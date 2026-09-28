@@ -1,5 +1,6 @@
 /* =========================================
-   Ahmed AI - Main JavaScript
+   اسأل أبو الريس AI - Main JavaScript
+   Streaming AI Version
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -205,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chat: {
             title: "AI Chat",
             subtitle:
-                "تحدث مع Ahmed AI"
+                "تحدث مع اسأل أبو الريس AI"
         },
 
         study: {
@@ -241,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         settings: {
             title: "الإعدادات",
             subtitle:
-                "إعدادات Ahmed AI"
+                "إعدادات اسأل أبو الريس AI"
         }
 
     };
@@ -678,7 +679,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
                 <h2>
-                    Ahmed AI
+                    اسأل أبو الريس AI
                 </h2>
 
                 <p>
@@ -813,13 +814,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
+       CREATE STREAMING MESSAGE
+    ========================================= */
+
+    function createStreamingMessage() {
+
+        if (!chatMessages) {
+            return null;
+        }
+
+
+        const emptyChat =
+            chatMessages.querySelector(
+                ".empty-chat"
+            );
+
+
+        if (emptyChat) {
+
+            emptyChat.remove();
+
+        }
+
+
+        const messageElement =
+            document.createElement(
+                "div"
+            );
+
+
+        messageElement.className =
+            "message ai";
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "message-bubble";
+
+
+        bubble.textContent =
+            "";
+
+
+        messageElement.appendChild(
+            bubble
+        );
+
+
+        chatMessages.appendChild(
+            messageElement
+        );
+
+
+        chatMessages.scrollTop =
+            chatMessages.scrollHeight;
+
+
+        return bubble;
+
+    }
+
+
+    /* =========================================
        AI PROMPTS
     ========================================= */
 
     const AI_PROMPTS = {
 
         general: `
-أنت Ahmed AI، مساعد ذكي للمذاكرة والعمل.
+أنت اسأل أبو الريس AI، مساعد ذكي للمذاكرة والعمل.
 
 ساعد المستخدم بطريقة واضحة ومنظمة وعملية.
 
@@ -847,7 +915,7 @@ English
 `,
 
         gis: `
-أنت الآن Ahmed AI - GIS Specialist.
+أنت الآن اسأل أبو الريس AI - GIS Specialist.
 
 تخصصك الأساسي هو:
 GIS
@@ -874,6 +942,7 @@ Sentinel
 Google Earth Engine
 
 عندما يطرح المستخدم سؤال GIS:
+
 1. اشرح الفكرة ببساطة.
 2. أعطِ الخطوات العملية.
 3. اذكر الأدوات المستخدمة في ArcGIS Pro عندما يكون ذلك مناسبًا.
@@ -885,7 +954,7 @@ Google Earth Engine
 `,
 
         coding: `
-أنت الآن Ahmed AI - Coding Assistant.
+أنت الآن اسأل أبو الريس AI - Coding Assistant.
 
 تخصصك في:
 Python
@@ -898,6 +967,7 @@ Data Processing
 Geospatial Programming
 
 عندما يطلب المستخدم كودًا:
+
 1. افهم المطلوب أولًا.
 2. أعطِ كودًا كاملًا قابلًا للنسخ.
 3. لا تضع كودًا ناقصًا إلا إذا كان المستخدم طلب جزءًا محددًا.
@@ -911,11 +981,12 @@ Geospatial Programming
 `,
 
         study: `
-أنت الآن Ahmed AI - Study Assistant.
+أنت الآن اسأل أبو الريس AI - Study Assistant.
 
 مهمتك مساعدة المستخدم على الدراسة والفهم وليس مجرد إعطاء الإجابة.
 
 عند شرح موضوع:
+
 - ابدأ بالفكرة الأساسية.
 - قسم الموضوع إلى أجزاء.
 - استخدم أمثلة بسيطة.
@@ -926,6 +997,7 @@ Geospatial Programming
 - إذا طلب تلخيصًا، حافظ على أهم المعلومات بدون حشو.
 
 المستخدم يدرس خصوصًا:
+
 الجغرافيا
 GIS
 ArcGIS Pro
@@ -941,12 +1013,172 @@ English
 
 
     /* =========================================
-       REAL AI REQUEST
+       STREAM DATA PARSER
     ========================================= */
 
-    async function askAI(
+    function extractStreamText(
+        rawData
+    ) {
+
+        if (!rawData) {
+            return "";
+        }
+
+
+        let text = "";
+
+
+        const lines =
+            rawData.split("\n");
+
+
+        for (
+            const line of lines
+        ) {
+
+            const trimmed =
+                line.trim();
+
+
+            if (!trimmed) {
+                continue;
+            }
+
+
+            if (
+                trimmed ===
+                "data: [DONE]"
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                trimmed.startsWith(
+                    "data:"
+                )
+            ) {
+
+                const jsonText =
+                    trimmed
+                        .substring(5)
+                        .trim();
+
+
+                if (!jsonText) {
+                    continue;
+                }
+
+
+                try {
+
+                    const parsed =
+                        JSON.parse(
+                            jsonText
+                        );
+
+
+                    if (
+                        typeof parsed.response ===
+                        "string"
+                    ) {
+
+                        text +=
+                            parsed.response;
+
+                    } else if (
+                        parsed.result &&
+                        typeof parsed.result.response ===
+                        "string"
+                    ) {
+
+                        text +=
+                            parsed.result.response;
+
+                    } else if (
+                        typeof parsed.text ===
+                        "string"
+                    ) {
+
+                        text +=
+                            parsed.text;
+
+                    }
+
+                } catch (error) {
+
+                    /*
+                     * أحيانًا قد يصل جزء
+                     * غير مكتمل من JSON.
+                     * نتركه للـbuffer التالي.
+                     */
+
+                }
+
+
+            } else {
+
+                /*
+                 * دعم بعض أشكال الـstream
+                 * التي قد ترسل JSON مباشرة.
+                 */
+
+                try {
+
+                    const parsed =
+                        JSON.parse(
+                            trimmed
+                        );
+
+
+                    if (
+                        typeof parsed.response ===
+                        "string"
+                    ) {
+
+                        text +=
+                            parsed.response;
+
+                    } else if (
+                        parsed.result &&
+                        typeof parsed.result.response ===
+                        "string"
+                    ) {
+
+                        text +=
+                            parsed.result.response;
+
+                    }
+
+                } catch (error) {
+
+                    /*
+                     * ليس JSON مباشرًا.
+                     * نتجاهله هنا.
+                     */
+
+                }
+
+            }
+
+        }
+
+
+        return text;
+
+    }
+
+
+    /* =========================================
+       REAL AI STREAMING REQUEST
+    ========================================= */
+
+    async function askAIStream(
         userMessage,
-        mode = "general"
+        mode = "general",
+        onChunk = null
     ) {
 
         if (
@@ -1007,50 +1239,203 @@ ${cleanMessage}
 
         if (!response.ok) {
 
-            throw new Error(
+            let errorText =
                 "HTTP Error: " +
-                response.status
-            );
-
-        }
+                response.status;
 
 
-        const data =
-            await response.json();
+            try {
+
+                const errorData =
+                    await response.json();
 
 
-        if (
-            data &&
-            data.success &&
-            data.reply
-        ) {
+                if (
+                    errorData &&
+                    errorData.error
+                ) {
 
-            return data.reply;
+                    errorText =
+                        errorData.error;
 
-        }
+                }
 
+            } catch (error) {
+                // تجاهل خطأ قراءة JSON
+            }
 
-        if (
-            data &&
-            data.error
-        ) {
 
             throw new Error(
-                data.error
+                errorText
             );
 
         }
 
 
-        throw new Error(
-            "لم يصل رد صحيح من Ahmed AI."
-        );
+        if (!response.body) {
+
+            throw new Error(
+                "المتصفح لم يستلم Stream من Worker."
+            );
+
+        }
+
+
+        const reader =
+            response.body.getReader();
+
+
+        const decoder =
+            new TextDecoder(
+                "utf-8"
+            );
+
+
+        let buffer = "";
+
+        let fullText = "";
+
+
+        while (true) {
+
+            const {
+                value,
+                done
+            } =
+                await reader.read();
+
+
+            if (done) {
+                break;
+            }
+
+
+            buffer +=
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+
+            /*
+             * نحاول استخراج البيانات
+             * المكتملة من الـbuffer.
+             */
+
+            const parts =
+                buffer.split(
+                    "\n"
+                );
+
+
+            /*
+             * نحتفظ بآخر جزء لأنه
+             * قد يكون غير مكتمل.
+             */
+
+            buffer =
+                parts.pop() || "";
+
+
+            const completedData =
+                parts.join("\n");
+
+
+            const chunkText =
+                extractStreamText(
+                    completedData
+                );
+
+
+            if (chunkText) {
+
+                fullText +=
+                    chunkText;
+
+
+                if (
+                    typeof onChunk ===
+                    "function"
+                ) {
+
+                    onChunk(
+                        chunkText,
+                        fullText
+                    );
+
+                }
+
+
+                if (chatMessages) {
+
+                    chatMessages.scrollTop =
+                        chatMessages.scrollHeight;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+         * قراءة أي بيانات متبقية
+         * في نهاية الـstream.
+         */
+
+        buffer +=
+            decoder.decode();
+
+
+        if (buffer.trim()) {
+
+            const finalChunk =
+                extractStreamText(
+                    buffer
+                );
+
+
+            if (finalChunk) {
+
+                fullText +=
+                    finalChunk;
+
+
+                if (
+                    typeof onChunk ===
+                    "function"
+                ) {
+
+                    onChunk(
+                        finalChunk,
+                        fullText
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        if (!fullText.trim()) {
+
+            throw new Error(
+                "لم يصل نص من نموذج الذكاء الاصطناعي."
+            );
+
+        }
+
+
+        return fullText;
 
     }
 
 
     /* =========================================
-       REAL AI CHAT
+       REAL AI CHAT WITH STREAMING
     ========================================= */
 
     async function sendChatMessage(
@@ -1086,50 +1471,136 @@ ${cleanMessage}
         showLoading();
 
 
-        try {
+        /*
+         * ننشئ فقاعة AI فارغة
+         * ثم نملأها تدريجيًا.
+         */
 
-            const reply =
-                await askAI(
-                    cleanText,
-                    mode
-                );
+        const aiBubble =
+            createStreamingMessage();
 
+
+        if (!aiBubble) {
 
             hideLoading();
 
+            return;
 
-            addMessage(
-                reply,
-                "ai"
+        }
+
+
+        /*
+         * رسالة مؤقتة أثناء
+         * بدء الاتصال.
+         */
+
+        aiBubble.textContent =
+            "جاري التفكير...";
+
+
+        try {
+
+            let hasReceivedText =
+                false;
+
+
+            await askAIStream(
+
+                cleanText,
+
+                mode,
+
+                (
+                    chunk,
+                    fullText
+                ) => {
+
+                    hasReceivedText =
+                        true;
+
+
+                    /*
+                     * أول ما يصل النص
+                     * نحذف "جاري التفكير..."
+                     */
+
+                    if (
+                        fullText ===
+                        chunk
+                    ) {
+
+                        aiBubble.textContent =
+                            "";
+
+                    }
+
+
+                    aiBubble.textContent +=
+                        chunk;
+
+
+                    if (chatMessages) {
+
+                        chatMessages.scrollTop =
+                            chatMessages.scrollHeight;
+
+                    }
+
+                }
+
             );
+
+
+            /*
+             * إذا وصل الرد بنجاح
+             */
+
+            if (!hasReceivedText) {
+
+                aiBubble.textContent =
+                    "تم استلام الرد.";
+
+            }
+
+
+            /*
+             * نحفظ المحادثة مرة واحدة
+             * بعد انتهاء الـstream.
+             */
+
+            saveMessages();
 
 
         } catch (error) {
 
-            hideLoading();
-
-
             console.error(
-                "Ahmed AI Error:",
+                "اسأل أبو الريس AI Error:",
                 error
             );
 
 
-            addMessage(
-
-                "تعذر الحصول على رد من Ahmed AI.\n\n" +
+            aiBubble.textContent =
+                "تعذر الحصول على رد من اسأل أبو الريس AI.\n\n" +
                 "الخطأ:\n" +
-                error.message,
-
-                "ai"
-
-            );
+                error.message;
 
 
             showNotification(
                 "حدث خطأ في الذكاء الاصطناعي",
                 "error"
             );
+
+
+            saveMessages();
+
+        } finally {
+
+            /*
+             * مهم جدًا:
+             * إخفاء التحميل دائمًا.
+             */
+
+            hideLoading();
 
         }
 
@@ -1639,10 +2110,185 @@ ${request}
 `;
 
 
-        return await askAI(
+        return await askAIStream(
             prompt,
-            "coding"
+            "coding",
+            null
         );
+
+    }
+
+
+    /*
+     * دالة غير Streaming لاستخدامها
+     * مع مولد الأكواد.
+     */
+
+    async function askAIFull(
+        userMessage,
+        mode = "general"
+    ) {
+
+        if (
+            !userMessage ||
+            !userMessage.trim()
+        ) {
+
+            throw new Error(
+                "Empty message"
+            );
+
+        }
+
+
+        const cleanMessage =
+            userMessage.trim();
+
+
+        const selectedPrompt =
+            AI_PROMPTS[mode] ||
+            AI_PROMPTS.general;
+
+
+        const finalMessage = `
+
+${selectedPrompt}
+
+رسالة المستخدم:
+
+${cleanMessage}
+
+أجب الآن بشكل مفيد ومنظم.
+`;
+
+
+        const response =
+            await fetch(
+                AI_API_URL,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        message:
+                            finalMessage
+
+                    })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+
+        }
+
+
+        /*
+         * لأن Worker أصبح Streaming،
+         * نقرأ الـstream بالكامل هنا.
+         */
+
+        if (!response.body) {
+
+            throw new Error(
+                "لا يوجد Stream."
+            );
+
+        }
+
+
+        const reader =
+            response.body.getReader();
+
+
+        const decoder =
+            new TextDecoder(
+                "utf-8"
+            );
+
+
+        let buffer = "";
+
+        let fullText = "";
+
+
+        while (true) {
+
+            const {
+                value,
+                done
+            } =
+                await reader.read();
+
+
+            if (done) {
+                break;
+            }
+
+
+            buffer +=
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+
+            const parts =
+                buffer.split(
+                    "\n"
+                );
+
+
+            buffer =
+                parts.pop() || "";
+
+
+            fullText +=
+                extractStreamText(
+                    parts.join("\n")
+                );
+
+        }
+
+
+        buffer +=
+            decoder.decode();
+
+
+        if (buffer.trim()) {
+
+            fullText +=
+                extractStreamText(
+                    buffer
+                );
+
+        }
+
+
+        if (!fullText.trim()) {
+
+            throw new Error(
+                "لم يصل رد من AI."
+            );
+
+        }
+
+
+        return fullText;
 
     }
 
@@ -1689,9 +2335,6 @@ ${request}
                         );
 
 
-                    hideLoading();
-
-
                     if (codeOutput) {
 
                         codeOutput.textContent =
@@ -1701,14 +2344,11 @@ ${request}
 
 
                     showNotification(
-                        "تم إنشاء الكود بواسطة Ahmed AI"
+                        "تم إنشاء الكود بواسطة اسأل أبو الريس AI"
                     );
 
 
                 } catch (error) {
-
-                    hideLoading();
-
 
                     console.error(
                         "Code AI Error:",
@@ -1729,6 +2369,10 @@ ${request}
                         "تعذر إنشاء الكود",
                         "error"
                     );
+
+                } finally {
+
+                    hideLoading();
 
                 }
 
@@ -3069,7 +3713,7 @@ ${request}
 
 
     console.log(
-        "Ahmed AI initialized successfully."
+        "اسأل أبو الريس AI initialized successfully - Streaming enabled."
     );
 
 });
