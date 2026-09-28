@@ -1,7 +1,6 @@
 /* =========================================
    اسأل أبو الريس AI - Main JavaScript
-   Streaming AI Version
-   Image Vision + Clickable Links
+   Streaming AI + Image Vision + Clickable Links
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -199,21 +198,15 @@ const AI_API_URL =
 ========================================= */
 
 /*
- * الصورة التي اختارها المستخدم
- * تظل موجودة هنا حتى يكتب السؤال
- * ثم يتم إرسالها مع السؤال إلى Worker.
+ * الصورة التي يختارها المستخدم تبقى هنا
+ * حتى يكتب السؤال ثم يضغط إرسال.
  */
 
-let pendingImage = null;
+let pendingImageData = null;
 
+let pendingImageFile = null;
 
-/*
- * الحد الأقصى للصورة:
- * 6MB
- */
-
-const MAX_IMAGE_SIZE =
-    6 * 1024 * 1024;
+let pendingImageComposer = null;
 
 
 /* =========================================
@@ -343,9 +336,13 @@ function openSection(sectionName) {
         window.innerWidth <= 768
     ) {
 
-        sidebar.classList.remove(
-            "open"
-        );
+        if (sidebar) {
+
+            sidebar.classList.remove(
+                "open"
+            );
+
+        }
 
     }
 
@@ -390,9 +387,13 @@ if (mobileMenuBtn) {
         "click",
         () => {
 
-            sidebar.classList.toggle(
-                "open"
-            );
+            if (sidebar) {
+
+                sidebar.classList.toggle(
+                    "open"
+                );
+
+            }
 
         }
     );
@@ -414,6 +415,7 @@ document.addEventListener(
 
 
         if (
+            sidebar &&
             sidebar.classList.contains(
                 "open"
             ) &&
@@ -532,12 +534,21 @@ function showNotification(
 ========================================= */
 
 function showLoading() {
-    // لا يوجد Loading Overlay.
+
+    /*
+     * لا يوجد Loading Overlay.
+     * لا يتم حجب الصفحة أثناء انتظار رد AI.
+     */
+
 }
 
 
 function hideLoading() {
-    // لا يوجد Loading Overlay.
+
+    /*
+     * لا يوجد Loading Overlay.
+     */
+
 }
 
 
@@ -671,249 +682,6 @@ document
 
 
 /* =========================================
-   TEXT + LINK FORMATTER
-========================================= */
-
-/*
- * يحول الروابط الموجودة في رد AI
- * إلى روابط قابلة للضغط.
- *
- * مثال:
- * https://geostepsacademy.com
- *
- * يصبح رابطًا أزرق قابلًا للضغط.
- */
-
-function renderAIText(
-    element,
-    text
-) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.innerHTML = "";
-
-
-    const urlRegex =
-        /(https?:\/\/[^\s<>"'`]+)/g;
-
-
-    const parts =
-        String(text || "").split(
-            urlRegex
-        );
-
-
-    parts.forEach(
-        (part, index) => {
-
-            if (
-                index % 2 === 1
-            ) {
-
-                let cleanUrl =
-                    part.replace(
-                        /[),.!؟؛:]+$/g,
-                        ""
-                    );
-
-
-                const trailing =
-                    part.substring(
-                        cleanUrl.length
-                    );
-
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-
-                link.href =
-                    cleanUrl;
-
-                link.textContent =
-                    cleanUrl;
-
-                link.target =
-                    "_blank";
-
-                link.rel =
-                    "noopener noreferrer";
-
-                link.style.color =
-                    "#2563eb";
-
-                link.style.textDecoration =
-                    "underline";
-
-                link.style.cursor =
-                    "pointer";
-
-
-                element.appendChild(
-                    link
-                );
-
-
-                if (trailing) {
-
-                    element.appendChild(
-                        document.createTextNode(
-                            trailing
-                        )
-                    );
-
-                }
-
-            } else {
-
-                /*
-                 * تحويل الأسطر إلى نص
-                 * مع الحفاظ على التنسيق.
-                 */
-
-                const lines =
-                    part.split(
-                        "\n"
-                    );
-
-
-                lines.forEach(
-                    (
-                        line,
-                        lineIndex
-                    ) => {
-
-                        element.appendChild(
-                            document.createTextNode(
-                                line
-                            )
-                        );
-
-
-                        if (
-                            lineIndex <
-                            lines.length - 1
-                        ) {
-
-                            element.appendChild(
-                                document.createElement(
-                                    "br"
-                                )
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   IMAGE PREVIEW STYLES
-========================================= */
-
-function injectImageStyles() {
-
-    if (
-        document.getElementById(
-            "ahmedAIImageStyles"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    const style =
-        document.createElement(
-            "style"
-        );
-
-
-    style.id =
-        "ahmedAIImageStyles";
-
-
-    style.textContent = `
-
-        .ahmed-ai-image-wrapper {
-            margin-top: 8px;
-            max-width: 320px;
-        }
-
-        .ahmed-ai-image-preview {
-            display: block;
-            width: 100%;
-            max-width: 320px;
-            max-height: 320px;
-            object-fit: contain;
-            border-radius: 14px;
-            border: 1px solid rgba(148,163,184,0.35);
-            background: rgba(148,163,184,0.08);
-        }
-
-        .ahmed-ai-image-name {
-            display: block;
-            margin-top: 7px;
-            font-size: 12px;
-            opacity: 0.75;
-            word-break: break-word;
-        }
-
-        .ahmed-ai-pending {
-            position: relative;
-        }
-
-        .ahmed-ai-remove-image {
-            border: none;
-            cursor: pointer;
-            margin-top: 8px;
-            padding: 6px 10px;
-            border-radius: 8px;
-            background: rgba(239,68,68,0.12);
-            color: #dc2626;
-            font-family: inherit;
-        }
-
-        .ahmed-ai-remove-image:hover {
-            background: rgba(239,68,68,0.2);
-        }
-
-        .message-bubble a {
-            color: #2563eb;
-        }
-
-        .dark .message-bubble a {
-            color: #60a5fa;
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        style
-    );
-
-}
-
-
-injectImageStyles();
-
-
-/* =========================================
    NEW CHAT
 ========================================= */
 
@@ -922,9 +690,6 @@ function createNewChat() {
     if (!chatMessages) {
         return;
     }
-
-
-    pendingImage = null;
 
 
     chatMessages.innerHTML = `
@@ -972,6 +737,13 @@ function createNewChat() {
     }
 
 
+    pendingImageData = null;
+
+    pendingImageFile = null;
+
+    pendingImageComposer = null;
+
+
     saveMessages();
 
 
@@ -1001,14 +773,177 @@ if (newChatBtn) {
 
 
 /* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value
+    )
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================
+   CLICKABLE LINKS
+========================================= */
+
+/*
+ * يحول الروابط مثل:
+ *
+ * https://geostepsacademy.com
+ *
+ * إلى روابط قابلة للضغط.
+ *
+ * يتم أولًا عمل Escape للنص،
+ * ثم إضافة الروابط بطريقة آمنة.
+ */
+
+function linkifyText(
+    text
+) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    const escaped =
+        escapeHTML(text);
+
+
+    const urlRegex =
+        /(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
+
+
+    return escaped.replace(
+        urlRegex,
+        matchedUrl => {
+
+            let url =
+                matchedUrl;
+
+
+            let trailing =
+                "";
+
+
+            /*
+             * إزالة علامات الترقيم
+             * الموجودة في نهاية الرابط.
+             */
+
+            while (
+                /[.,،؛;!?؟)\]}>"']$/.test(
+                    url
+                )
+            ) {
+
+                trailing =
+                    url.slice(-1) +
+                    trailing;
+
+                url =
+                    url.slice(
+                        0,
+                        -1
+                    );
+
+            }
+
+
+            let href =
+                url;
+
+
+            if (
+                href
+                    .toLowerCase()
+                    .startsWith(
+                        "www."
+                    )
+            ) {
+
+                href =
+                    "https://" +
+                    href;
+
+            }
+
+
+            return (
+                `<a href="${href}" ` +
+                `target="_blank" ` +
+                `rel="noopener noreferrer" ` +
+                `class="ai-link">` +
+                `${url}` +
+                `</a>` +
+                trailing
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   RENDER AI TEXT
+========================================= */
+
+function renderAIText(
+    element,
+    text
+) {
+
+    if (!element) {
+        return;
+    }
+
+
+    element.innerHTML =
+        linkifyText(
+            text
+        );
+
+}
+
+
+/* =========================================
    CHAT FUNCTIONS
 ========================================= */
 
 function addMessage(
     message,
-    sender = "user",
-    imageData = null,
-    imageName = ""
+    sender = "user"
 ) {
 
     if (!chatMessages) {
@@ -1049,108 +984,19 @@ function addMessage(
         "message-bubble";
 
 
-    if (imageData) {
+    if (
+        sender === "ai"
+    ) {
 
-        const imageWrapper =
-            document.createElement(
-                "div"
-            );
-
-
-        imageWrapper.className =
-            "ahmed-ai-image-wrapper";
-
-
-        const image =
-            document.createElement(
-                "img"
-            );
-
-
-        image.className =
-            "ahmed-ai-image-preview";
-
-
-        image.src =
-            imageData;
-
-
-        image.alt =
-            imageName ||
-            "الصورة المرسلة إلى AI";
-
-
-        imageWrapper.appendChild(
-            image
+        renderAIText(
+            bubble,
+            message
         );
-
-
-        if (imageName) {
-
-            const name =
-                document.createElement(
-                    "span"
-                );
-
-
-            name.className =
-                "ahmed-ai-image-name";
-
-
-            name.textContent =
-                `📷 ${imageName}`;
-
-
-            imageWrapper.appendChild(
-                name
-            );
-
-        }
-
-
-        bubble.appendChild(
-            imageWrapper
-        );
-
-
-        if (message) {
-
-            const question =
-                document.createElement(
-                    "div"
-                );
-
-
-            question.style.marginTop =
-                "10px";
-
-            question.textContent =
-                message;
-
-
-            bubble.appendChild(
-                question
-            );
-
-        }
 
     } else {
 
-        if (
-            sender === "ai"
-        ) {
-
-            renderAIText(
-                bubble,
-                message
-            );
-
-        } else {
-
-            bubble.textContent =
-                message;
-
-        }
+        bubble.textContent =
+            message;
 
     }
 
@@ -1158,19 +1004,6 @@ function addMessage(
     messageElement.appendChild(
         bubble
     );
-
-
-    /*
-     * لا نخزن الصور Base64 في localStorage
-     * حتى لا يمتلئ التخزين بسرعة.
-     */
-
-    if (imageData) {
-
-        messageElement.dataset.imageMessage =
-            "true";
-
-    }
 
 
     chatMessages.appendChild(
@@ -1183,6 +1016,173 @@ function addMessage(
 
 
     saveMessages();
+
+}
+
+
+/* =========================================
+   ADD IMAGE MESSAGE
+========================================= */
+
+function addImageMessage(
+    imageData,
+    fileName = "",
+    question = ""
+) {
+
+    if (!chatMessages) {
+        return null;
+    }
+
+
+    const emptyChat =
+        chatMessages.querySelector(
+            ".empty-chat"
+        );
+
+
+    if (emptyChat) {
+
+        emptyChat.remove();
+
+    }
+
+
+    const messageElement =
+        document.createElement(
+            "div"
+        );
+
+
+    messageElement.className =
+        "message user";
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "message-bubble image-message-bubble";
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.src =
+        imageData;
+
+    image.alt =
+        fileName
+            ? `الصورة المرفوعة: ${fileName}`
+            : "الصورة المرفوعة";
+
+    image.className =
+        "chat-uploaded-image";
+
+
+    image.style.maxWidth =
+        "100%";
+
+    image.style.width =
+        "320px";
+
+    image.style.maxHeight =
+        "320px";
+
+    image.style.objectFit =
+        "contain";
+
+    image.style.borderRadius =
+        "14px";
+
+    image.style.display =
+        "block";
+
+    image.style.marginBottom =
+        "10px";
+
+
+    bubble.appendChild(
+        image
+    );
+
+
+    if (fileName) {
+
+        const nameElement =
+            document.createElement(
+                "div"
+            );
+
+
+        nameElement.textContent =
+            `📷 ${fileName}`;
+
+
+        nameElement.style.fontSize =
+            "12px";
+
+        nameElement.style.opacity =
+            "0.75";
+
+        nameElement.style.marginTop =
+            "5px";
+
+
+        bubble.appendChild(
+            nameElement
+        );
+
+    }
+
+
+    if (question) {
+
+        const questionElement =
+            document.createElement(
+                "div"
+            );
+
+
+        questionElement.textContent =
+            question;
+
+
+        questionElement.style.marginTop =
+            "10px";
+
+
+        bubble.appendChild(
+            questionElement
+        );
+
+    }
+
+
+    messageElement.appendChild(
+        bubble
+    );
+
+
+    chatMessages.appendChild(
+        messageElement
+    );
+
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+
+    saveMessages();
+
+
+    return messageElement;
 
 }
 
@@ -1255,293 +1255,142 @@ function createStreamingMessage() {
 
 
 /* =========================================
-   IMAGE PREVIEW IN CHAT
+   IMAGE PREVIEW STYLES
 ========================================= */
 
-function showPendingImage(
-    imageData,
-    fileName
-) {
+function injectImageStyles() {
 
-    if (!chatMessages) {
+    if (
+        document.getElementById(
+            "ahmedAIExtraStyles"
+        )
+    ) {
+
         return;
-    }
-
-
-    /*
-     * حذف معاينة قديمة
-     */
-
-    const oldPreview =
-        chatMessages.querySelector(
-            ".ahmed-ai-pending"
-        );
-
-
-    if (oldPreview) {
-
-        oldPreview.remove();
 
     }
 
 
-    const messageElement =
+    const style =
         document.createElement(
-            "div"
+            "style"
         );
 
 
-    messageElement.className =
-        "message user ahmed-ai-pending";
+    style.id =
+        "ahmedAIExtraStyles";
 
 
-    const bubble =
-        document.createElement(
-            "div"
-        );
+    style.textContent = `
 
-
-    bubble.className =
-        "message-bubble";
-
-
-    const title =
-        document.createElement(
-            "div"
-        );
-
-
-    title.textContent =
-        "📷 الصورة جاهزة للإرسال";
-
-
-    title.style.marginBottom =
-        "8px";
-
-
-    title.style.fontWeight =
-        "600";
-
-
-    bubble.appendChild(
-        title
-    );
-
-
-    const wrapper =
-        document.createElement(
-            "div"
-        );
-
-
-    wrapper.className =
-        "ahmed-ai-image-wrapper";
-
-
-    const image =
-        document.createElement(
-            "img"
-        );
-
-
-    image.className =
-        "ahmed-ai-image-preview";
-
-
-    image.src =
-        imageData;
-
-
-    image.alt =
-        fileName;
-
-
-    wrapper.appendChild(
-        image
-    );
-
-
-    const name =
-        document.createElement(
-            "span"
-        );
-
-
-    name.className =
-        "ahmed-ai-image-name";
-
-
-    name.textContent =
-        `📎 ${fileName}`;
-
-
-    wrapper.appendChild(
-        name
-    );
-
-
-    bubble.appendChild(
-        wrapper
-    );
-
-
-    const removeButton =
-        document.createElement(
-            "button"
-        );
-
-
-    removeButton.type =
-        "button";
-
-
-    removeButton.className =
-        "ahmed-ai-remove-image";
-
-
-    removeButton.textContent =
-        "🗑️ إزالة الصورة";
-
-
-    removeButton.addEventListener(
-        "click",
-        () => {
-
-            pendingImage =
-                null;
-
-
-            messageElement.remove();
-
-
-            showNotification(
-                "تمت إزالة الصورة"
-            );
-
+        .ai-link {
+            color: #2563eb;
+            text-decoration: underline;
+            font-weight: 600;
+            word-break: break-word;
         }
-    );
 
-
-    bubble.appendChild(
-        removeButton
-    );
-
-
-    messageElement.appendChild(
-        bubble
-    );
-
-
-    chatMessages.appendChild(
-        messageElement
-    );
-
-
-    chatMessages.scrollTop =
-        chatMessages.scrollHeight;
-
-}
-
-
-/* =========================================
-   READ IMAGE AS BASE64
-========================================= */
-
-function readImageAsBase64(
-    file
-) {
-
-    return new Promise(
-        (
-            resolve,
-            reject
-        ) => {
-
-            if (!file) {
-
-                reject(
-                    new Error(
-                        "لم يتم اختيار صورة."
-                    )
-                );
-
-                return;
-
-            }
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                reject(
-                    new Error(
-                        "الملف المختار ليس صورة."
-                    )
-                );
-
-                return;
-
-            }
-
-
-            if (
-                file.size >
-                MAX_IMAGE_SIZE
-            ) {
-
-                reject(
-                    new Error(
-                        "حجم الصورة كبير جدًا. الحد الأقصى 6MB."
-                    )
-                );
-
-                return;
-
-            }
-
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload = () => {
-
-                resolve(
-                    reader.result
-                );
-
-            };
-
-
-            reader.onerror = () => {
-
-                reject(
-                    new Error(
-                        "تعذر قراءة الصورة."
-                    )
-                );
-
-            };
-
-
-            reader.readAsDataURL(
-                file
-            );
-
+        .ai-link:hover {
+            opacity: 0.8;
         }
+
+        .image-upload-composer {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 18px;
+            border: 1px solid rgba(100, 116, 139, 0.25);
+            background: var(--card-bg, #ffffff);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .image-upload-preview {
+            display: block;
+            width: 100%;
+            max-width: 360px;
+            max-height: 300px;
+            object-fit: contain;
+            margin: 0 auto 12px;
+            border-radius: 14px;
+        }
+
+        .image-upload-file-name {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .image-upload-question {
+            width: 100%;
+            min-height: 70px;
+            resize: vertical;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .image-upload-question:focus {
+            border-color: #2563eb;
+        }
+
+        .image-upload-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .image-upload-send,
+        .image-upload-cancel {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+        }
+
+        .image-upload-send {
+            background: #2563eb;
+            color: white;
+        }
+
+        .image-upload-cancel {
+            background: rgba(100,116,139,0.12);
+            color: inherit;
+        }
+
+        .image-message-bubble {
+            overflow: hidden;
+        }
+
+        .chat-uploaded-image {
+            cursor: pointer;
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
     );
 
 }
 
 
+injectImageStyles();
+
+
 /* =========================================
-   PROCESS IMAGE SELECTION
+   IMAGE PREVIEW COMPOSER
 ========================================= */
 
-async function handleImageSelection(
+function showImagePreview(
     file
 ) {
 
@@ -1550,29 +1399,56 @@ async function handleImageSelection(
     }
 
 
-    try {
+    if (
+        !file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        showNotification(
+            "الملف المختار ليس صورة",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const maxSize =
+        10 * 1024 * 1024;
+
+
+    if (
+        file.size >
+        maxSize
+    ) {
+
+        showNotification(
+            "حجم الصورة يجب ألا يتجاوز 10MB",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = event => {
 
         const imageData =
-            await readImageAsBase64(
-                file
-            );
+            event.target.result;
 
 
-        pendingImage = {
+        pendingImageData =
+            imageData;
 
-            data:
-                imageData,
-
-            name:
-                file.name,
-
-            type:
-                file.type,
-
-            size:
-                file.size
-
-        };
+        pendingImageFile =
+            file;
 
 
         openSection(
@@ -1580,35 +1456,437 @@ async function handleImageSelection(
         );
 
 
-        showPendingImage(
-            imageData,
-            file.name
-        );
+        removeImagePreview();
 
 
-        if (chatInput) {
+        if (!chatMessages) {
+            return;
+        }
 
-            chatInput.focus();
+
+        const emptyChat =
+            chatMessages.querySelector(
+                ".empty-chat"
+            );
+
+
+        if (emptyChat) {
+
+            emptyChat.remove();
 
         }
 
 
-        showNotification(
-            "تم اختيار الصورة. اكتب سؤالك ثم اضغط إرسال."
+        const composer =
+            document.createElement(
+                "div"
+            );
+
+
+        composer.className =
+            "image-upload-composer";
+
+
+        const preview =
+            document.createElement(
+                "img"
+            );
+
+
+        preview.className =
+            "image-upload-preview";
+
+        preview.src =
+            imageData;
+
+        preview.alt =
+            "معاينة الصورة";
+
+
+        const fileName =
+            document.createElement(
+                "div"
+            );
+
+
+        fileName.className =
+            "image-upload-file-name";
+
+
+        fileName.textContent =
+            `📷 ${file.name}`;
+
+
+        const question =
+            document.createElement(
+                "textarea"
+            );
+
+
+        question.className =
+            "image-upload-question";
+
+
+        question.placeholder =
+            "اكتب سؤالك عن الصورة هنا... مثال: اشرح لي ما الموجود في هذه الخريطة";
+
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+
+        actions.className =
+            "image-upload-actions";
+
+
+        const sendButton =
+            document.createElement(
+                "button"
+            );
+
+
+        sendButton.type =
+            "button";
+
+        sendButton.className =
+            "image-upload-send";
+
+        sendButton.textContent =
+            "📤 إرسال الصورة والسؤال";
+
+
+        const cancelButton =
+            document.createElement(
+                "button"
+            );
+
+
+        cancelButton.type =
+            "button";
+
+        cancelButton.className =
+            "image-upload-cancel";
+
+        cancelButton.textContent =
+            "إلغاء";
+
+
+        actions.appendChild(
+            sendButton
         );
+
+        actions.appendChild(
+            cancelButton
+        );
+
+
+        composer.appendChild(
+            preview
+        );
+
+        composer.appendChild(
+            fileName
+        );
+
+        composer.appendChild(
+            question
+        );
+
+        composer.appendChild(
+            actions
+        );
+
+
+        chatMessages.appendChild(
+            composer
+        );
+
+
+        chatMessages.scrollTop =
+            chatMessages.scrollHeight;
+
+
+        pendingImageComposer =
+            composer;
+
+
+        question.focus();
+
+
+        sendButton.addEventListener(
+            "click",
+            async () => {
+
+                const userQuestion =
+                    question.value.trim();
+
+
+                if (
+                    !userQuestion
+                ) {
+
+                    showNotification(
+                        "اكتب سؤالك عن الصورة أولاً",
+                        "error"
+                    );
+
+                    question.focus();
+
+                    return;
+
+                }
+
+
+                await sendImageMessage(
+                    imageData,
+                    file.name,
+                    userQuestion
+                );
+
+            }
+        );
+
+
+        cancelButton.addEventListener(
+            "click",
+            () => {
+
+                removeImagePreview();
+
+                showNotification(
+                    "تم إلغاء الصورة"
+                );
+
+            }
+        );
+
+
+        question.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                        "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendButton.click();
+
+                }
+
+            }
+        );
+
+    };
+
+
+    reader.onerror = () => {
+
+        showNotification(
+            "تعذر قراءة الصورة",
+            "error"
+        );
+
+    };
+
+
+    reader.readAsDataURL(
+        file
+    );
+
+}
+
+
+/* =========================================
+   REMOVE IMAGE PREVIEW
+========================================= */
+
+function removeImagePreview() {
+
+    if (
+        pendingImageComposer &&
+        pendingImageComposer.parentNode
+    ) {
+
+        pendingImageComposer.remove();
+
+    }
+
+
+    pendingImageComposer =
+        null;
+
+    pendingImageData =
+        null;
+
+    pendingImageFile =
+        null;
+
+}
+
+
+/* =========================================
+   SEND IMAGE MESSAGE
+========================================= */
+
+async function sendImageMessage(
+    imageData,
+    fileName,
+    question
+) {
+
+    if (
+        !imageData ||
+        !question ||
+        !question.trim()
+    ) {
+
+        showNotification(
+            "الصورة والسؤال مطلوبان",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const cleanQuestion =
+        question.trim();
+
+
+    /*
+     * نحذف واجهة اختيار الصورة
+     * قبل إضافة الرسالة النهائية.
+     */
+
+    removeImagePreview();
+
+
+    /*
+     * إضافة الصورة والسؤال إلى المحادثة.
+     */
+
+    addImageMessage(
+        imageData,
+        fileName,
+        cleanQuestion
+    );
+
+
+    /*
+     * إنشاء فقاعة AI.
+     */
+
+    const aiBubble =
+        createStreamingMessage();
+
+
+    if (!aiBubble) {
+        return;
+    }
+
+
+    aiBubble.textContent =
+        "🤖 جاري تحليل الصورة...";
+
+
+    try {
+
+        let hasReceivedText =
+            false;
+
+
+        await askAIStream(
+            cleanQuestion,
+            "general",
+            (
+                chunk,
+                fullText
+            ) => {
+
+                hasReceivedText =
+                    true;
+
+
+                if (
+                    fullText ===
+                    chunk
+                ) {
+
+                    aiBubble.innerHTML =
+                        "";
+
+                }
+
+
+                /*
+                 * نعيد رسم النص
+                 * حتى تظهر الروابط
+                 * قابلة للضغط.
+                 */
+
+                const currentText =
+                    fullText;
+
+
+                renderAIText(
+                    aiBubble,
+                    currentText
+                );
+
+
+                if (chatMessages) {
+
+                    chatMessages.scrollTop =
+                        chatMessages.scrollHeight;
+
+                }
+
+            },
+            imageData
+        );
+
+
+        if (
+            !hasReceivedText
+        ) {
+
+            aiBubble.textContent =
+                "تم تحليل الصورة.";
+
+        }
+
+
+        saveMessages();
+
 
     } catch (error) {
 
         console.error(
-            "Image Error:",
+            "Image AI Error:",
             error
         );
 
 
+        aiBubble.textContent =
+            "تعذر تحليل الصورة.\n\n" +
+            "الخطأ:\n" +
+            error.message;
+
+
         showNotification(
-            error.message,
+            "حدث خطأ أثناء تحليل الصورة",
             "error"
         );
+
+
+        saveMessages();
 
     }
 
@@ -1650,11 +1928,10 @@ English
 لا تخترع معلومات غير متأكد منها.
 
 إذا أرسل المستخدم صورة:
-- حلل الصورة فعليًا.
-- صف ما يظهر فيها عند الحاجة.
-- إذا كانت صورة شاشة لبرنامج GIS فحدد الأدوات أو الخطأ الظاهر قدر الإمكان.
-- إذا كانت صورة سؤال دراسي فحل السؤال واشرحه.
-- لا تطلب من المستخدم إعادة إرسال الصورة إذا كانت الصورة موجودة في الطلب.
+- حلل الصورة نفسها.
+- لا تطلب منه إعادة إرسال الصورة إذا كانت الصورة موجودة في الطلب.
+- اشرح ما يظهر في الصورة قدر الإمكان.
+- إذا كانت الصورة خريطة أو واجهة برنامج أو خطأ برمجي، اربط الشرح بما يظهر فعليًا في الصورة.
 `,
 
     gis: `
@@ -1700,9 +1977,6 @@ Google Earth Engine
 6. إذا كان السؤال عن مشكلة، حاول تحديد سبب المشكلة والحل خطوة بخطوة.
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
-إذا أرسل المستخدم صورة من ArcGIS Pro أو QGIS:
-حلل الصورة نفسها وحاول تحديد ما يظهر فيها من أدوات أو أخطاء أو إعدادات.
 `,
 
     coding: `
@@ -1738,9 +2012,6 @@ Geospatial Programming
 8. استخدم تعليقات داخل الكود عند الحاجة.
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
-إذا أرسل المستخدم صورة لكود أو خطأ برمجي:
-حلل الصورة وحدد الخطأ الظاهر ثم اقترح الحل.
 `,
 
     study: `
@@ -1778,9 +2049,6 @@ Python
 English
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
-إذا أرسل المستخدم صورة لصفحة أو سؤال:
-اقرأ محتوى الصورة وحاول حل أو شرح ما فيها مباشرة.
 `
 
 };
@@ -1886,12 +2154,18 @@ function extractStreamText(
                 /*
                  * أحيانًا قد يصل جزء
                  * غير مكتمل من JSON.
+                 * نتركه للـbuffer التالي.
                  */
 
             }
 
 
         } else {
+
+            /*
+             * دعم بعض أشكال الـstream
+             * التي قد ترسل JSON مباشرة.
+             */
 
             try {
 
@@ -1924,6 +2198,7 @@ function extractStreamText(
 
                 /*
                  * ليس JSON مباشرًا.
+                 * نتجاهله هنا.
                  */
 
             }
@@ -1982,6 +2257,11 @@ ${cleanMessage}
 `;
 
 
+    /*
+     * تجهيز البيانات التي سيتم إرسالها
+     * إلى Cloudflare Worker.
+     */
+
     const requestBody = {
 
         message:
@@ -1991,11 +2271,13 @@ ${cleanMessage}
 
 
     /*
-     * إذا كانت هناك صورة:
-     * نرسل Base64 إلى Worker.
+     * إذا كانت هناك صورة،
+     * يتم إرسالها مع الرسالة.
      */
 
-    if (imageData) {
+    if (
+        imageData
+    ) {
 
         requestBody.image =
             imageData;
@@ -2049,7 +2331,9 @@ ${cleanMessage}
 
         } catch (error) {
 
-            // تجاهل خطأ قراءة JSON
+            /*
+             * تجاهل خطأ قراءة JSON
+             */
 
         }
 
@@ -2214,19 +2498,12 @@ ${cleanMessage}
 
 async function sendChatMessage(
     text,
-    mode = "general",
-    imageData = null,
-    imageName = ""
+    mode = "general"
 ) {
 
-    /*
-     * السماح بإرسال صورة حتى لو لم يكتب
-     * المستخدم سؤالًا.
-     */
-
     if (
-        (!text || !text.trim()) &&
-        !imageData
+        !text ||
+        !text.trim()
     ) {
 
         showNotification(
@@ -2240,41 +2517,19 @@ async function sendChatMessage(
 
 
     const cleanText =
-        text
-            ? text.trim()
-            : "حلل هذه الصورة واشرح لي ما يظهر فيها.";
+        text.trim();
 
-
-    /*
-     * إضافة رسالة المستخدم
-     * مع الصورة.
-     */
 
     addMessage(
         cleanText,
-        "user",
-        imageData,
-        imageName
+        "user"
     );
 
 
     /*
-     * إزالة معاينة الصورة المؤقتة.
+     * لم نعد نستخدم شاشة تحميل
+     * تغطي الصفحة بالكامل.
      */
-
-    const pendingPreview =
-        chatMessages
-            ? chatMessages.querySelector(
-                ".ahmed-ai-pending"
-            )
-            : null;
-
-
-    if (pendingPreview) {
-
-        pendingPreview.remove();
-
-    }
 
 
     const aiBubble =
@@ -2287,6 +2542,11 @@ async function sendChatMessage(
 
     }
 
+
+    /*
+     * حالة الانتظار تظهر داخل
+     * فقاعة AI فقط.
+     */
 
     aiBubble.textContent =
         "🤖 جاري التفكير...";
@@ -2323,15 +2583,15 @@ async function sendChatMessage(
                     chunk
                 ) {
 
-                    aiBubble.textContent =
+                    aiBubble.innerHTML =
                         "";
 
                 }
 
 
                 /*
-                 * أثناء Streaming نعرض
-                 * النص بشكل طبيعي.
+                 * إظهار الروابط
+                 * كروابط قابلة للضغط.
                  */
 
                 renderAIText(
@@ -2347,9 +2607,7 @@ async function sendChatMessage(
 
                 }
 
-            },
-
-            imageData
+            }
 
         );
 
@@ -2361,10 +2619,6 @@ async function sendChatMessage(
 
         }
 
-
-        /*
-         * حفظ المحادثة.
-         */
 
         saveMessages();
 
@@ -2419,32 +2673,9 @@ if (chatSendBtn) {
                 "";
 
 
-            /*
-             * أخذ الصورة الحالية
-             * قبل تصفيرها.
-             */
-
-            const imageToSend =
-                pendingImage
-                    ? pendingImage.data
-                    : null;
-
-
-            const imageNameToSend =
-                pendingImage
-                    ? pendingImage.name
-                    : "";
-
-
-            pendingImage =
-                null;
-
-
             sendChatMessage(
                 text,
-                "general",
-                imageToSend,
-                imageNameToSend
+                "general"
             );
 
         }
@@ -2629,65 +2860,29 @@ function saveMessages() {
 
 
     /*
-     * نعمل نسخة حتى لا نعدل
-     * المحادثة الظاهرة للمستخدم.
-     */
-
-    const clone =
-        chatMessages.cloneNode(
-            true
-        );
-
-
-    /*
-     * الصور المرسلة لا يتم حفظ
-     * Base64 الخاص بها داخل localStorage.
+     * نحفظ HTML المحادثة كما كان في
+     * النظام الأصلي.
      *
-     * نستبدلها برسالة صغيرة بدلًا منها.
+     * ملاحظة:
+     * الصور الكبيرة قد تجعل localStorage
+     * ممتلئًا إذا تم حفظها.
      */
 
-    clone
-        .querySelectorAll(
-            '[data-image-message="true"]'
-        )
-        .forEach(
-            message => {
+    try {
 
-                const bubble =
-                    message.querySelector(
-                        ".message-bubble"
-                    );
-
-
-                if (bubble) {
-
-                    bubble.innerHTML =
-                        `<div>📷 تم إرسال صورة</div>`;
-
-                }
-
-            }
+        localStorage.setItem(
+            "ahmedAI_chatHTML",
+            chatMessages.innerHTML
         );
 
+    } catch (error) {
 
-    /*
-     * أيضًا لا نحفظ معاينة الصورة
-     * التي لم تُرسل بعد.
-     */
-
-    clone
-        .querySelectorAll(
-            ".ahmed-ai-pending"
-        )
-        .forEach(
-            item => item.remove()
+        console.warn(
+            "تعذر حفظ المحادثة:",
+            error
         );
 
-
-    localStorage.setItem(
-        "ahmedAI_chatHTML",
-        clone.innerHTML
-    );
+    }
 
 }
 
@@ -2982,6 +3177,7 @@ ${request}
 
 `;
 
+
     return await askAIStream(
         prompt,
         "coding",
@@ -3190,6 +3386,12 @@ if (codeSendBtn) {
             }
 
 
+            /*
+             * لم تعد هناك شاشة تحميل.
+             * زر إنشاء الكود يظل في الصفحة
+             * أثناء انتظار الرد.
+             */
+
             const originalText =
                 codeSendBtn.textContent;
 
@@ -3257,6 +3459,7 @@ if (codeSendBtn) {
 
                 codeSendBtn.disabled =
                     false;
+
 
                 codeSendBtn.textContent =
                     originalText;
@@ -3607,42 +3810,6 @@ function handleFile(
 }
 
 
-function escapeHTML(
-    value
-) {
-
-    return String(
-        value
-    )
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
 if (mainFileInput) {
 
     mainFileInput.addEventListener(
@@ -3777,7 +3944,7 @@ if (homeImageInput) {
 
     homeImageInput.addEventListener(
         "change",
-        async () => {
+        () => {
 
             const file =
                 homeImageInput.files[0];
@@ -3785,7 +3952,7 @@ if (homeImageInput) {
 
             if (file) {
 
-                await handleImageSelection(
+                showImagePreview(
                     file
                 );
 
@@ -3809,7 +3976,7 @@ if (chatImageInput) {
 
     chatImageInput.addEventListener(
         "change",
-        async () => {
+        () => {
 
             const file =
                 chatImageInput.files[0];
@@ -3817,7 +3984,7 @@ if (chatImageInput) {
 
             if (file) {
 
-                await handleImageSelection(
+                showImagePreview(
                     file
                 );
 
@@ -3840,38 +4007,98 @@ renderFiles();
    WEB SEARCH BUTTON
 ========================================= */
 
+/*
+ * مهم:
+ *
+ * هذا الزر الآن يفتح بحثًا حقيقيًا على Google.
+ *
+ * لكنه لا يدّعي أن نتائج Google دخلت إلى
+ * نموذج AI.
+ *
+ * لكي يصبح:
+ *
+ * سؤال المستخدم
+ *       ↓
+ * Web Search API
+ *       ↓
+ * نتائج البحث
+ *       ↓
+ * AI
+ *
+ * نحتاج إضافة Search API إلى Cloudflare Worker.
+ *
+ * حاليًا الزر يوفر بحثًا مباشرًا للمستخدم.
+ */
+
 if (webSearchBtn) {
 
     webSearchBtn.addEventListener(
         "click",
         () => {
 
-            /*
-             * ملاحظة:
-             * الزر هنا يجهز البحث داخل المحادثة،
-             * لكن البحث الحقيقي في الإنترنت يحتاج
-             * Search API أو Cloudflare AI Search
-             * داخل Worker.
-             */
-
-            openSection(
-                "chat"
-            );
+            let query = "";
 
 
-            if (chatInput) {
+            if (
+                chatInput &&
+                chatInput.value.trim()
+            ) {
 
-                chatInput.value =
-                    "ابحث على الإنترنت عن: ";
+                query =
+                    chatInput.value.trim();
 
+            } else if (
+                homeChatInput &&
+                homeChatInput.value.trim()
+            ) {
 
-                chatInput.focus();
+                query =
+                    homeChatInput.value.trim();
 
             }
 
 
+            if (!query) {
+
+                showNotification(
+                    "اكتب ما تريد البحث عنه أولًا",
+                    "error"
+                );
+
+
+                openSection(
+                    "chat"
+                );
+
+
+                if (chatInput) {
+
+                    chatInput.focus();
+
+                }
+
+
+                return;
+
+            }
+
+
+            const searchURL =
+                "https://www.google.com/search?q=" +
+                encodeURIComponent(
+                    query
+                );
+
+
+            window.open(
+                searchURL,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+
             showNotification(
-                "اكتب موضوع البحث ثم اضغط إرسال."
+                "تم فتح البحث على الإنترنت"
             );
 
         }
@@ -4249,6 +4476,10 @@ const testQuestions = {
 };
 
 
+/* =========================================
+   CREATE TEST
+========================================= */
+
 function createTest() {
 
     if (!testContainer) {
@@ -4400,6 +4631,10 @@ function createTest() {
 
 }
 
+
+/* =========================================
+   TEST OPTIONS
+========================================= */
 
 function activateTestOptions() {
 
@@ -4613,7 +4848,7 @@ openSection(
 
 
 console.log(
-    "اسأل أبو الريس AI initialized successfully - Streaming + Vision + Clickable Links enabled."
+    "اسأل أبو الريس AI initialized successfully - Streaming + Vision + Links enabled."
 );
 
 });
