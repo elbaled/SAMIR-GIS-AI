@@ -2261,13 +2261,61 @@ ${cleanMessage}
      * تجهيز البيانات التي سيتم إرسالها
      * إلى Cloudflare Worker.
      */
+const requestBody = {
 
-    const requestBody = {
+    messages: [
 
-        message:
-            finalMessage
+        {
+            role: "user",
 
-    };
+            content:
+                finalMessage
+
+        }
+
+    ]
+
+};
+
+
+if (
+    imageData
+) {
+
+    requestBody.messages = [
+
+        {
+            role: "user",
+
+            content: [
+
+                {
+                    type: "text",
+
+                    text:
+                        finalMessage
+                },
+
+                {
+                    type: "image_url",
+
+                    image_url: {
+
+                        url:
+                            imageData
+
+                    }
+
+                }
+
+            ]
+
+        }
+
+    ];
+
+}
+;
 
 
     /*
@@ -3241,13 +3289,21 @@ ${cleanMessage}
                         "application/json"
                 },
 
-                body: JSON.stringify({
+              body: JSON.stringify({
 
-                    message:
-                        finalMessage
+    messages: [
 
-                })
+        {
+            role: "user",
 
+            content:
+                finalMessage
+
+        }
+
+    ]
+
+})
             }
         );
 
