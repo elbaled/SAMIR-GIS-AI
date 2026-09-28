@@ -1,3516 +1,900 @@
 /* =========================================
-
 اسأل أبو الريس AI - Main JavaScript
-
-Streaming AI + Image Vision + Clickable Links
-
+Streaming AI Version
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================================
+/* =========================================  
+   ELEMENTS  
+========================================= */  
+
+const sidebar = document.getElementById("sidebar");  
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");  
+
+const menuItems =  
+    document.querySelectorAll(  
+        ".menu-item[data-section]"  
+    );  
+
+const sections =  
+    document.querySelectorAll(  
+        ".page-section"  
+    );  
+
+const pageTitle =  
+    document.getElementById(  
+        "pageTitle"  
+    );  
+
+const pageSubtitle =  
+    document.getElementById(  
+        "pageSubtitle"  
+    );  
+
+const newChatBtn =  
+    document.getElementById(  
+        "newChatBtn"  
+    );  
+
+const themeBtn =  
+    document.getElementById(  
+        "themeBtn"  
+    );  
+
+const darkModeToggle =  
+    document.getElementById(  
+        "darkModeToggle"  
+    );  
+
+const notification =  
+    document.getElementById(  
+        "notification"  
+    );  
+
+const notificationText =  
+    document.getElementById(  
+        "notificationText"  
+    );  
+
+const notificationIcon =  
+    document.getElementById(  
+        "notificationIcon"  
+    );  
+
+const chatMessages =  
+    document.getElementById(  
+        "chatMessages"  
+    );  
+
+const chatInput =  
+    document.getElementById(  
+        "chatInput"  
+    );  
+
+const chatSendBtn =  
+    document.getElementById(  
+        "chatSendBtn"  
+    );  
+
+const homeChatInput =  
+    document.getElementById(  
+        "homeChatInput"  
+    );  
+
+const homeSendBtn =  
+    document.getElementById(  
+        "homeSendBtn"  
+    );  
+
+const gisInput =  
+    document.getElementById(  
+        "gisInput"  
+    );  
+
+const gisSendBtn =  
+    document.getElementById(  
+        "gisSendBtn"  
+    );  
+
+const codeInput =  
+    document.getElementById(  
+        "codeInput"  
+    );  
+
+const codeSendBtn =  
+    document.getElementById(  
+        "codeSendBtn"  
+    );  
+
+const codeOutput =  
+    document.getElementById(  
+        "codeOutput"  
+    );  
+
+const copyCodeBtn =  
+    document.getElementById(  
+        "copyCodeBtn"  
+    );  
+
+const mainFileInput =  
+    document.getElementById(  
+        "mainFileInput"  
+    );  
+
+const studyFileInput =  
+    document.getElementById(  
+        "studyFileInput"  
+    );  
+
+const filesList =  
+    document.getElementById(  
+        "filesList"  
+    );  
+
+const createTestBtn =  
+    document.getElementById(  
+        "createTestBtn"  
+    );  
+
+const testContainer =  
+    document.getElementById(  
+        "testContainer"  
+    );  
+
+const saveChatsToggle =  
+    document.getElementById(  
+        "saveChatsToggle"  
+    );  
+
+const languageSelect =  
+    document.getElementById(  
+        "languageSelect"  
+    );  
+
+const webSearchBtn =  
+    document.getElementById(  
+        "webSearchBtn"  
+    );  
+
+const homeImageInput =  
+    document.getElementById(  
+        "homeImageInput"  
+    );  
+
+const homeFileInput =  
+    document.getElementById(  
+        "homeFileInput"  
+    );  
+
+const chatImageInput =  
+    document.getElementById(  
+        "chatImageInput"  
+    );  
+
+const chatFileInput =  
+    document.getElementById(  
+        "chatFileInput"  
+    );  
 
-ELEMENTS
 
-========================================= */
+/* =========================================  
+   CLOUDFLARE WORKER  
+========================================= */  
 
-const sidebar =
+const AI_API_URL =  
+    "https://late-mode-12d3.123456789012345678o01234567898.workers.dev/api/chat";  
 
-document.getElementById(
 
-    "sidebar"
+/* =========================================  
+   PAGE INFORMATION  
+========================================= */  
 
-);
+const pageInfo = {  
 
-const mobileMenuBtn =
+    home: {  
+        title: "الرئيسية",  
+        subtitle:  
+            "مساعدك الذكي للمذاكرة والعمل"  
+    },  
 
-document.getElementById(
+    chat: {  
+        title: "AI Chat",  
+        subtitle:  
+            "تحدث مع اسأل أبو الريس AI"  
+    },  
 
-    "mobileMenuBtn"
+    study: {  
+        title: "المذاكرة",  
+        subtitle:  
+            "تعلم بطريقة أسهل وأسرع"  
+    },  
 
-);
+    gis: {  
+        title: "مساعد GIS",  
+        subtitle:  
+            "GIS • Remote Sensing • Surveying"  
+    },  
 
-const menuItems =
+    coding: {  
+        title: "البرمجة",  
+        subtitle:  
+            "Python • ArcPy • JavaScript"  
+    },  
 
-document.querySelectorAll(
+    files: {  
+        title: "ملفاتي",  
+        subtitle:  
+            "ملفاتك المستخدمة في التعلم"  
+    },  
 
-    ".menu-item[data-section]"
+    tests: {  
+        title: "الاختبارات",  
+        subtitle:  
+            "اختبر معلوماتك"  
+    },  
 
-);
+    settings: {  
+        title: "الإعدادات",  
+        subtitle:  
+            "إعدادات اسأل أبو الريس AI"  
+    }  
 
-const sections =
+};  
 
-document.querySelectorAll(
 
-    ".page-section"
+/* =========================================  
+   NAVIGATION  
+========================================= */  
 
-);
+function openSection(sectionName) {  
 
-const pageTitle =
+    sections.forEach(section => {  
 
-document.getElementById(
+        section.classList.remove(  
+            "active"  
+        );  
 
-    "pageTitle"
+    });  
 
-);
 
-const pageSubtitle =
+    const target =  
+        document.getElementById(  
+            sectionName + "Section"  
+        );  
 
-document.getElementById(
 
-    "pageSubtitle"
+    if (target) {  
 
-);
+        target.classList.add(  
+            "active"  
+        );  
 
-const newChatBtn =
+    }  
 
-document.getElementById(
 
-    "newChatBtn"
+    menuItems.forEach(item => {  
 
-);
+        item.classList.remove(  
+            "active"  
+        );  
 
-const themeBtn =
 
-document.getElementById(
+        if (  
+            item.dataset.section ===  
+            sectionName  
+        ) {  
 
-    "themeBtn"
+            item.classList.add(  
+                "active"  
+            );  
 
-);
+        }  
 
-const darkModeToggle =
+    });  
 
-document.getElementById(
 
-    "darkModeToggle"
+    if (pageInfo[sectionName]) {  
 
-);
+        pageTitle.textContent =  
+            pageInfo[  
+                sectionName  
+            ].title;  
 
-const notification =
+        pageSubtitle.textContent =  
+            pageInfo[  
+                sectionName  
+            ].subtitle;  
 
-document.getElementById(
+    }  
 
-    "notification"
 
-);
+    if (  
+        window.innerWidth <= 768  
+    ) {  
 
-const notificationText =
+        sidebar.classList.remove(  
+            "open"  
+        );  
 
-document.getElementById(
+    }  
 
-    "notificationText"
 
-);
+    window.scrollTo({  
 
-const notificationIcon =
+        top: 0,  
 
-document.getElementById(
+        behavior: "smooth"  
 
-    "notificationIcon"
+    });  
 
-);
+}  
 
-const chatMessages =
 
-document.getElementById(
+menuItems.forEach(item => {  
 
-    "chatMessages"
+    item.addEventListener(  
+        "click",  
+        () => {  
 
-);
+            const section =  
+                item.dataset.section;  
 
-const chatInput =
+            openSection(  
+                section  
+            );  
 
-document.getElementById(
+        }  
+    );  
 
-    "chatInput"
+});  
 
-);
 
-const chatSendBtn =
+/* =========================================  
+   MOBILE SIDEBAR  
+========================================= */  
 
-document.getElementById(
+if (mobileMenuBtn) {  
 
-    "chatSendBtn"
+    mobileMenuBtn.addEventListener(  
+        "click",  
+        () => {  
 
-);
+            sidebar.classList.toggle(  
+                "open"  
+            );  
 
-const homeChatInput =
+        }  
+    );  
 
-document.getElementById(
+}  
 
-    "homeChatInput"
 
-);
+document.addEventListener(  
+    "click",  
+    event => {  
 
-const homeSendBtn =
+        if (  
+            window.innerWidth > 768  
+        ) {  
 
-document.getElementById(
+            return;  
 
-    "homeSendBtn"
+        }  
 
-);
 
-const gisInput =
+        if (  
+            sidebar.classList.contains(  
+                "open"  
+            ) &&  
+            !sidebar.contains(  
+                event.target  
+            ) &&  
+            mobileMenuBtn &&  
+            !mobileMenuBtn.contains(  
+                event.target  
+            )  
+        ) {  
 
-document.getElementById(
+            sidebar.classList.remove(  
+                "open"  
+            );  
 
-    "gisInput"
+        }  
 
-);
+    }  
+);  
 
-const gisSendBtn =
 
-document.getElementById(
+/* =========================================  
+   NOTIFICATIONS  
+========================================= */  
 
-    "gisSendBtn"
+let notificationTimer = null;  
 
-);
 
-const codeInput =
+function showNotification(  
+    message,  
+    type = "success"  
+) {  
 
-document.getElementById(
+    if (!notificationText) {  
+        return;  
+    }  
 
-    "codeInput"
 
-);
+    notificationText.textContent =  
+        message;  
 
-const codeSendBtn =
 
-document.getElementById(
+    if (  
+        type === "error"  
+    ) {  
 
-    "codeSendBtn"
+        if (notificationIcon) {  
 
-);
+            notificationIcon.textContent =  
+                "×";  
 
-const codeOutput =
+            notificationIcon.style.color =  
+                "var(--danger)";  
 
-document.getElementById(
+            notificationIcon.style.background =  
+                "rgba(239,68,68,0.1)";  
 
-    "codeOutput"
+        }  
 
-);
+    } else {  
 
-const copyCodeBtn =
+        if (notificationIcon) {  
 
-document.getElementById(
+            notificationIcon.textContent =  
+                "✓";  
 
-    "copyCodeBtn"
+            notificationIcon.style.color =  
+                "var(--success)";  
 
-);
+            notificationIcon.style.background =  
+                "rgba(34,197,94,0.1)";  
 
-const mainFileInput =
+        }  
 
-document.getElementById(
+    }  
 
-    "mainFileInput"
 
-);
+    if (notification) {  
 
-const studyFileInput =
+        notification.classList.add(  
+            "show"  
+        );  
 
-document.getElementById(
+    }  
 
-    "studyFileInput"
 
-);
+    clearTimeout(  
+        notificationTimer  
+    );  
 
-const filesList =
 
-document.getElementById(
+    notificationTimer =  
+        setTimeout(  
+            () => {  
 
-    "filesList"
+                if (notification) {  
 
-);
+                    notification.classList.remove(  
+                        "show"  
+                    );  
 
-const createTestBtn =
+                }  
 
-document.getElementById(
+            },  
+            3000  
+        );  
 
-    "createTestBtn"
+}  
 
-);
 
-const testContainer =
+/* =========================================  
+   LOADING  
+   تم إلغاء شاشة التحميل الكاملة.  
+   حالة الانتظار تظهر داخل رسالة AI.  
+========================================= */  
 
-document.getElementById(
+function showLoading() {  
+    // لا يوجد Loading Overlay.  
+    // لا يتم حجب الصفحة أثناء انتظار رد AI.  
+}  
 
-    "testContainer"
 
-);
+function hideLoading() {  
+    // لا يوجد Loading Overlay.  
+}  
 
-const saveChatsToggle =
 
-document.getElementById(
+/* =========================================  
+   DARK MODE  
+========================================= */  
 
-    "saveChatsToggle"
+function setDarkMode(  
+    enabled  
+) {  
 
-);
+    document.body.classList.toggle(  
+        "dark",  
+        enabled  
+    );  
 
-const languageSelect =
 
-document.getElementById(
+    localStorage.setItem(  
+        "ahmedAI_darkMode",  
+        enabled  
+            ? "true"  
+            : "false"  
+    );  
 
-    "languageSelect"
 
-);
+    if (darkModeToggle) {  
 
-const webSearchBtn =
+        darkModeToggle.checked =  
+            enabled;  
 
-document.getElementById(
+    }  
 
-    "webSearchBtn"
 
-);
+    if (themeBtn) {  
 
-const homeImageInput =
+        themeBtn.textContent =  
+            enabled  
+                ? "☀️"  
+                : "🌙";  
 
-document.getElementById(
 
-    "homeImageInput"
+        themeBtn.title =  
+            enabled  
+                ? "الوضع النهاري"  
+                : "الوضع الليلي";  
 
-);
+    }  
 
-const homeFileInput =
+}  
 
-document.getElementById(
 
-    "homeFileInput"
+const savedTheme =  
+    localStorage.getItem(  
+        "ahmedAI_darkMode"  
+    );  
 
-);
 
-const chatImageInput =
+setDarkMode(  
+    savedTheme === "true"  
+);  
 
-document.getElementById(
 
-    "chatImageInput"
+if (themeBtn) {  
 
-);
+    themeBtn.addEventListener(  
+        "click",  
+        () => {  
 
-const chatFileInput =
+            const enabled =  
+                !document.body.classList.contains(  
+                    "dark"  
+                );  
 
-document.getElementById(
 
-    "chatFileInput"
+            setDarkMode(  
+                enabled  
+            );  
 
-);
+        }  
+    );  
 
-/* =========================================
+}  
 
-CLOUDFLARE WORKER
 
-========================================= */
+if (darkModeToggle) {  
 
-const AI_API_URL =
+    darkModeToggle.addEventListener(  
+        "change",  
+        () => {  
 
-"https://late-mode-12d3.123456789012345678o01234567898.workers.dev/api/chat";
+            setDarkMode(  
+                darkModeToggle.checked  
+            );  
 
-/* =========================================
+        }  
+    );  
 
-IMAGE STATE
+}  
 
-========================================= */
 
-/*
+/* =========================================  
+   QUICK ACTIONS  
+========================================= */  
 
-الصورة التي يختارها المستخدم تبقى هنا
+document  
+    .querySelectorAll(  
+        ".quick-card"  
+    )  
+    .forEach(card => {  
 
-حتى يكتب السؤال ثم يضغط إرسال.
+        card.addEventListener(  
+            "click",  
+            () => {  
 
+                const action =  
+                    card.dataset.action;  
 
-*/
 
-let pendingImageData = null;
+                if (action) {  
 
-let pendingImageFile = null;
+                    openSection(  
+                        action  
+                    );  
 
-let pendingImageComposer = null;
+                }  
 
-/* =========================================
+            }  
+        );  
 
-PAGE INFORMATION
+    });  
 
-========================================= */
 
-const pageInfo = {
+/* =========================================  
+   NEW CHAT  
+========================================= */  
 
-home: {
+function createNewChat() {  
 
-    title: "الرئيسية",
+    if (!chatMessages) {  
+        return;  
+    }  
 
-    subtitle:
 
-        "مساعدك الذكي للمذاكرة والعمل"
+    chatMessages.innerHTML = `  
 
-},
+        <div class="empty-chat">  
 
+            <div class="empty-icon">  
+                🤖  
+            </div>  
 
+            <h2>  
+                اسأل أبو الريس AI  
+            </h2>  
 
-chat: {
+            <p>  
+                أنا جاهز أساعدك في المذاكرة  
+                وGIS والبرمجة.  
+            </p>  
 
-    title: "AI Chat",
+            <div class="suggestions">  
 
-    subtitle:
+                <button>  
+                    اشرحلي ArcGIS Pro  
+                </button>  
 
-        "تحدث مع اسأل أبو الريس AI"
+                <button>  
+                    علمني Python  
+                </button>  
 
-},
+                <button>  
+                    اشرحلي Remote Sensing  
+                </button>  
 
+            </div>  
 
+        </div>  
 
-study: {
+    `;  
 
-    title: "المذاكرة",
 
-    subtitle:
+    if (chatInput) {  
 
-        "تعلم بطريقة أسهل وأسرع"
+        chatInput.value = "";  
 
-},
+    }  
 
 
+    saveMessages();  
 
-gis: {
 
-    title: "مساعد GIS",
+    showNotification(  
+        "تم إنشاء محادثة جديدة"  
+    );  
 
-    subtitle:
 
-        "GIS • Remote Sensing • Surveying"
+    openSection(  
+        "chat"  
+    );  
 
-},
 
+    activateSuggestions();  
 
+}  
 
-coding: {
 
-    title: "البرمجة",
+if (newChatBtn) {  
 
-    subtitle:
+    newChatBtn.addEventListener(  
+        "click",  
+        createNewChat  
+    );  
 
-        "Python • ArcPy • JavaScript"
+}  
 
-},
 
+/* =========================================  
+   CHAT FUNCTIONS  
+========================================= */  
 
+function addMessage(  
+    message,  
+    sender = "user"  
+) {  
 
-files: {
+    if (!chatMessages) {  
+        return;  
+    }  
 
-    title: "ملفاتي",
 
-    subtitle:
+    const emptyChat =  
+        chatMessages.querySelector(  
+            ".empty-chat"  
+        );  
 
-        "ملفاتك المستخدمة في التعلم"
 
-},
+    if (emptyChat) {  
 
+        emptyChat.remove();  
 
+    }  
 
-tests: {
 
-    title: "الاختبارات",
+    const messageElement =  
+        document.createElement(  
+            "div"  
+        );  
 
-    subtitle:
 
-        "اختبر معلوماتك"
+    messageElement.className =  
+        `message ${sender}`;  
 
-},
 
+    const bubble =  
+        document.createElement(  
+            "div"  
+        );  
 
 
-settings: {
+    bubble.className =  
+        "message-bubble";  
 
-    title: "الإعدادات",
 
-    subtitle:
+    bubble.textContent =  
+        message;  
 
-        "إعدادات اسأل أبو الريس AI"
 
-}
+    messageElement.appendChild(  
+        bubble  
+    );  
 
-};
 
-/* =========================================
+    chatMessages.appendChild(  
+        messageElement  
+    );  
 
-NAVIGATION
 
-========================================= */
+    chatMessages.scrollTop =  
+        chatMessages.scrollHeight;  
 
-function openSection(sectionName) {
 
-sections.forEach(section => {
+    saveMessages();  
 
+}  
 
 
-    section.classList.remove(
+/* =========================================  
+   CREATE STREAMING MESSAGE  
+========================================= */  
 
-        "active"
+function createStreamingMessage() {  
 
-    );
+    if (!chatMessages) {  
+        return null;  
+    }  
 
 
+    const emptyChat =  
+        chatMessages.querySelector(  
+            ".empty-chat"  
+        );  
 
-});
 
+    if (emptyChat) {  
 
+        emptyChat.remove();  
 
+    }  
 
 
-const target =
+    const messageElement =  
+        document.createElement(  
+            "div"  
+        );  
 
-    document.getElementById(
 
-        sectionName + "Section"
+    messageElement.className =  
+        "message ai";  
 
-    );
 
+    const bubble =  
+        document.createElement(  
+            "div"  
+        );  
 
 
+    bubble.className =  
+        "message-bubble";  
 
 
-if (target) {
+    bubble.textContent =  
+        "";  
 
 
+    messageElement.appendChild(  
+        bubble  
+    );  
 
-    target.classList.add(
 
-        "active"
+    chatMessages.appendChild(  
+        messageElement  
+    );  
 
-    );
 
+    chatMessages.scrollTop =  
+        chatMessages.scrollHeight;  
 
 
-}
+    return bubble;  
 
+}  
 
 
+/* =========================================  
+   AI PROMPTS  
+========================================= */  
 
+const AI_PROMPTS = {  
 
-menuItems.forEach(item => {
-
-
-
-    item.classList.remove(
-
-        "active"
-
-    );
-
-
-
-
-
-    if (
-
-        item.dataset.section ===
-
-        sectionName
-
-    ) {
-
-
-
-        item.classList.add(
-
-            "active"
-
-        );
-
-
-
-    }
-
-
-
-});
-
-
-
-
-
-if (pageInfo[sectionName]) {
-
-
-
-    pageTitle.textContent =
-
-        pageInfo[
-
-            sectionName
-
-        ].title;
-
-
-
-    pageSubtitle.textContent =
-
-        pageInfo[
-
-            sectionName
-
-        ].subtitle;
-
-
-
-}
-
-
-
-
-
-if (
-
-    window.innerWidth <= 768
-
-) {
-
-
-
-    if (sidebar) {
-
-
-
-        sidebar.classList.remove(
-
-            "open"
-
-        );
-
-
-
-    }
-
-
-
-}
-
-
-
-
-
-window.scrollTo({
-
-
-
-    top: 0,
-
-
-
-    behavior: "smooth"
-
-
-
-});
-
-}
-
-menuItems.forEach(item => {
-
-item.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        const section =
-
-            item.dataset.section;
-
-
-
-        openSection(
-
-            section
-
-        );
-
-
-
-    }
-
-);
-
-});
-
-/* =========================================
-
-MOBILE SIDEBAR
-
-========================================= */
-
-if (mobileMenuBtn) {
-
-mobileMenuBtn.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        if (sidebar) {
-
-
-
-            sidebar.classList.toggle(
-
-                "open"
-
-            );
-
-
-
-        }
-
-
-
-    }
-
-);
-
-}
-
-document.addEventListener(
-
-"click",
-
-event => {
-
-
-
-    if (
-
-        window.innerWidth > 768
-
-    ) {
-
-
-
-        return;
-
-
-
-    }
-
-
-
-
-
-    if (
-
-        sidebar &&
-
-        sidebar.classList.contains(
-
-            "open"
-
-        ) &&
-
-        !sidebar.contains(
-
-            event.target
-
-        ) &&
-
-        mobileMenuBtn &&
-
-        !mobileMenuBtn.contains(
-
-            event.target
-
-        )
-
-    ) {
-
-
-
-        sidebar.classList.remove(
-
-            "open"
-
-        );
-
-
-
-    }
-
-
-
-}
-
-);
-
-/* =========================================
-
-NOTIFICATIONS
-
-========================================= */
-
-let notificationTimer = null;
-
-function showNotification(
-
-message,
-
-type = "success"
-
-) {
-
-if (!notificationText) {
-
-    return;
-
-}
-
-
-
-
-
-notificationText.textContent =
-
-    message;
-
-
-
-
-
-if (
-
-    type === "error"
-
-) {
-
-
-
-    if (notificationIcon) {
-
-
-
-        notificationIcon.textContent =
-
-            "×";
-
-
-
-        notificationIcon.style.color =
-
-            "var(--danger)";
-
-
-
-        notificationIcon.style.background =
-
-            "rgba(239,68,68,0.1)";
-
-
-
-    }
-
-
-
-} else {
-
-
-
-    if (notificationIcon) {
-
-
-
-        notificationIcon.textContent =
-
-            "✓";
-
-
-
-        notificationIcon.style.color =
-
-            "var(--success)";
-
-
-
-        notificationIcon.style.background =
-
-            "rgba(34,197,94,0.1)";
-
-
-
-    }
-
-
-
-}
-
-
-
-
-
-if (notification) {
-
-
-
-    notification.classList.add(
-
-        "show"
-
-    );
-
-
-
-}
-
-
-
-
-
-clearTimeout(
-
-    notificationTimer
-
-);
-
-
-
-
-
-notificationTimer =
-
-    setTimeout(
-
-        () => {
-
-
-
-            if (notification) {
-
-
-
-                notification.classList.remove(
-
-                    "show"
-
-                );
-
-
-
-            }
-
-
-
-        },
-
-        3000
-
-    );
-
-}
-
-/* =========================================
-
-LOADING
-
-تم إلغاء شاشة التحميل الكاملة.
-
-حالة الانتظار تظهر داخل رسالة AI.
-
-========================================= */
-
-function showLoading() {
-
-/*
-
- * لا يوجد Loading Overlay.
-
- * لا يتم حجب الصفحة أثناء انتظار رد AI.
-
- */
-
-}
-
-function hideLoading() {
-
-/*
-
- * لا يوجد Loading Overlay.
-
- */
-
-}
-
-/* =========================================
-
-DARK MODE
-
-========================================= */
-
-function setDarkMode(
-
-enabled
-
-) {
-
-document.body.classList.toggle(
-
-    "dark",
-
-    enabled
-
-);
-
-
-
-
-
-localStorage.setItem(
-
-    "ahmedAI_darkMode",
-
-    enabled
-
-        ? "true"
-
-        : "false"
-
-);
-
-
-
-
-
-if (darkModeToggle) {
-
-
-
-    darkModeToggle.checked =
-
-        enabled;
-
-
-
-}
-
-
-
-
-
-if (themeBtn) {
-
-
-
-    themeBtn.textContent =
-
-        enabled
-
-            ? "☀️"
-
-            : "🌙";
-
-
-
-
-
-    themeBtn.title =
-
-        enabled
-
-            ? "الوضع النهاري"
-
-            : "الوضع الليلي";
-
-
-
-}
-
-}
-
-const savedTheme =
-
-localStorage.getItem(
-
-    "ahmedAI_darkMode"
-
-);
-
-setDarkMode(
-
-savedTheme === "true"
-
-);
-
-if (themeBtn) {
-
-themeBtn.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        const enabled =
-
-            !document.body.classList.contains(
-
-                "dark"
-
-            );
-
-
-
-
-
-        setDarkMode(
-
-            enabled
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-if (darkModeToggle) {
-
-darkModeToggle.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        setDarkMode(
-
-            darkModeToggle.checked
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-QUICK ACTIONS
-
-========================================= */
-
-document
-
-.querySelectorAll(
-
-    ".quick-card"
-
-)
-
-.forEach(card => {
-
-
-
-    card.addEventListener(
-
-        "click",
-
-        () => {
-
-
-
-            const action =
-
-                card.dataset.action;
-
-
-
-
-
-            if (action) {
-
-
-
-                openSection(
-
-                    action
-
-                );
-
-
-
-            }
-
-
-
-        }
-
-    );
-
-
-
-});
-
-/* =========================================
-
-NEW CHAT
-
-========================================= */
-
-function createNewChat() {
-
-if (!chatMessages) {
-
-    return;
-
-}
-
-
-
-
-
-chatMessages.innerHTML = `
-
-
-
-    <div class="empty-chat">
-
-
-
-        <div class="empty-icon">
-
-            🤖
-
-        </div>
-
-
-
-        <h2>
-
-            اسأل أبو الريس AI
-
-        </h2>
-
-
-
-        <p>
-
-            أنا جاهز أساعدك في المذاكرة
-
-            وGIS والبرمجة.
-
-        </p>
-
-
-
-        <div class="suggestions">
-
-
-
-            <button>
-
-                اشرحلي ArcGIS Pro
-
-            </button>
-
-
-
-            <button>
-
-                علمني Python
-
-            </button>
-
-
-
-            <button>
-
-                اشرحلي Remote Sensing
-
-            </button>
-
-
-
-        </div>
-
-
-
-    </div>
-
-
-
-`;
-
-
-
-
-
-if (chatInput) {
-
-
-
-    chatInput.value = "";
-
-
-
-}
-
-
-
-
-
-pendingImageData = null;
-
-
-
-pendingImageFile = null;
-
-
-
-pendingImageComposer = null;
-
-
-
-
-
-saveMessages();
-
-
-
-
-
-showNotification(
-
-    "تم إنشاء محادثة جديدة"
-
-);
-
-
-
-
-
-openSection(
-
-    "chat"
-
-);
-
-
-
-
-
-activateSuggestions();
-
-}
-
-if (newChatBtn) {
-
-newChatBtn.addEventListener(
-
-    "click",
-
-    createNewChat
-
-);
-
-}
-
-/* =========================================
-
-ESCAPE HTML
-
-========================================= */
-
-function escapeHTML(
-
-value
-
-) {
-
-return String(
-
-    value
-
-)
-
-
-
-    .replaceAll(
-
-        "&",
-
-        "&amp;"
-
-    )
-
-
-
-    .replaceAll(
-
-        "<",
-
-        "&lt;"
-
-    )
-
-
-
-    .replaceAll(
-
-        ">",
-
-        "&gt;"
-
-    )
-
-
-
-    .replaceAll(
-
-        '"',
-
-        "&quot;"
-
-    )
-
-
-
-    .replaceAll(
-
-        "'",
-
-        "&#039;"
-
-    );
-
-}
-
-/* =========================================
-
-CLICKABLE LINKS
-
-========================================= */
-
-/*
-
-يحول الروابط مثل:
-
-https://geostepsacademy.com
-
-إلى روابط قابلة للضغط.
-
-يتم أولًا عمل Escape للنص،
-
-ثم إضافة الروابط بطريقة آمنة.
-
-
-*/
-
-function linkifyText(
-
-text
-
-) {
-
-if (!text) {
-
-    return "";
-
-}
-
-
-
-
-
-const escaped =
-
-    escapeHTML(text);
-
-
-
-
-
-const urlRegex =
-
-    /(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
-
-
-
-
-
-return escaped.replace(
-
-    urlRegex,
-
-    matchedUrl => {
-
-
-
-        let url =
-
-            matchedUrl;
-
-
-
-
-
-        let trailing =
-
-            "";
-
-
-
-
-
-        /*
-
-         * إزالة علامات الترقيم
-
-         * الموجودة في نهاية الرابط.
-
-         */
-
-
-
-        while (
-
-            /[.,،؛;!?؟)\]}>"']$/.test(
-
-                url
-
-            )
-
-        ) {
-
-
-
-            trailing =
-
-                url.slice(-1) +
-
-                trailing;
-
-
-
-            url =
-
-                url.slice(
-
-                    0,
-
-                    -1
-
-                );
-
-
-
-        }
-
-
-
-
-
-        let href =
-
-            url;
-
-
-
-
-
-        if (
-
-            href
-
-                .toLowerCase()
-
-                .startsWith(
-
-                    "www."
-
-                )
-
-        ) {
-
-
-
-            href =
-
-                "https://" +
-
-                href;
-
-
-
-        }
-
-
-
-
-
-        return (
-
-            `<a href="${href}" ` +
-
-            `target="_blank" ` +
-
-            `rel="noopener noreferrer" ` +
-
-            `class="ai-link">` +
-
-            `${url}` +
-
-            `</a>` +
-
-            trailing
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-RENDER AI TEXT
-
-========================================= */
-
-function renderAIText(
-
-element,
-
-text
-
-) {
-
-if (!element) {
-
-    return;
-
-}
-
-
-
-
-
-element.innerHTML =
-
-    linkifyText(
-
-        text
-
-    );
-
-}
-
-/* =========================================
-
-CHAT FUNCTIONS
-
-========================================= */
-
-function addMessage(
-
-message,
-
-sender = "user"
-
-) {
-
-if (!chatMessages) {
-
-    return;
-
-}
-
-
-
-
-
-const emptyChat =
-
-    chatMessages.querySelector(
-
-        ".empty-chat"
-
-    );
-
-
-
-
-
-if (emptyChat) {
-
-
-
-    emptyChat.remove();
-
-
-
-}
-
-
-
-
-
-const messageElement =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-messageElement.className =
-
-    `message ${sender}`;
-
-
-
-
-
-const bubble =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-bubble.className =
-
-    "message-bubble";
-
-
-
-
-
-if (
-
-    sender === "ai"
-
-) {
-
-
-
-    renderAIText(
-
-        bubble,
-
-        message
-
-    );
-
-
-
-} else {
-
-
-
-    bubble.textContent =
-
-        message;
-
-
-
-}
-
-
-
-
-
-messageElement.appendChild(
-
-    bubble
-
-);
-
-
-
-
-
-chatMessages.appendChild(
-
-    messageElement
-
-);
-
-
-
-
-
-chatMessages.scrollTop =
-
-    chatMessages.scrollHeight;
-
-
-
-
-
-saveMessages();
-
-}
-
-/* =========================================
-
-ADD IMAGE MESSAGE
-
-========================================= */
-
-function addImageMessage(
-
-imageData,
-
-fileName = "",
-
-question = ""
-
-) {
-
-if (!chatMessages) {
-
-    return null;
-
-}
-
-
-
-
-
-const emptyChat =
-
-    chatMessages.querySelector(
-
-        ".empty-chat"
-
-    );
-
-
-
-
-
-if (emptyChat) {
-
-
-
-    emptyChat.remove();
-
-
-
-}
-
-
-
-
-
-const messageElement =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-messageElement.className =
-
-    "message user";
-
-
-
-
-
-const bubble =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-bubble.className =
-
-    "message-bubble image-message-bubble";
-
-
-
-
-
-const image =
-
-    document.createElement(
-
-        "img"
-
-    );
-
-
-
-
-
-image.src =
-
-    imageData;
-
-
-
-image.alt =
-
-    fileName
-
-        ? `الصورة المرفوعة: ${fileName}`
-
-        : "الصورة المرفوعة";
-
-
-
-image.className =
-
-    "chat-uploaded-image";
-
-
-
-
-
-image.style.maxWidth =
-
-    "100%";
-
-
-
-image.style.width =
-
-    "320px";
-
-
-
-image.style.maxHeight =
-
-    "320px";
-
-
-
-image.style.objectFit =
-
-    "contain";
-
-
-
-image.style.borderRadius =
-
-    "14px";
-
-
-
-image.style.display =
-
-    "block";
-
-
-
-image.style.marginBottom =
-
-    "10px";
-
-
-
-
-
-bubble.appendChild(
-
-    image
-
-);
-
-
-
-
-
-if (fileName) {
-
-
-
-    const nameElement =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-    nameElement.textContent =
-
-        `📷 ${fileName}`;
-
-
-
-
-
-    nameElement.style.fontSize =
-
-        "12px";
-
-
-
-    nameElement.style.opacity =
-
-        "0.75";
-
-
-
-    nameElement.style.marginTop =
-
-        "5px";
-
-
-
-
-
-    bubble.appendChild(
-
-        nameElement
-
-    );
-
-
-
-}
-
-
-
-
-
-if (question) {
-
-
-
-    const questionElement =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-    questionElement.textContent =
-
-        question;
-
-
-
-
-
-    questionElement.style.marginTop =
-
-        "10px";
-
-
-
-
-
-    bubble.appendChild(
-
-        questionElement
-
-    );
-
-
-
-}
-
-
-
-
-
-messageElement.appendChild(
-
-    bubble
-
-);
-
-
-
-
-
-chatMessages.appendChild(
-
-    messageElement
-
-);
-
-
-
-
-
-chatMessages.scrollTop =
-
-    chatMessages.scrollHeight;
-
-
-
-
-
-saveMessages();
-
-
-
-
-
-return messageElement;
-
-}
-
-/* =========================================
-
-CREATE STREAMING MESSAGE
-
-========================================= */
-
-function createStreamingMessage() {
-
-if (!chatMessages) {
-
-    return null;
-
-}
-
-
-
-
-
-const emptyChat =
-
-    chatMessages.querySelector(
-
-        ".empty-chat"
-
-    );
-
-
-
-
-
-if (emptyChat) {
-
-
-
-    emptyChat.remove();
-
-
-
-}
-
-
-
-
-
-const messageElement =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-messageElement.className =
-
-    "message ai";
-
-
-
-
-
-const bubble =
-
-    document.createElement(
-
-        "div"
-
-    );
-
-
-
-
-
-bubble.className =
-
-    "message-bubble";
-
-
-
-
-
-bubble.textContent =
-
-    "";
-
-
-
-
-
-messageElement.appendChild(
-
-    bubble
-
-);
-
-
-
-
-
-chatMessages.appendChild(
-
-    messageElement
-
-);
-
-
-
-
-
-chatMessages.scrollTop =
-
-    chatMessages.scrollHeight;
-
-
-
-
-
-return bubble;
-
-}
-
-/* =========================================
-
-IMAGE PREVIEW STYLES
-
-========================================= */
-
-function injectImageStyles() {
-
-if (
-
-    document.getElementById(
-
-        "ahmedAIExtraStyles"
-
-    )
-
-) {
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const style =
-
-    document.createElement(
-
-        "style"
-
-    );
-
-
-
-
-
-style.id =
-
-    "ahmedAIExtraStyles";
-
-
-
-
-
-style.textContent = `
-
-
-
-    .ai-link {
-
-        color: #2563eb;
-
-        text-decoration: underline;
-
-        font-weight: 600;
-
-        word-break: break-word;
-
-    }
-
-
-
-    .ai-link:hover {
-
-        opacity: 0.8;
-
-    }
-
-
-
-    .image-upload-composer {
-
-        margin: 12px 0;
-
-        padding: 12px;
-
-        border-radius: 18px;
-
-        border: 1px solid rgba(100, 116, 139, 0.25);
-
-        background: var(--card-bg, #ffffff);
-
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-
-    }
-
-
-
-    .image-upload-preview {
-
-        display: block;
-
-        width: 100%;
-
-        max-width: 360px;
-
-        max-height: 300px;
-
-        object-fit: contain;
-
-        margin: 0 auto 12px;
-
-        border-radius: 14px;
-
-    }
-
-
-
-    .image-upload-file-name {
-
-        font-size: 12px;
-
-        opacity: 0.7;
-
-        margin-bottom: 10px;
-
-        word-break: break-word;
-
-    }
-
-
-
-    .image-upload-question {
-
-        width: 100%;
-
-        min-height: 70px;
-
-        resize: vertical;
-
-        padding: 10px 12px;
-
-        border-radius: 12px;
-
-        border: 1px solid rgba(100, 116, 139, 0.3);
-
-        background: transparent;
-
-        color: inherit;
-
-        font-family: inherit;
-
-        box-sizing: border-box;
-
-        outline: none;
-
-    }
-
-
-
-    .image-upload-question:focus {
-
-        border-color: #2563eb;
-
-    }
-
-
-
-    .image-upload-actions {
-
-        display: flex;
-
-        gap: 8px;
-
-        margin-top: 10px;
-
-        flex-wrap: wrap;
-
-    }
-
-
-
-    .image-upload-send,
-
-    .image-upload-cancel {
-
-        border: none;
-
-        border-radius: 10px;
-
-        padding: 9px 15px;
-
-        cursor: pointer;
-
-        font-family: inherit;
-
-        font-weight: 600;
-
-    }
-
-
-
-    .image-upload-send {
-
-        background: #2563eb;
-
-        color: white;
-
-    }
-
-
-
-    .image-upload-cancel {
-
-        background: rgba(100,116,139,0.12);
-
-        color: inherit;
-
-    }
-
-
-
-    .image-message-bubble {
-
-        overflow: hidden;
-
-    }
-
-
-
-    .chat-uploaded-image {
-
-        cursor: pointer;
-
-    }
-
-
-
-`;
-
-
-
-
-
-document.head.appendChild(
-
-    style
-
-);
-
-}
-
-injectImageStyles();
-
-/* =========================================
-
-IMAGE PREVIEW COMPOSER
-
-========================================= */
-
-function showImagePreview(
-
-file
-
-) {
-
-if (!file) {
-
-    return;
-
-}
-
-
-
-
-
-if (
-
-    !file.type.startsWith(
-
-        "image/"
-
-    )
-
-) {
-
-
-
-    showNotification(
-
-        "الملف المختار ليس صورة",
-
-        "error"
-
-    );
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const maxSize =
-
-    10 * 1024 * 1024;
-
-
-
-
-
-if (
-
-    file.size >
-
-    maxSize
-
-) {
-
-
-
-    showNotification(
-
-        "حجم الصورة يجب ألا يتجاوز 10MB",
-
-        "error"
-
-    );
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const reader =
-
-    new FileReader();
-
-
-
-
-
-reader.onload = event => {
-
-
-
-    const imageData =
-
-        event.target.result;
-
-
-
-
-
-    pendingImageData =
-
-        imageData;
-
-
-
-    pendingImageFile =
-
-        file;
-
-
-
-
-
-    openSection(
-
-        "chat"
-
-    );
-
-
-
-
-
-    removeImagePreview();
-
-
-
-
-
-    if (!chatMessages) {
-
-        return;
-
-    }
-
-
-
-
-
-    const emptyChat =
-
-        chatMessages.querySelector(
-
-            ".empty-chat"
-
-        );
-
-
-
-
-
-    if (emptyChat) {
-
-
-
-        emptyChat.remove();
-
-
-
-    }
-
-
-
-
-
-    const composer =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-    composer.className =
-
-        "image-upload-composer";
-
-
-
-
-
-    const preview =
-
-        document.createElement(
-
-            "img"
-
-        );
-
-
-
-
-
-    preview.className =
-
-        "image-upload-preview";
-
-
-
-    preview.src =
-
-        imageData;
-
-
-
-    preview.alt =
-
-        "معاينة الصورة";
-
-
-
-
-
-    const fileName =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-    fileName.className =
-
-        "image-upload-file-name";
-
-
-
-
-
-    fileName.textContent =
-
-        `📷 ${file.name}`;
-
-
-
-
-
-    const question =
-
-        document.createElement(
-
-            "textarea"
-
-        );
-
-
-
-
-
-    question.className =
-
-        "image-upload-question";
-
-
-
-
-
-    question.placeholder =
-
-        "اكتب سؤالك عن الصورة هنا... مثال: اشرح لي ما الموجود في هذه الخريطة";
-
-
-
-
-
-    const actions =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-    actions.className =
-
-        "image-upload-actions";
-
-
-
-
-
-    const sendButton =
-
-        document.createElement(
-
-            "button"
-
-        );
-
-
-
-
-
-    sendButton.type =
-
-        "button";
-
-
-
-    sendButton.className =
-
-        "image-upload-send";
-
-
-
-    sendButton.textContent =
-
-        "📤 إرسال الصورة والسؤال";
-
-
-
-
-
-    const cancelButton =
-
-        document.createElement(
-
-            "button"
-
-        );
-
-
-
-
-
-    cancelButton.type =
-
-        "button";
-
-
-
-    cancelButton.className =
-
-        "image-upload-cancel";
-
-
-
-    cancelButton.textContent =
-
-        "إلغاء";
-
-
-
-
-
-    actions.appendChild(
-
-        sendButton
-
-    );
-
-
-
-    actions.appendChild(
-
-        cancelButton
-
-    );
-
-
-
-
-
-    composer.appendChild(
-
-        preview
-
-    );
-
-
-
-    composer.appendChild(
-
-        fileName
-
-    );
-
-
-
-    composer.appendChild(
-
-        question
-
-    );
-
-
-
-    composer.appendChild(
-
-        actions
-
-    );
-
-
-
-
-
-    chatMessages.appendChild(
-
-        composer
-
-    );
-
-
-
-
-
-    chatMessages.scrollTop =
-
-        chatMessages.scrollHeight;
-
-
-
-
-
-    pendingImageComposer =
-
-        composer;
-
-
-
-
-
-    question.focus();
-
-
-
-
-
-    sendButton.addEventListener(
-
-        "click",
-
-        async () => {
-
-
-
-            const userQuestion =
-
-                question.value.trim();
-
-
-
-
-
-            if (
-
-                !userQuestion
-
-            ) {
-
-
-
-                showNotification(
-
-                    "اكتب سؤالك عن الصورة أولاً",
-
-                    "error"
-
-                );
-
-
-
-                question.focus();
-
-
-
-                return;
-
-
-
-            }
-
-
-
-
-
-            await sendImageMessage(
-
-                imageData,
-
-                file.name,
-
-                userQuestion
-
-            );
-
-
-
-        }
-
-    );
-
-
-
-
-
-    cancelButton.addEventListener(
-
-        "click",
-
-        () => {
-
-
-
-            removeImagePreview();
-
-
-
-            showNotification(
-
-                "تم إلغاء الصورة"
-
-            );
-
-
-
-        }
-
-    );
-
-
-
-
-
-    question.addEventListener(
-
-        "keydown",
-
-        event => {
-
-
-
-            if (
-
-                event.key ===
-
-                    "Enter" &&
-
-                !event.shiftKey
-
-            ) {
-
-
-
-                event.preventDefault();
-
-
-
-                sendButton.click();
-
-
-
-            }
-
-
-
-        }
-
-    );
-
-
-
-};
-
-
-
-
-
-reader.onerror = () => {
-
-
-
-    showNotification(
-
-        "تعذر قراءة الصورة",
-
-        "error"
-
-    );
-
-
-
-};
-
-
-
-
-
-reader.readAsDataURL(
-
-    file
-
-);
-
-}
-
-/* =========================================
-
-REMOVE IMAGE PREVIEW
-
-========================================= */
-
-function removeImagePreview() {
-
-if (
-
-    pendingImageComposer &&
-
-    pendingImageComposer.parentNode
-
-) {
-
-
-
-    pendingImageComposer.remove();
-
-
-
-}
-
-
-
-
-
-pendingImageComposer =
-
-    null;
-
-
-
-pendingImageData =
-
-    null;
-
-
-
-pendingImageFile =
-
-    null;
-
-}
-
-/* =========================================
-
-SEND IMAGE MESSAGE
-
-========================================= */
-
-async function sendImageMessage(
-
-imageData,
-
-fileName,
-
-question
-
-) {
-
-if (
-
-    !imageData ||
-
-    !question ||
-
-    !question.trim()
-
-) {
-
-
-
-    showNotification(
-
-        "الصورة والسؤال مطلوبان",
-
-        "error"
-
-    );
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const cleanQuestion =
-
-    question.trim();
-
-
-
-
-
-/*
-
- * نحذف واجهة اختيار الصورة
-
- * قبل إضافة الرسالة النهائية.
-
- */
-
-
-
-removeImagePreview();
-
-
-
-
-
-/*
-
- * إضافة الصورة والسؤال إلى المحادثة.
-
- */
-
-
-
-addImageMessage(
-
-    imageData,
-
-    fileName,
-
-    cleanQuestion
-
-);
-
-
-
-
-
-/*
-
- * إنشاء فقاعة AI.
-
- */
-
-
-
-const aiBubble =
-
-    createStreamingMessage();
-
-
-
-
-
-if (!aiBubble) {
-
-    return;
-
-}
-
-
-
-
-
-aiBubble.textContent =
-
-    "🤖 جاري تحليل الصورة...";
-
-
-
-
-
-try {
-
-
-
-    let hasReceivedText =
-
-        false;
-
-
-
-
-
-    await askAIStream(
-
-        cleanQuestion,
-
-        "general",
-
-        (
-
-            chunk,
-
-            fullText
-
-        ) => {
-
-
-
-            hasReceivedText =
-
-                true;
-
-
-
-
-
-            if (
-
-                fullText ===
-
-                chunk
-
-            ) {
-
-
-
-                aiBubble.innerHTML =
-
-                    "";
-
-
-
-            }
-
-
-
-
-
-            /*
-
-             * نعيد رسم النص
-
-             * حتى تظهر الروابط
-
-             * قابلة للضغط.
-
-             */
-
-
-
-            const currentText =
-
-                fullText;
-
-
-
-
-
-            renderAIText(
-
-                aiBubble,
-
-                currentText
-
-            );
-
-
-
-
-
-            if (chatMessages) {
-
-
-
-                chatMessages.scrollTop =
-
-                    chatMessages.scrollHeight;
-
-
-
-            }
-
-
-
-        },
-
-        imageData
-
-    );
-
-
-
-
-
-    if (
-
-        !hasReceivedText
-
-    ) {
-
-
-
-        aiBubble.textContent =
-
-            "تم تحليل الصورة.";
-
-
-
-    }
-
-
-
-
-
-    saveMessages();
-
-
-
-
-
-} catch (error) {
-
-
-
-    console.error(
-
-        "Image AI Error:",
-
-        error
-
-    );
-
-
-
-
-
-    aiBubble.textContent =
-
-        "تعذر تحليل الصورة.\n\n" +
-
-        "الخطأ:\n" +
-
-        error.message;
-
-
-
-
-
-    showNotification(
-
-        "حدث خطأ أثناء تحليل الصورة",
-
-        "error"
-
-    );
-
-
-
-
-
-    saveMessages();
-
-
-
-}
-
-}
-
-/* =========================================
-
-AI PROMPTS
-
-========================================= */
-
-const AI_PROMPTS = {
-
-general: `
+    general: `
 
 أنت اسأل أبو الريس AI، مساعد ذكي للمذاكرة والعمل.
 
 ساعد المستخدم بطريقة واضحة ومنظمة وعملية.
 
 إذا كتب المستخدم بالعربية فأجب بالعربية،
-
 وإذا كتب بالإنجليزية فأجب بالإنجليزية.
 
 يمكنك مساعدة المستخدم في:
-
 GIS
-
 ArcGIS Pro
-
 QGIS
-
 Remote Sensing
-
 Surveying
-
 AutoCAD
-
 Civil 3D
-
 Python
-
 ArcPy
-
 JavaScript
-
 Geography
-
 English
-
 والمذاكرة بشكل عام.
 
 اشرح للمستخدم خطوة بخطوة عندما يكون السؤال عمليًا.
 
 لا تخترع معلومات غير متأكد منها.
-
-إذا أرسل المستخدم صورة:
-
-حلل الصورة نفسها.
-
-لا تطلب منه إعادة إرسال الصورة إذا كانت الصورة موجودة في الطلب.
-
-اشرح ما يظهر في الصورة قدر الإمكان.
-
-إذا كانت الصورة خريطة أو واجهة برنامج أو خطأ برمجي، اربط الشرح بما يظهر فعليًا في الصورة.
-
-
 `,
 
 gis: `
@@ -3518,49 +902,27 @@ gis: `
 أنت الآن اسأل أبو الريس AI - GIS Specialist.
 
 تخصصك الأساسي هو:
-
 GIS
-
 ArcGIS Pro
-
 QGIS
-
 Remote Sensing
-
 Surveying
-
 AutoCAD
-
 Civil 3D
-
 Spatial Analysis
-
 Network Analyst
-
 Spatial Analyst
-
 Geoprocessing
-
 Raster
-
 Vector
-
 Geodatabase
-
 Coordinate Systems
-
 Projection
-
 Cartography
-
 Python for GIS
-
 ArcPy
-
 Landsat
-
 Sentinel
-
 Google Earth Engine
 
 عندما يطرح المستخدم سؤال GIS:
@@ -3585,7 +947,6 @@ Google Earth Engine
 
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
 `,
 
 coding: `
@@ -3593,21 +954,13 @@ coding: `
 أنت الآن اسأل أبو الريس AI - Coding Assistant.
 
 تخصصك في:
-
 Python
-
 ArcPy
-
 JavaScript
-
 HTML
-
 CSS
-
 GIS Automation
-
 Data Processing
-
 Geospatial Programming
 
 عندما يطلب المستخدم كودًا:
@@ -3638,7 +991,6 @@ Geospatial Programming
 
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
 `,
 
 study: `
@@ -3665,397 +1017,214 @@ study: `
 
 إذا طلب تلخيصًا، حافظ على أهم المعلومات بدون حشو.
 
+
 المستخدم يدرس خصوصًا:
 
 الجغرافيا
-
 GIS
-
 ArcGIS Pro
-
 Remote Sensing
-
 Surveying
-
 Python
-
 English
 
 إذا كتب المستخدم بالعربية فأجب بالعربية.
-
 `
 
-};
+};  
 
-/* =========================================
 
-STREAM DATA PARSER
+/* =========================================  
+   STREAM DATA PARSER  
+========================================= */  
 
-========================================= */
+function extractStreamText(  
+    rawData  
+) {  
 
-function extractStreamText(
+    if (!rawData) {  
+        return "";  
+    }  
 
-rawData
 
-) {
+    let text = "";  
 
-if (!rawData) {
 
-    return "";
+    const lines =  
+        rawData.split("\n");  
 
-}
 
+    for (  
+        const line of lines  
+    ) {  
 
+        const trimmed =  
+            line.trim();  
 
 
+        if (!trimmed) {  
+            continue;  
+        }  
 
-let text = "";
 
+        if (  
+            trimmed ===  
+            "data: [DONE]"  
+        ) {  
 
+            continue;  
 
+        }  
 
 
-const lines =
+        if (  
+            trimmed.startsWith(  
+                "data:"  
+            )  
+        ) {  
 
-    rawData.split("\n");
+            const jsonText =  
+                trimmed  
+                    .substring(5)  
+                    .trim();  
 
 
+            if (!jsonText) {  
+                continue;  
+            }  
 
 
+            try {  
 
-for (
+                const parsed =  
+                    JSON.parse(  
+                        jsonText  
+                    );  
 
-    const line of lines
 
-) {
+                if (  
+                    typeof parsed.response ===  
+                    "string"  
+                ) {  
 
+                    text +=  
+                        parsed.response;  
 
+                } else if (  
+                    parsed.result &&  
+                    typeof parsed.result.response ===  
+                    "string"  
+                ) {  
 
-    const trimmed =
+                    text +=  
+                        parsed.result.response;  
 
-        line.trim();
+                } else if (  
+                    typeof parsed.text ===  
+                    "string"  
+                ) {  
 
+                    text +=  
+                        parsed.text;  
 
+                }  
 
+            } catch (error) {  
 
+                /*  
+                 * أحيانًا قد يصل جزء  
+                 * غير مكتمل من JSON.  
+                 * نتركه للـbuffer التالي.  
+                 */  
 
-    if (!trimmed) {
+            }  
 
-        continue;
 
-    }
+        } else {  
 
+            /*  
+             * دعم بعض أشكال الـstream  
+             * التي قد ترسل JSON مباشرة.  
+             */  
 
+            try {  
 
+                const parsed =  
+                    JSON.parse(  
+                        trimmed  
+                    );  
 
 
-    if (
+                if (  
+                    typeof parsed.response ===  
+                    "string"  
+                ) {  
 
-        trimmed ===
+                    text +=  
+                        parsed.response;  
 
-        "data: [DONE]"
+                } else if (  
+                    parsed.result &&  
+                    typeof parsed.result.response ===  
+                    "string"  
+                ) {  
 
-    ) {
+                    text +=  
+                        parsed.result.response;  
 
+                }  
 
+            } catch (error) {  
 
-        continue;
+                /*  
+                 * ليس JSON مباشرًا.  
+                 * نتجاهله هنا.  
+                 */  
 
+            }  
 
+        }  
 
-    }
+    }  
 
 
+    return text;  
 
+}  
 
 
-    if (
+/* =========================================  
+   REAL AI STREAMING REQUEST  
+========================================= */  
 
-        trimmed.startsWith(
+async function askAIStream(  
+    userMessage,  
+    mode = "general",  
+    onChunk = null  
+) {  
 
-            "data:"
+    if (  
+        !userMessage ||  
+        !userMessage.trim()  
+    ) {  
 
-        )
+        throw new Error(  
+            "Empty message"  
+        );  
 
-    ) {
+    }  
 
 
+    const cleanMessage =  
+        userMessage.trim();  
 
-        const jsonText =
 
-            trimmed
+    const selectedPrompt =  
+        AI_PROMPTS[mode] ||  
+        AI_PROMPTS.general;  
 
-                .substring(5)
 
-                .trim();
-
-
-
-
-
-        if (!jsonText) {
-
-            continue;
-
-        }
-
-
-
-
-
-        try {
-
-
-
-            const parsed =
-
-                JSON.parse(
-
-                    jsonText
-
-                );
-
-
-
-
-
-            if (
-
-                typeof parsed.response ===
-
-                "string"
-
-            ) {
-
-
-
-                text +=
-
-                    parsed.response;
-
-
-
-            } else if (
-
-                parsed.result &&
-
-                typeof parsed.result.response ===
-
-                "string"
-
-            ) {
-
-
-
-                text +=
-
-                    parsed.result.response;
-
-
-
-            } else if (
-
-                typeof parsed.text ===
-
-                "string"
-
-            ) {
-
-
-
-                text +=
-
-                    parsed.text;
-
-
-
-            }
-
-
-
-        } catch (error) {
-
-
-
-            /*
-
-             * أحيانًا قد يصل جزء
-
-             * غير مكتمل من JSON.
-
-             * نتركه للـbuffer التالي.
-
-             */
-
-
-
-        }
-
-
-
-
-
-    } else {
-
-
-
-        /*
-
-         * دعم بعض أشكال الـstream
-
-         * التي قد ترسل JSON مباشرة.
-
-         */
-
-
-
-        try {
-
-
-
-            const parsed =
-
-                JSON.parse(
-
-                    trimmed
-
-                );
-
-
-
-
-
-            if (
-
-                typeof parsed.response ===
-
-                "string"
-
-            ) {
-
-
-
-                text +=
-
-                    parsed.response;
-
-
-
-            } else if (
-
-                parsed.result &&
-
-                typeof parsed.result.response ===
-
-                "string"
-
-            ) {
-
-
-
-                text +=
-
-                    parsed.result.response;
-
-
-
-            }
-
-
-
-        } catch (error) {
-
-
-
-            /*
-
-             * ليس JSON مباشرًا.
-
-             * نتجاهله هنا.
-
-             */
-
-
-
-        }
-
-
-
-    }
-
-
-
-}
-
-
-
-
-
-return text;
-
-}
-
-/* =========================================
-
-REAL AI STREAMING REQUEST
-
-========================================= */
-
-async function askAIStream(
-
-userMessage,
-
-mode = "general",
-
-onChunk = null,
-
-imageData = null
-
-) {
-
-if (
-
-    !userMessage ||
-
-    !userMessage.trim()
-
-) {
-
-
-
-    throw new Error(
-
-        "Empty message"
-
-    );
-
-
-
-}
-
-
-
-
-
-const cleanMessage =
-
-    userMessage.trim();
-
-
-
-
-
-const selectedPrompt =
-
-    AI_PROMPTS[mode] ||
-
-    AI_PROMPTS.general;
-
-
-
-
-
-const finalMessage = `
+    const finalMessage = `
 
 ${selectedPrompt}
 
@@ -4064,1672 +1233,848 @@ ${selectedPrompt}
 ${cleanMessage}
 
 أجب الآن بشكل مفيد ومنظم.
-
 `;
 
-/*
+const response =  
+        await fetch(  
+            AI_API_URL,  
+            {  
 
- * تجهيز البيانات التي سيتم إرسالها
+                method: "POST",  
 
- * إلى Cloudflare Worker.
+                headers: {  
+                    "Content-Type":  
+                        "application/json"  
+                },  
 
- */
+                body: JSON.stringify({  
 
+                    message:  
+                        finalMessage  
 
+                })  
 
-const requestBody = {
+            }  
+        );  
 
 
+    if (!response.ok) {  
 
-    message:
+        let errorText =  
+            "HTTP Error: " +  
+            response.status;  
 
-        finalMessage
 
+        try {  
 
+            const errorData =  
+                await response.json();  
 
-};
 
+            if (  
+                errorData &&  
+                errorData.error  
+            ) {  
 
+                errorText =  
+                    errorData.error;  
 
+            }  
 
+        } catch (error) {  
+            // تجاهل خطأ قراءة JSON  
+        }  
 
-/*
 
- * إذا كانت هناك صورة،
+        throw new Error(  
+            errorText  
+        );  
 
- * يتم إرسالها مع الرسالة.
+    }  
 
- */
 
+    if (!response.body) {  
 
+        throw new Error(  
+            "المتصفح لم يستلم Stream من Worker."  
+        );  
 
-if (
+    }  
 
-    imageData
 
-) {
+    const reader =  
+        response.body.getReader();  
 
 
+    const decoder =  
+        new TextDecoder(  
+            "utf-8"  
+        );  
 
-    requestBody.image =
 
-        imageData;
+    let buffer = "";  
 
+    let fullText = "";  
 
 
-}
+    while (true) {  
 
+        const {  
+            value,  
+            done  
+        } =  
+            await reader.read();  
 
 
+        if (done) {  
+            break;  
+        }  
 
 
-const response =
+        buffer +=  
+            decoder.decode(  
+                value,  
+                {  
+                    stream: true  
+                }  
+            );  
 
-    await fetch(
 
-        AI_API_URL,
+        const parts =  
+            buffer.split(  
+                "\n"  
+            );  
 
-        {
 
+        buffer =  
+            parts.pop() || "";  
 
 
-            method: "POST",
+        const completedData =  
+            parts.join("\n");  
 
 
+        const chunkText =  
+            extractStreamText(  
+                completedData  
+            );  
 
-            headers: {
 
-                "Content-Type":
+        if (chunkText) {  
 
-                    "application/json"
+            fullText +=  
+                chunkText;  
 
-            },
 
+            if (  
+                typeof onChunk ===  
+                "function"  
+            ) {  
 
+                onChunk(  
+                    chunkText,  
+                    fullText  
+                );  
 
-            body:
+            }  
 
-                JSON.stringify(
 
-                    requestBody
+            if (chatMessages) {  
 
-                )
+                chatMessages.scrollTop =  
+                    chatMessages.scrollHeight;  
 
+            }  
 
+        }  
 
-        }
+    }  
 
-    );
 
+    buffer +=  
+        decoder.decode();  
 
 
+    if (buffer.trim()) {  
 
+        const finalChunk =  
+            extractStreamText(  
+                buffer  
+            );  
 
-if (!response.ok) {
 
+        if (finalChunk) {  
 
+            fullText +=  
+                finalChunk;  
 
-    let errorText =
 
-        "HTTP Error: " +
+            if (  
+                typeof onChunk ===  
+                "function"  
+            ) {  
 
-        response.status;
+                onChunk(  
+                    finalChunk,  
+                    fullText  
+                );  
 
+            }  
 
+        }  
 
+    }  
 
 
-    try {
+    if (!fullText.trim()) {  
 
+        throw new Error(  
+            "لم يصل نص من نموذج الذكاء الاصطناعي."  
+        );  
 
+    }  
 
-        const errorData =
 
-            await response.json();
+    return fullText;  
 
+}  
 
 
+/* =========================================  
+   REAL AI CHAT WITH STREAMING  
+========================================= */  
 
+async function sendChatMessage(  
+    text,  
+    mode = "general"  
+) {  
 
-        if (
+    if (  
+        !text ||  
+        !text.trim()  
+    ) {  
 
-            errorData &&
+        showNotification(  
+            "اكتب رسالتك أولاً",  
+            "error"  
+        );  
 
-            errorData.error
+        return;  
 
-        ) {
+    }  
 
 
+    const cleanText =  
+        text.trim();  
 
-            errorText =
 
-                errorData.error;
+    addMessage(  
+        cleanText,  
+        "user"  
+    );  
 
 
+    /*  
+     * لم نعد نستخدم شاشة تحميل  
+     * تغطي الصفحة بالكامل.  
+     */  
 
-        }
 
+    const aiBubble =  
+        createStreamingMessage();  
 
 
-    } catch (error) {
+    if (!aiBubble) {  
 
+        return;  
 
+    }  
 
-        /*
 
-         * تجاهل خطأ قراءة JSON
+    /*  
+     * حالة الانتظار تظهر داخل  
+     * فقاعة AI فقط.  
+     */  
 
-         */
+    aiBubble.textContent =  
+        "🤖 جاري التفكير...";  
 
 
+    try {  
 
-    }
+        let hasReceivedText =  
+            false;  
 
 
+        await askAIStream(  
 
+            cleanText,  
 
+            mode,  
 
-    throw new Error(
+            (  
+                chunk,  
+                fullText  
+            ) => {  
 
-        errorText
+                hasReceivedText =  
+                    true;  
 
-    );
 
+                /*  
+                 * عند وصول أول جزء  
+                 * نحذف رسالة التفكير.  
+                 */  
 
+                if (  
+                    fullText ===  
+                    chunk  
+                ) {  
 
-}
+                    aiBubble.textContent =  
+                        "";  
 
+                }  
 
 
+                aiBubble.textContent +=  
+                    chunk;  
 
 
-if (!response.body) {
+                if (chatMessages) {  
 
+                    chatMessages.scrollTop =  
+                        chatMessages.scrollHeight;  
 
+                }  
 
-    throw new Error(
+            }  
 
-        "المتصفح لم يستلم Stream من Worker."
+        );  
 
-    );
 
+        if (!hasReceivedText) {  
 
+            aiBubble.textContent =  
+                "تم استلام الرد.";  
 
-}
+        }  
 
 
+        saveMessages();  
 
 
+    } catch (error) {  
 
-const reader =
+        console.error(  
+            "اسأل أبو الريس AI Error:",  
+            error  
+        );  
 
-    response.body.getReader();
 
+        aiBubble.textContent =  
+            "تعذر الحصول على رد من اسأل أبو الريس AI.\n\n" +  
+            "الخطأ:\n" +  
+            error.message;  
 
 
+        showNotification(  
+            "حدث خطأ في الذكاء الاصطناعي",  
+            "error"  
+        );  
 
 
-const decoder =
+        saveMessages();  
 
-    new TextDecoder(
+    }  
 
-        "utf-8"
+}  
 
-    );
 
+/* =========================================  
+   CHAT SEND BUTTON  
+========================================= */  
 
+if (chatSendBtn) {  
 
+    chatSendBtn.addEventListener(  
+        "click",  
+        () => {  
 
+            if (!chatInput) {  
+                return;  
+            }  
 
-let buffer = "";
 
+            const text =  
+                chatInput.value;  
 
 
-let fullText = "";
+            chatInput.value =  
+                "";  
 
 
+            sendChatMessage(  
+                text,  
+                "general"  
+            );  
 
+        }  
+    );  
 
+}  
 
-while (true) {
 
+/* =========================================  
+   CHAT ENTER KEY  
+========================================= */  
 
+if (chatInput) {  
 
-    const {
+    chatInput.addEventListener(  
+        "keydown",  
+        event => {  
 
-        value,
+            if (  
+                event.key ===  
+                    "Enter" &&  
+                !event.shiftKey  
+            ) {  
 
-        done
+                event.preventDefault();  
 
-    } =
 
-        await reader.read();
+                if (chatSendBtn) {  
 
+                    chatSendBtn.click();  
 
+                }  
 
+            }  
 
+        }  
+    );  
 
-    if (done) {
+}  
 
-        break;
 
-    }
+/* =========================================  
+   HOME CHAT  
+========================================= */  
 
+if (homeSendBtn) {  
 
+    homeSendBtn.addEventListener(  
+        "click",  
+        () => {  
 
+            if (!homeChatInput) {  
+                return;  
+            }  
 
 
-    buffer +=
+            const text =  
+                homeChatInput.value.trim();  
 
-        decoder.decode(
 
-            value,
+            if (!text) {  
 
-            {
+                showNotification(  
+                    "اكتب سؤالك أولاً",  
+                    "error"  
+                );  
 
-                stream: true
+                return;  
 
-            }
+            }  
 
-        );
 
+            openSection(  
+                "chat"  
+            );  
 
 
+            if (chatInput) {  
 
+                chatInput.value =  
+                    text;  
 
-    const parts =
+            }  
 
-        buffer.split(
 
-            "\n"
+            homeChatInput.value =  
+                "";  
 
-        );
 
+            sendChatMessage(  
+                text,  
+                "general"  
+            );  
 
 
+            if (chatInput) {  
 
+                chatInput.value =  
+                    "";  
 
-    buffer =
+            }  
 
-        parts.pop() || "";
+        }  
+    );  
 
+}  
 
 
+/* =========================================  
+   SUGGESTIONS  
+========================================= */  
 
+function activateSuggestions() {  
 
-    const completedData =
+    document  
+        .querySelectorAll(  
+            ".suggestions button"  
+        )  
+        .forEach(button => {  
 
-        parts.join("\n");
+            button.onclick = () => {  
 
+                const text =  
+                    button.textContent.trim();  
 
 
+                openSection(  
+                    "chat"  
+                );  
 
 
-    const chunkText =
+                if (chatInput) {  
 
-        extractStreamText(
+                    chatInput.value =  
+                        text;  
 
-            completedData
+                }  
 
-        );
 
+                sendChatMessage(  
+                    text,  
+                    "general"  
+                );  
 
 
+                if (chatInput) {  
 
+                    chatInput.value =  
+                        "";  
 
-    if (chunkText) {
+                }  
 
+            };  
 
+        });  
 
-        fullText +=
+}  
 
-            chunkText;
 
+activateSuggestions();  
 
 
+/* =========================================  
+   SAVE CHAT  
+========================================= */  
 
+function saveMessages() {  
 
-        if (
+    if (!chatMessages) {  
+        return;  
+    }  
 
-            typeof onChunk ===
 
-            "function"
+    if (  
+        saveChatsToggle &&  
+        !saveChatsToggle.checked  
+    ) {  
 
-        ) {
+        return;  
 
+    }  
 
 
-            onChunk(
+    localStorage.setItem(  
+        "ahmedAI_chatHTML",  
+        chatMessages.innerHTML  
+    );  
 
-                chunkText,
+}  
 
-                fullText
 
-            );
+function loadMessages() {  
 
+    if (!chatMessages) {  
+        return;  
+    }  
 
 
-        }
+    const saved =  
+        localStorage.getItem(  
+            "ahmedAI_chatHTML"  
+        );  
 
 
+    if (  
+        saved &&  
+        saved.trim()  
+    ) {  
 
+        chatMessages.innerHTML =  
+            saved;  
 
 
-        if (chatMessages) {
+        activateSuggestions();  
 
+    }  
 
+}  
 
-            chatMessages.scrollTop =
 
-                chatMessages.scrollHeight;
+loadMessages();  
 
 
+if (saveChatsToggle) {  
 
-        }
+    const saved =  
+        localStorage.getItem(  
+            "ahmedAI_saveChats"  
+        );  
 
 
+    if (saved !== null) {  
 
-    }
+        saveChatsToggle.checked =  
+            saved === "true";  
 
+    }  
 
 
-}
+    saveChatsToggle.addEventListener(  
+        "change",  
+        () => {  
 
+            localStorage.setItem(  
+                "ahmedAI_saveChats",  
+                saveChatsToggle.checked  
+            );  
 
 
+            if (  
+                saveChatsToggle.checked  
+            ) {  
 
+                saveMessages();  
 
-buffer +=
+            }  
 
-    decoder.decode();
 
+            showNotification(  
 
+                saveChatsToggle.checked  
 
+                    ? "تم تفعيل حفظ المحادثات"  
 
+                    : "تم إيقاف حفظ المحادثات"  
 
-if (buffer.trim()) {
+            );  
 
+        }  
+    );  
 
+}  
 
-    const finalChunk =
 
-        extractStreamText(
+/* =========================================  
+   GIS SUBJECTS  
+========================================= */  
 
-            buffer
+document  
+    .querySelectorAll(  
+        ".subject-card"  
+    )  
+    .forEach(card => {  
 
-        );
+        card.addEventListener(  
+            "click",  
+            () => {  
 
+                const topic =  
+                    card.dataset.topic;  
 
 
+                openSection(  
+                    "gis"  
+                );  
 
 
-    if (finalChunk) {
+                if (gisInput) {  
 
+                    gisInput.value =  
+                        `اشرحلي ${topic} في GIS بالتفصيل وبطريقة عملية`;  
 
 
-        fullText +=
+                    gisInput.focus();  
 
-            finalChunk;
+                }  
 
+            }  
+        );  
 
+    });  
 
 
+/* =========================================  
+   GIS AI SEND  
+========================================= */  
 
-        if (
+if (gisSendBtn) {  
 
-            typeof onChunk ===
+    gisSendBtn.addEventListener(  
+        "click",  
+        async () => {  
 
-            "function"
+            if (!gisInput) {  
+                return;  
+            }  
 
-        ) {
 
+            const question =  
+                gisInput.value.trim();  
 
 
-            onChunk(
+            if (!question) {  
 
-                finalChunk,
+                showNotification(  
+                    "اكتب سؤالك أولاً",  
+                    "error"  
+                );  
 
-                fullText
+                return;  
 
-            );
+            }  
 
 
+            gisInput.value =  
+                "";  
 
-        }
 
+            openSection(  
+                "chat"  
+            );  
 
 
-    }
+            await sendChatMessage(  
+                question,  
+                "gis"  
+            );  
 
+        }  
+    );  
 
+}  
 
-}
 
+/* =========================================  
+   GIS ENTER KEY  
+========================================= */  
 
+if (gisInput) {  
 
+    gisInput.addEventListener(  
+        "keydown",  
+        event => {  
 
+            if (  
+                event.key ===  
+                    "Enter" &&  
+                !event.shiftKey  
+            ) {  
 
-if (!fullText.trim()) {
+                event.preventDefault();  
 
 
+                if (gisSendBtn) {  
 
-    throw new Error(
+                    gisSendBtn.click();  
 
-        "لم يصل نص من نموذج الذكاء الاصطناعي."
+                }  
 
-    );
+            }  
 
+        }  
+    );  
 
+}  
 
-}
 
+/* =========================================  
+   CODING LANGUAGES  
+========================================= */  
 
+document  
+    .querySelectorAll(  
+        ".language-card"  
+    )  
+    .forEach(card => {  
 
+        card.addEventListener(  
+            "click",  
+            () => {  
 
+                document  
+                    .querySelectorAll(  
+                        ".language-card"  
+                    )  
+                    .forEach(item => {  
 
-return fullText;
+                        item.classList.remove(  
+                            "active"  
+                        );  
 
-}
+                    });  
 
-/* =========================================
 
-REAL AI CHAT WITH STREAMING
+                card.classList.add(  
+                    "active"  
+                );  
 
-========================================= */
 
-async function sendChatMessage(
+                const language =  
+                    card.dataset.language;  
 
-text,
 
-mode = "general"
+                if (codeInput) {  
 
-) {
+                    codeInput.value =  
+                        `اكتبلي كود ${language} يقوم بـ`;  
 
-if (
 
-    !text ||
+                    codeInput.focus();  
 
-    !text.trim()
+                }  
 
-) {
+            }  
+        );  
 
+    });  
 
 
-    showNotification(
+/* =========================================  
+   REAL AI CODE GENERATOR  
+========================================= */  
 
-        "اكتب رسالتك أولاً",
+async function generateCodeWithAI(  
+    request  
+) {  
 
-        "error"
-
-    );
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const cleanText =
-
-    text.trim();
-
-
-
-
-
-addMessage(
-
-    cleanText,
-
-    "user"
-
-);
-
-
-
-
-
-/*
-
- * لم نعد نستخدم شاشة تحميل
-
- * تغطي الصفحة بالكامل.
-
- */
-
-
-
-
-
-const aiBubble =
-
-    createStreamingMessage();
-
-
-
-
-
-if (!aiBubble) {
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-/*
-
- * حالة الانتظار تظهر داخل
-
- * فقاعة AI فقط.
-
- */
-
-
-
-aiBubble.textContent =
-
-    "🤖 جاري التفكير...";
-
-
-
-
-
-try {
-
-
-
-    let hasReceivedText =
-
-        false;
-
-
-
-
-
-    await askAIStream(
-
-
-
-        cleanText,
-
-
-
-        mode,
-
-
-
-        (
-
-            chunk,
-
-            fullText
-
-        ) => {
-
-
-
-            hasReceivedText =
-
-                true;
-
-
-
-
-
-            /*
-
-             * عند وصول أول جزء
-
-             * نحذف رسالة التفكير.
-
-             */
-
-
-
-            if (
-
-                fullText ===
-
-                chunk
-
-            ) {
-
-
-
-                aiBubble.innerHTML =
-
-                    "";
-
-
-
-            }
-
-
-
-
-
-            /*
-
-             * إظهار الروابط
-
-             * كروابط قابلة للضغط.
-
-             */
-
-
-
-            renderAIText(
-
-                aiBubble,
-
-                fullText
-
-            );
-
-
-
-
-
-            if (chatMessages) {
-
-
-
-                chatMessages.scrollTop =
-
-                    chatMessages.scrollHeight;
-
-
-
-            }
-
-
-
-        }
-
-
-
-    );
-
-
-
-
-
-    if (!hasReceivedText) {
-
-
-
-        aiBubble.textContent =
-
-            "تم استلام الرد.";
-
-
-
-    }
-
-
-
-
-
-    saveMessages();
-
-
-
-
-
-} catch (error) {
-
-
-
-    console.error(
-
-        "اسأل أبو الريس AI Error:",
-
-        error
-
-    );
-
-
-
-
-
-    aiBubble.textContent =
-
-        "تعذر الحصول على رد من اسأل أبو الريس AI.\n\n" +
-
-        "الخطأ:\n" +
-
-        error.message;
-
-
-
-
-
-    showNotification(
-
-        "حدث خطأ في الذكاء الاصطناعي",
-
-        "error"
-
-    );
-
-
-
-
-
-    saveMessages();
-
-
-
-}
-
-}
-
-/* =========================================
-
-CHAT SEND BUTTON
-
-========================================= */
-
-if (chatSendBtn) {
-
-chatSendBtn.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        if (!chatInput) {
-
-            return;
-
-        }
-
-
-
-
-
-        const text =
-
-            chatInput.value;
-
-
-
-
-
-        chatInput.value =
-
-            "";
-
-
-
-
-
-        sendChatMessage(
-
-            text,
-
-            "general"
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-CHAT ENTER KEY
-
-========================================= */
-
-if (chatInput) {
-
-chatInput.addEventListener(
-
-    "keydown",
-
-    event => {
-
-
-
-        if (
-
-            event.key ===
-
-                "Enter" &&
-
-            !event.shiftKey
-
-        ) {
-
-
-
-            event.preventDefault();
-
-
-
-
-
-            if (chatSendBtn) {
-
-
-
-                chatSendBtn.click();
-
-
-
-            }
-
-
-
-        }
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-HOME CHAT
-
-========================================= */
-
-if (homeSendBtn) {
-
-homeSendBtn.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        if (!homeChatInput) {
-
-            return;
-
-        }
-
-
-
-
-
-        const text =
-
-            homeChatInput.value.trim();
-
-
-
-
-
-        if (!text) {
-
-
-
-            showNotification(
-
-                "اكتب سؤالك أولاً",
-
-                "error"
-
-            );
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-        openSection(
-
-            "chat"
-
-        );
-
-
-
-
-
-        if (chatInput) {
-
-
-
-            chatInput.value =
-
-                text;
-
-
-
-        }
-
-
-
-
-
-        homeChatInput.value =
-
-            "";
-
-
-
-
-
-        sendChatMessage(
-
-            text,
-
-            "general"
-
-        );
-
-
-
-
-
-        if (chatInput) {
-
-
-
-            chatInput.value =
-
-                "";
-
-
-
-        }
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-SUGGESTIONS
-
-========================================= */
-
-function activateSuggestions() {
-
-document
-
-    .querySelectorAll(
-
-        ".suggestions button"
-
-    )
-
-    .forEach(button => {
-
-
-
-        button.onclick = () => {
-
-
-
-            const text =
-
-                button.textContent.trim();
-
-
-
-
-
-            openSection(
-
-                "chat"
-
-            );
-
-
-
-
-
-            if (chatInput) {
-
-
-
-                chatInput.value =
-
-                    text;
-
-
-
-            }
-
-
-
-
-
-            sendChatMessage(
-
-                text,
-
-                "general"
-
-            );
-
-
-
-
-
-            if (chatInput) {
-
-
-
-                chatInput.value =
-
-                    "";
-
-
-
-            }
-
-
-
-        };
-
-
-
-    });
-
-}
-
-activateSuggestions();
-
-/* =========================================
-
-SAVE CHAT
-
-========================================= */
-
-function saveMessages() {
-
-if (!chatMessages) {
-
-    return;
-
-}
-
-
-
-
-
-if (
-
-    saveChatsToggle &&
-
-    !saveChatsToggle.checked
-
-) {
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-/*
-
- * نحفظ HTML المحادثة كما كان في
-
- * النظام الأصلي.
-
- *
-
- * ملاحظة:
-
- * الصور الكبيرة قد تجعل localStorage
-
- * ممتلئًا إذا تم حفظها.
-
- */
-
-
-
-try {
-
-
-
-    localStorage.setItem(
-
-        "ahmedAI_chatHTML",
-
-        chatMessages.innerHTML
-
-    );
-
-
-
-} catch (error) {
-
-
-
-    console.warn(
-
-        "تعذر حفظ المحادثة:",
-
-        error
-
-    );
-
-
-
-}
-
-}
-
-function loadMessages() {
-
-if (!chatMessages) {
-
-    return;
-
-}
-
-
-
-
-
-const saved =
-
-    localStorage.getItem(
-
-        "ahmedAI_chatHTML"
-
-    );
-
-
-
-
-
-if (
-
-    saved &&
-
-    saved.trim()
-
-) {
-
-
-
-    chatMessages.innerHTML =
-
-        saved;
-
-
-
-
-
-    activateSuggestions();
-
-
-
-}
-
-}
-
-loadMessages();
-
-if (saveChatsToggle) {
-
-const saved =
-
-    localStorage.getItem(
-
-        "ahmedAI_saveChats"
-
-    );
-
-
-
-
-
-if (saved !== null) {
-
-
-
-    saveChatsToggle.checked =
-
-        saved === "true";
-
-
-
-}
-
-
-
-
-
-saveChatsToggle.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        localStorage.setItem(
-
-            "ahmedAI_saveChats",
-
-            saveChatsToggle.checked
-
-        );
-
-
-
-
-
-        if (
-
-            saveChatsToggle.checked
-
-        ) {
-
-
-
-            saveMessages();
-
-
-
-        }
-
-
-
-
-
-        showNotification(
-
-
-
-            saveChatsToggle.checked
-
-
-
-                ? "تم تفعيل حفظ المحادثات"
-
-
-
-                : "تم إيقاف حفظ المحادثات"
-
-
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-GIS SUBJECTS
-
-========================================= */
-
-document
-
-.querySelectorAll(
-
-    ".subject-card"
-
-)
-
-.forEach(card => {
-
-
-
-    card.addEventListener(
-
-        "click",
-
-        () => {
-
-
-
-            const topic =
-
-                card.dataset.topic;
-
-
-
-
-
-            openSection(
-
-                "gis"
-
-            );
-
-
-
-
-
-            if (gisInput) {
-
-
-
-                gisInput.value =
-
-                    `اشرحلي ${topic} في GIS بالتفصيل وبطريقة عملية`;
-
-
-
-                gisInput.focus();
-
-
-
-            }
-
-
-
-        }
-
-    );
-
-
-
-});
-
-/* =========================================
-
-GIS AI SEND
-
-========================================= */
-
-if (gisSendBtn) {
-
-gisSendBtn.addEventListener(
-
-    "click",
-
-    async () => {
-
-
-
-        if (!gisInput) {
-
-            return;
-
-        }
-
-
-
-
-
-        const question =
-
-            gisInput.value.trim();
-
-
-
-
-
-        if (!question) {
-
-
-
-            showNotification(
-
-                "اكتب سؤالك أولاً",
-
-                "error"
-
-            );
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-        gisInput.value =
-
-            "";
-
-
-
-
-
-        openSection(
-
-            "chat"
-
-        );
-
-
-
-
-
-        await sendChatMessage(
-
-            question,
-
-            "gis"
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-GIS ENTER KEY
-
-========================================= */
-
-if (gisInput) {
-
-gisInput.addEventListener(
-
-    "keydown",
-
-    event => {
-
-
-
-        if (
-
-            event.key ===
-
-                "Enter" &&
-
-            !event.shiftKey
-
-        ) {
-
-
-
-            event.preventDefault();
-
-
-
-
-
-            if (gisSendBtn) {
-
-
-
-                gisSendBtn.click();
-
-
-
-            }
-
-
-
-        }
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-CODING LANGUAGES
-
-========================================= */
-
-document
-
-.querySelectorAll(
-
-    ".language-card"
-
-)
-
-.forEach(card => {
-
-
-
-    card.addEventListener(
-
-        "click",
-
-        () => {
-
-
-
-            document
-
-                .querySelectorAll(
-
-                    ".language-card"
-
-                )
-
-                .forEach(item => {
-
-
-
-                    item.classList.remove(
-
-                        "active"
-
-                    );
-
-
-
-                });
-
-
-
-
-
-            card.classList.add(
-
-                "active"
-
-            );
-
-
-
-
-
-            const language =
-
-                card.dataset.language;
-
-
-
-
-
-            if (codeInput) {
-
-
-
-                codeInput.value =
-
-                    `اكتبلي كود ${language} يقوم بـ`;
-
-
-
-                codeInput.focus();
-
-
-
-            }
-
-
-
-        }
-
-    );
-
-
-
-});
-
-/* =========================================
-
-REAL AI CODE GENERATOR
-
-========================================= */
-
-async function generateCodeWithAI(
-
-request
-
-) {
-
-const prompt = `
+    const prompt = `
 
 اكتب لي كودًا برمجيًا كاملًا بناءً على الطلب التالي:
 
@@ -5764,75 +2109,46 @@ ${request}
 
 `;
 
-return await askAIStream(
+return await askAIStream(  
+        prompt,  
+        "coding",  
+        null  
+    );  
 
-    prompt,
-
-    "coding",
-
-    null
-
-);
-
-}
-
-/* =========================================
-
-FULL AI REQUEST
-
-========================================= */
-
-async function askAIFull(
-
-userMessage,
-
-mode = "general"
-
-) {
-
-if (
-
-    !userMessage ||
-
-    !userMessage.trim()
-
-) {
+}  
 
 
+/* =========================================  
+   FULL AI REQUEST  
+========================================= */  
 
-    throw new Error(
+async function askAIFull(  
+    userMessage,  
+    mode = "general"  
+) {  
 
-        "Empty message"
+    if (  
+        !userMessage ||  
+        !userMessage.trim()  
+    ) {  
 
-    );
+        throw new Error(  
+            "Empty message"  
+        );  
 
-
-
-}
-
-
-
-
-
-const cleanMessage =
-
-    userMessage.trim();
-
-
-
+    }  
 
 
-const selectedPrompt =
-
-    AI_PROMPTS[mode] ||
-
-    AI_PROMPTS.general;
+    const cleanMessage =  
+        userMessage.trim();  
 
 
+    const selectedPrompt =  
+        AI_PROMPTS[mode] ||  
+        AI_PROMPTS.general;  
 
 
-
-const finalMessage = `
+    const finalMessage = `
 
 ${selectedPrompt}
 
@@ -5841,3030 +2157,1582 @@ ${selectedPrompt}
 ${cleanMessage}
 
 أجب الآن بشكل مفيد ومنظم.
-
 `;
 
-const response =
+const response =  
+        await fetch(  
+            AI_API_URL,  
+            {  
 
-    await fetch(
+                method: "POST",  
 
-        AI_API_URL,
+                headers: {  
+                    "Content-Type":  
+                        "application/json"  
+                },  
 
-        {
+                body: JSON.stringify({  
 
+                    message:  
+                        finalMessage  
 
+                })  
 
-            method: "POST",
+            }  
+        );  
 
 
+    if (!response.ok) {  
 
-            headers: {
+        throw new Error(  
+            "HTTP Error: " +  
+            response.status  
+        );  
 
-                "Content-Type":
+    }  
 
-                    "application/json"
 
-            },
+    if (!response.body) {  
 
+        throw new Error(  
+            "لا يوجد Stream."  
+        );  
 
+    }  
 
-            body: JSON.stringify({
 
+    const reader =  
+        response.body.getReader();  
 
 
-                message:
+    const decoder =  
+        new TextDecoder(  
+            "utf-8"  
+        );  
 
-                    finalMessage
 
+    let buffer = "";  
 
+    let fullText = "";  
 
-            })
 
+    while (true) {  
 
+        const {  
+            value,  
+            done  
+        } =  
+            await reader.read();  
 
-        }
 
-    );
+        if (done) {  
+            break;  
+        }  
 
 
+        buffer +=  
+            decoder.decode(  
+                value,  
+                {  
+                    stream: true  
+                }  
+            );  
 
 
+        const parts =  
+            buffer.split(  
+                "\n"  
+            );  
 
-if (!response.ok) {
 
+        buffer =  
+            parts.pop() || "";  
 
 
-    throw new Error(
+        fullText +=  
+            extractStreamText(  
+                parts.join("\n")  
+            );  
 
-        "HTTP Error: " +
+    }  
 
-        response.status
 
-    );
+    buffer +=  
+        decoder.decode();  
 
 
+    if (buffer.trim()) {  
 
-}
+        fullText +=  
+            extractStreamText(  
+                buffer  
+            );  
 
+    }  
 
 
+    if (!fullText.trim()) {  
 
+        throw new Error(  
+            "لم يصل رد من AI."  
+        );  
 
-if (!response.body) {
+    }  
 
 
+    return fullText;  
 
-    throw new Error(
+}  
 
-        "لا يوجد Stream."
 
-    );
+/* =========================================  
+   CODE SEND BUTTON  
+========================================= */  
 
+if (codeSendBtn) {  
 
+    codeSendBtn.addEventListener(  
+        "click",  
+        async () => {  
 
-}
+            if (!codeInput) {  
+                return;  
+            }  
 
 
+            const request =  
+                codeInput.value.trim();  
 
 
+            if (!request) {  
 
-const reader =
+                showNotification(  
+                    "اكتب المطلوب من AI",  
+                    "error"  
+                );  
 
-    response.body.getReader();
+                return;  
 
+            }  
 
 
+            /*  
+             * لم تعد هناك شاشة تحميل.  
+             * زر إنشاء الكود يظل في الصفحة  
+             * أثناء انتظار الرد.  
+             */  
 
+            const originalText =  
+                codeSendBtn.textContent;  
 
-const decoder =
 
-    new TextDecoder(
+            codeSendBtn.disabled =  
+                true;  
 
-        "utf-8"
 
-    );
+            codeSendBtn.textContent =  
+                "🤖 جاري إنشاء الكود...";  
 
 
+            if (codeOutput) {  
 
+                codeOutput.textContent =  
+                    "🤖 جاري التفكير وإنشاء الكود...";  
 
+            }  
 
-let buffer = "";
 
+            try {  
 
+                const result =  
+                    await generateCodeWithAI(  
+                        request  
+                    );  
 
-let fullText = "";
 
+                if (codeOutput) {  
 
+                    codeOutput.textContent =  
+                        result;  
 
+                }  
 
 
-while (true) {
+                showNotification(  
+                    "تم إنشاء الكود بواسطة اسأل أبو الريس AI"  
+                );  
 
 
+            } catch (error) {  
 
-    const {
+                console.error(  
+                    "Code AI Error:",  
+                    error  
+                );  
 
-        value,
 
-        done
+                if (codeOutput) {  
 
-    } =
+                    codeOutput.textContent =  
+                        "حدث خطأ:\n\n" +  
+                        error.message;  
 
-        await reader.read();
+                }  
 
 
+                showNotification(  
+                    "تعذر إنشاء الكود",  
+                    "error"  
+                );  
 
+            } finally {  
 
+                codeSendBtn.disabled =  
+                    false;  
 
-    if (done) {
+                codeSendBtn.textContent =  
+                    originalText;  
 
-        break;
+            }  
 
-    }
+        }  
+    );  
 
+}  
 
 
+/* =========================================  
+   CODE ENTER KEY  
+========================================= */  
 
+if (codeInput) {  
 
-    buffer +=
+    codeInput.addEventListener(  
+        "keydown",  
+        event => {  
 
-        decoder.decode(
+            if (  
+                event.key ===  
+                    "Enter" &&  
+                event.ctrlKey  
+            ) {  
 
-            value,
+                event.preventDefault();  
 
-            {
 
-                stream: true
+                if (codeSendBtn) {  
 
-            }
+                    codeSendBtn.click();  
 
-        );
+                }  
 
+            }  
 
+        }  
+    );  
 
+}  
 
 
-    const parts =
+/* =========================================  
+   COPY CODE  
+========================================= */  
 
-        buffer.split(
+if (copyCodeBtn) {  
 
-            "\n"
+    copyCodeBtn.addEventListener(  
+        "click",  
+        async () => {  
 
-        );
+            if (!codeOutput) {  
+                return;  
+            }  
 
 
+            const code =  
+                codeOutput.textContent;  
 
 
+            if (  
+                !code ||  
+                code ===  
+                    "سيظهر الكود هنا..."  
+            ) {  
 
-    buffer =
+                showNotification(  
+                    "لا يوجد كود لنسخه",  
+                    "error"  
+                );  
 
-        parts.pop() || "";
+                return;  
 
+            }  
 
 
+            try {  
 
+                await navigator  
+                    .clipboard  
+                    .writeText(  
+                        code  
+                    );  
 
-    fullText +=
 
-        extractStreamText(
+                showNotification(  
+                    "تم نسخ الكود"  
+                );  
 
-            parts.join("\n")
+            } catch (error) {  
 
-        );
+                showNotification(  
+                    "تعذر نسخ الكود",  
+                    "error"  
+                );  
 
+            }  
 
+        }  
+    );  
 
-}
+}  
 
 
+/* =========================================  
+   FILE HANDLING  
+========================================= */  
 
+let uploadedFiles =  
+    JSON.parse(  
 
+        localStorage.getItem(  
+            "ahmedAI_files"  
+        ) || "[]"  
 
-buffer +=
+    );  
 
-    decoder.decode();
 
+function formatFileSize(  
+    bytes  
+) {  
 
+    if (!bytes) {  
 
+        return "0 KB";  
 
+    }  
 
-if (buffer.trim()) {
 
+    const kb =  
+        bytes / 1024;  
 
 
-    fullText +=
+    if (kb < 1024) {  
 
-        extractStreamText(
+        return (  
+            kb.toFixed(1) +  
+            " KB"  
+        );  
 
-            buffer
+    }  
 
-        );
 
+    return (  
 
+        kb / 1024  
+    ).toFixed(1) +  
+    " MB";  
 
-}
+}  
 
 
+function renderFiles() {  
 
+    if (!filesList) {  
 
+        return;  
 
-if (!fullText.trim()) {
+    }  
 
 
+    if (  
+        uploadedFiles.length === 0  
+    ) {  
 
-    throw new Error(
+        filesList.innerHTML = `  
 
-        "لم يصل رد من AI."
+            <div class="empty-files">  
 
-    );
+                📂  
 
+                <p>  
+                    لا توجد ملفات حتى الآن  
+                </p>  
 
+            </div>  
 
-}
+        `;  
 
+        return;  
 
+    }  
 
 
+    filesList.innerHTML =  
+        uploadedFiles  
+            .map(  
+                (  
+                    file,  
+                    index  
+                ) => `  
 
-return fullText;
+                <div class="file-card">  
 
-}
+                    <div class="file-card-icon">  
+                        📄  
+                    </div>  
 
-/* =========================================
+                    <div class="file-card-info">  
 
-CODE SEND BUTTON
+                        <strong>  
+                            ${escapeHTML(  
+                                file.name  
+                            )}  
+                        </strong>  
 
-========================================= */
+                        <small>  
+                            ${formatFileSize(  
+                                file.size  
+                            )}  
+                        </small>  
 
-if (codeSendBtn) {
+                    </div>  
 
-codeSendBtn.addEventListener(
+                    <button  
+                        class="delete-file"  
+                        data-index="${index}">  
+                        🗑️  
+                    </button>  
 
-    "click",
+                </div>  
 
-    async () => {
+            `  
+            )  
+            .join("");  
 
 
+    document  
+        .querySelectorAll(  
+            ".delete-file"  
+        )  
+        .forEach(button => {  
 
-        if (!codeInput) {
+            button.addEventListener(  
+                "click",  
+                () => {  
 
-            return;
+                    const index =  
+                        Number(  
+                            button.dataset.index  
+                        );  
 
-        }
 
+                    uploadedFiles.splice(  
+                        index,  
+                        1  
+                    );  
 
 
+                    saveFiles();  
 
 
-        const request =
+                    renderFiles();  
 
-            codeInput.value.trim();
 
+                    showNotification(  
+                        "تم حذف الملف"  
+                    );  
 
+                }  
+            );  
 
+        });  
 
+}  
 
-        if (!request) {
 
+function saveFiles() {  
 
+    localStorage.setItem(  
+        "ahmedAI_files",  
+        JSON.stringify(  
+            uploadedFiles  
+        )  
+    );  
 
-            showNotification(
+}  
 
-                "اكتب المطلوب من AI",
 
-                "error"
+function handleFile(  
+    file  
+) {  
 
-            );
+    if (!file) {  
 
+        return;  
 
+    }  
 
-            return;
 
+    const exists =  
+        uploadedFiles.some(  
+            item =>  
 
+                item.name ===  
+                    file.name &&  
 
-        }
+                item.size ===  
+                    file.size  
 
+        );  
 
 
+    if (exists) {  
 
+        showNotification(  
+            "الملف موجود بالفعل",  
+            "error"  
+        );  
 
-        /*
+        return;  
 
-         * لم تعد هناك شاشة تحميل.
+    }  
 
-         * زر إنشاء الكود يظل في الصفحة
 
-         * أثناء انتظار الرد.
+    uploadedFiles.push({  
 
-         */
+        name:  
+            file.name,  
 
+        size:  
+            file.size,  
 
+        type:  
+            file.type,  
 
-        const originalText =
+        date:  
+            new Date()  
+                .toISOString()  
 
-            codeSendBtn.textContent;
+    });  
 
 
+    saveFiles();  
 
 
+    renderFiles();  
 
-        codeSendBtn.disabled =
 
-            true;
+    showNotification(  
+        `تم إضافة ${file.name}`  
+    );  
 
+}  
 
 
+function escapeHTML(  
+    value  
+) {  
 
+    return String(  
+        value  
+    )  
 
-        codeSendBtn.textContent =
+        .replaceAll(  
+            "&",  
+            "&amp;"  
+        )  
 
-            "🤖 جاري إنشاء الكود...";
+        .replaceAll(  
+            "<",  
+            "&lt;"  
+        )  
 
+        .replaceAll(  
+            ">",  
+            "&gt;"  
+        )  
 
+        .replaceAll(  
+            '"',  
+            "&quot;"  
+        )  
 
+        .replaceAll(  
+            "'",  
+            "&#039;"  
+        );  
 
+}  
 
-        if (codeOutput) {
 
+if (mainFileInput) {  
 
+    mainFileInput.addEventListener(  
+        "change",  
+        () => {  
 
-            codeOutput.textContent =
+            Array  
+                .from(  
+                    mainFileInput.files  
+                )  
+                .forEach(  
+                    handleFile  
+                );  
 
-                "🤖 جاري التفكير وإنشاء الكود...";
 
+            mainFileInput.value =  
+                "";  
 
+        }  
+    );  
 
-        }
+}  
 
 
+if (studyFileInput) {  
 
+    studyFileInput.addEventListener(  
+        "change",  
+        () => {  
 
+            Array  
+                .from(  
+                    studyFileInput.files  
+                )  
+                .forEach(  
+                    file => {  
 
-        try {
+                        handleFile(  
+                            file  
+                        );  
 
 
+                        showNotification(  
+                            "تم رفع الملف للمذاكرة"  
+                        );  
 
-            const result =
+                    }  
+                );  
 
-                await generateCodeWithAI(
 
-                    request
+            studyFileInput.value =  
+                "";  
 
-                );
+        }  
+    );  
 
+}  
 
 
+if (homeFileInput) {  
 
+    homeFileInput.addEventListener(  
+        "change",  
+        () => {  
 
-            if (codeOutput) {
+            const file =  
+                homeFileInput.files[0];  
 
 
+            if (file) {  
 
-                codeOutput.textContent =
+                handleFile(  
+                    file  
+                );  
 
-                    result;
 
+                openSection(  
+                    "files"  
+                );  
 
+            }  
 
-            }
 
+            homeFileInput.value =  
+                "";  
 
+        }  
+    );  
 
+}  
 
 
-            showNotification(
+if (chatFileInput) {  
 
-                "تم إنشاء الكود بواسطة اسأل أبو الريس AI"
+    chatFileInput.addEventListener(  
+        "change",  
+        () => {  
 
-            );
+            const file =  
+                chatFileInput.files[0];  
 
 
+            if (file) {  
 
+                handleFile(  
+                    file  
+                );  
 
 
-        } catch (error) {
+                addMessage(  
+                    `📎 تم اختيار الملف: ${file.name}`,  
+                    "user"  
+                );  
 
+            }  
 
 
-            console.error(
+            chatFileInput.value =  
+                "";  
 
-                "Code AI Error:",
+        }  
+    );  
 
-                error
+}  
 
-            );
 
+if (homeImageInput) {  
 
+    homeImageInput.addEventListener(  
+        "change",  
+        () => {  
 
+            const file =  
+                homeImageInput.files[0];  
 
 
-            if (codeOutput) {
+            if (file) {  
 
+                openSection(  
+                    "chat"  
+                );  
 
 
-                codeOutput.textContent =
+                addMessage(  
+                    `📷 تم اختيار الصورة: ${file.name}`,  
+                    "user"  
+                );  
 
-                    "حدث خطأ:\n\n" +
+            }  
 
-                    error.message;
 
+            homeImageInput.value =  
+                "";  
 
+        }  
+    );  
 
-            }
+}  
 
 
+if (chatImageInput) {  
 
+    chatImageInput.addEventListener(  
+        "change",  
+        () => {  
 
+            const file =  
+                chatImageInput.files[0];  
 
-            showNotification(
 
-                "تعذر إنشاء الكود",
+            if (file) {  
 
-                "error"
+                addMessage(  
+                    `📷 تم اختيار الصورة: ${file.name}`,  
+                    "user"  
+                );  
 
-            );
+            }  
 
 
+            chatImageInput.value =  
+                "";  
 
-        } finally {
+        }  
+    );  
 
+}  
 
 
-            codeSendBtn.disabled =
+renderFiles();  
 
-                false;
 
+/* =========================================  
+   WEB SEARCH BUTTON  
+========================================= */  
 
+if (webSearchBtn) {  
 
+    webSearchBtn.addEventListener(  
+        "click",  
+        () => {  
 
+            showNotification(  
+                "البحث على الإنترنت سيتم تفعيله لاحقًا"  
+            );  
 
-            codeSendBtn.textContent =
+        }  
+    );  
 
-                originalText;
+}  
 
 
+/* =========================================  
+   STUDY ACTIONS  
+========================================= */  
 
-        }
+document  
+    .querySelectorAll(  
+        "[data-study-action]"  
+    )  
+    .forEach(button => {  
 
+        button.addEventListener(  
+            "click",  
+            async () => {  
 
+                const action =  
+                    button.dataset.studyAction;  
 
-    }
 
-);
+                let message =  
+                    "";  
 
-}
 
-/* =========================================
+                if (  
+                    action ===  
+                    "explain"  
+                ) {  
 
-CODE ENTER KEY
+                    message =  
+                        "اشرحلي هذا الدرس بطريقة بسيطة خطوة بخطوة.";  
 
-========================================= */
+                }  
 
-if (codeInput) {
 
-codeInput.addEventListener(
+                if (  
+                    action ===  
+                    "summary"  
+                ) {  
 
-    "keydown",
+                    message =  
+                        "لخصلي الدرس في نقاط مهمة ومنظمة.";  
 
-    event => {
+                }  
 
 
+                if (  
+                    action ===  
+                    "questions"  
+                ) {  
 
-        if (
+                    message =  
+                        "أنشئ لي أسئلة تدريبية على هذا الدرس.";  
 
-            event.key ===
+                }  
 
-                "Enter" &&
 
-            event.ctrlKey
+                if (  
+                    action ===  
+                    "exam"  
+                ) {  
 
-        ) {
+                    message =  
+                        "اعمل لي اختبار تدريبي على هذا الموضوع.";  
 
+                }  
 
 
-            event.preventDefault();
+                if (!message) {  
 
+                    return;  
 
+                }  
 
 
+                openSection(  
+                    "chat"  
+                );  
 
-            if (codeSendBtn) {
 
+                await sendChatMessage(  
+                    message,  
+                    "study"  
+                );  
 
+            }  
+        );  
 
-                codeSendBtn.click();
+    });  
 
 
+/* =========================================  
+   TEST SYSTEM  
+========================================= */  
 
-            }
+const testQuestions = {  
 
+    GIS: [  
 
+        {  
+            q:  
+                "ماذا يعني GIS؟",  
 
-        }
+            options: [  
 
+                "Geographic Information System",  
 
+                "Global Internet System",  
 
-    }
+                "Geology Information Software",  
 
-);
+                "Graphic Image System"  
 
-}
+            ],  
 
-/* =========================================
+            answer: 0  
 
-COPY CODE
+        },  
 
-========================================= */
 
-if (copyCodeBtn) {
+        {  
+            q:  
+                "ما الذي يستخدم لتمثيل الظواهر المستمرة؟",  
 
-copyCodeBtn.addEventListener(
+            options: [  
 
-    "click",
+                "Raster",  
 
-    async () => {
+                "Vector فقط",  
 
+                "Table",  
 
+                "Text"  
 
-        if (!codeOutput) {
+            ],  
 
-            return;
+            answer: 0  
 
-        }
+        },  
 
 
+        {  
+            q:  
+                "ما أحد مكونات GIS؟",  
 
+            options: [  
 
+                "Data",  
 
-        const code =
+                "Keyboard فقط",  
 
-            codeOutput.textContent;
+                "Printer فقط",  
 
+                "Browser فقط"  
 
+            ],  
 
+            answer: 0  
 
+        }  
 
-        if (
+    ],  
 
-            !code ||
 
-            code ===
+    "ArcGIS Pro": [  
 
-                "سيظهر الكود هنا..."
+        {  
+            q:  
+                "ما وظيفة Buffer؟",  
 
-        ) {
+            options: [  
 
+                "إنشاء منطقة حول معلم بمسافة محددة",  
 
+                "حذف كل البيانات",  
 
-            showNotification(
+                "تغيير لغة البرنامج",  
 
-                "لا يوجد كود لنسخه",
+                "فتح الإنترنت"  
 
-                "error"
+            ],  
 
-            );
+            answer: 0  
 
+        },  
 
 
-            return;
+        {  
+            q:  
+                "أي أداة تستخدم لقص طبقة باستخدام حدود طبقة أخرى؟",  
 
+            options: [  
 
+                "Clip",  
 
-        }
+                "Buffer",  
 
+                "Merge",  
 
+                "Dissolve"  
 
+            ],  
 
+            answer: 0  
 
-        try {
+        }  
 
+    ],  
 
 
-            await navigator
+    Python: [  
 
-                .clipboard
+        {  
+            q:  
+                "ما الكلمة المستخدمة لتعريف دالة في Python؟",  
 
-                .writeText(
+            options: [  
 
-                    code
+                "def",  
 
-                );
+                "function",  
 
+                "func",  
 
+                "define"  
 
+            ],  
 
+            answer: 0  
 
-            showNotification(
+        },  
 
-                "تم نسخ الكود"
 
-            );
+        {  
+            q:  
+                "أي رمز يستخدم لكتابة تعليق في Python؟",  
 
+            options: [  
 
+                "#",  
 
-        } catch (error) {
+                "//",  
 
+                "<!--",  
 
+                "/*"  
 
-            showNotification(
+            ],  
 
-                "تعذر نسخ الكود",
+            answer: 0  
 
-                "error"
+        }  
 
-            );
+    ],  
 
 
+    "Remote Sensing": [  
 
-        }
+        {  
+            q:  
+                "أي قمر صناعي يستخدم Sentinel-2؟",  
 
+            options: [  
 
+                "Earth observation",  
 
-    }
+                "GPS فقط",  
 
-);
+                "Communication فقط",  
 
-}
+                "Weather فقط"  
 
-/* =========================================
+            ],  
 
-FILE HANDLING
+            answer: 0  
 
-========================================= */
+        }  
 
-let uploadedFiles =
+    ],  
 
-JSON.parse(
 
+    AutoCAD: [  
 
+        {  
+            q:  
+                "ما وظيفة أمر LINE؟",  
 
-    localStorage.getItem(
+            options: [  
 
-        "ahmedAI_files"
+                "رسم خط",  
 
-    ) || "[]"
+                "حذف طبقة",  
 
+                "نسخ ملف",  
 
+                "تغيير اللون فقط"  
 
-);
+            ],  
 
-function formatFileSize(
+            answer: 0  
 
-bytes
+        }  
 
-) {
+    ],  
 
-if (!bytes) {
 
+    Surveying: [  
 
+        {  
+            q:  
+                "ما الجهاز المستخدم لقياس المناسيب؟",  
 
-    return "0 KB";
+            options: [  
 
+                "Level",  
 
+                "Printer",  
 
-}
+                "Scanner",  
 
+                "GPS فقط"  
 
+            ],  
 
+            answer: 0  
 
+        }  
 
-const kb =
+    ],  
 
-    bytes / 1024;
 
+    Geography: [  
 
+        {  
+            q:  
+                "ما عاصمة مصر؟",  
 
+            options: [  
 
+                "القاهرة",  
 
-if (kb < 1024) {
+                "الإسكندرية",  
 
+                "المنيا",  
 
+                "أسوان"  
 
-    return (
+            ],  
 
-        kb.toFixed(1) +
+            answer: 0  
 
-        " KB"
+        }  
 
-    );
+    ],  
 
 
+    English: [  
 
-}
+        {  
+            q:  
+                "ما معنى كلمة Map؟",  
 
+            options: [  
 
+                "خريطة",  
 
+                "كتاب",  
 
+                "طريق",  
 
-return (
+                "مدينة"  
 
+            ],  
 
+            answer: 0  
 
-    kb / 1024
+        }  
 
-).toFixed(1) +
+    ]  
 
-" MB";
+};  
 
-}
 
-function renderFiles() {
+function createTest() {  
 
-if (!filesList) {
+    if (!testContainer) {  
+        return;  
+    }  
 
 
+    const subjectElement =  
+        document.getElementById(  
+            "testSubject"  
+        );  
 
-    return;
 
+    const countElement =  
+        document.getElementById(  
+            "testCount"  
+        );  
 
 
-}
+    if (  
+        !subjectElement ||  
+        !countElement  
+    ) {  
 
+        return;  
 
+    }  
 
 
+    const subject =  
+        subjectElement.value;  
 
-if (
 
-    uploadedFiles.length === 0
+    const count =  
+        Number(  
+            countElement.value  
+        );  
 
-) {
 
+    let questions =  
+        testQuestions[  
+            subject  
+        ] || [];  
 
 
-    filesList.innerHTML = `
+    if (  
+        questions.length ===  
+        0  
+    ) {  
 
+        testContainer.innerHTML = `  
 
+            <div class="test-card">  
 
-        <div class="empty-files">
+                لا توجد أسئلة تجريبية لهذه المادة حاليًا.  
 
+            </div>  
 
+        `;  
 
-            📂
 
+        return;  
 
+    }  
 
-            <p>
 
-                لا توجد ملفات حتى الآن
+    questions =  
+        [...questions]  
 
-            </p>
+            .sort(  
+                () =>  
+                    Math.random() -  
+                    0.5  
+            )  
 
+            .slice(  
+                0,  
+                Math.min(  
+                    count,  
+                    questions.length  
+                )  
+            );  
 
 
-        </div>
+    testContainer.innerHTML =  
+        questions  
 
+            .map(  
+                (  
+                    question,  
+                    index  
+                ) => `  
 
+                <div  
+                    class="test-card"  
+                    data-answer="${question.answer}"  
+                >  
 
-    `;
+                    <div class="test-question">  
 
+                        ${index + 1}.  
+                        ${escapeHTML(  
+                            question.q  
+                        )}  
 
+                    </div>  
 
-    return;
+                    <div class="test-options">  
 
+                        ${question.options  
 
+                            .map(  
+                                (  
+                                    option,  
+                                    optionIndex  
+                                ) => `  
 
-}
+                                <button  
+                                    class="test-option"  
+                                    data-option="${optionIndex}">  
 
+                                    ${escapeHTML(  
+                                        option  
+                                    )}  
 
+                                </button>  
 
+                            `  
+                            )  
 
+                            .join("")}  
 
-filesList.innerHTML =
+                    </div>  
 
-    uploadedFiles
+                </div>  
 
-        .map(
+            `  
+            )  
 
-            (
+            .join("");  
 
-                file,
 
-                index
+    activateTestOptions();  
 
-            ) => `
 
+    showNotification(  
+        `تم إنشاء اختبار ${subject}`  
+    );  
 
+}  
 
-            <div class="file-card">
 
+function activateTestOptions() {  
 
+    document  
+        .querySelectorAll(  
+            ".test-option"  
+        )  
+        .forEach(option => {  
 
-                <div class="file-card-icon">
+            option.addEventListener(  
+                "click",  
+                () => {  
 
-                    📄
+                    const card =  
+                        option.closest(  
+                            ".test-card"  
+                        );  
 
-                </div>
 
+                    if (!card) {  
+                        return;  
+                    }  
 
 
-                <div class="file-card-info">
+                    const correct =  
+                        Number(  
+                            card.dataset.answer  
+                        );  
 
 
+                    const selected =  
+                        Number(  
+                            option.dataset.option  
+                        );  
 
-                    <strong>
 
-                        ${escapeHTML(
+                    card  
+                        .querySelectorAll(  
+                            ".test-option"  
+                        )  
+                        .forEach(  
+                            btn => {  
 
-                            file.name
+                                btn.disabled =  
+                                    true;  
 
-                        )}
+                            }  
+                        );  
 
-                    </strong>
 
+                    if (  
+                        selected ===  
+                        correct  
+                    ) {  
 
+                        option.classList.add(  
+                            "correct"  
+                        );  
 
-                    <small>
 
-                        ${formatFileSize(
+                        showNotification(  
+                            "إجابة صحيحة ✓"  
+                        );  
 
-                            file.size
+                    } else {  
 
-                        )}
+                        option.classList.add(  
+                            "wrong"  
+                        );  
 
-                    </small>
 
+                        const correctButton =  
+                            card.querySelector(  
+                                `[data-option="${correct}"]`  
+                            );  
 
 
-                </div>
+                        if (  
+                            correctButton  
+                        ) {  
 
+                            correctButton.classList.add(  
+                                "correct"  
+                            );  
 
+                        }  
 
-                <button
 
-                    class="delete-file"
+                        showNotification(  
+                            "إجابة غير صحيحة",  
+                            "error"  
+                        );  
 
-                    data-index="${index}">
+                    }  
 
-                    🗑️
+                }  
+            );  
 
-                </button>
+        });  
 
+}  
 
 
-            </div>
+if (createTestBtn) {  
 
+    createTestBtn.addEventListener(  
+        "click",  
+        createTest  
+    );  
 
+}  
 
-        `
 
-        )
+/* =========================================  
+   LANGUAGE  
+========================================= */  
 
-        .join("");
+if (languageSelect) {  
 
+    const savedLanguage =  
+        localStorage.getItem(  
+            "ahmedAI_language"  
+        );  
 
 
+    if (savedLanguage) {  
 
+        languageSelect.value =  
+            savedLanguage;  
 
-document
+    }  
 
-    .querySelectorAll(
 
-        ".delete-file"
+    languageSelect.addEventListener(  
+        "change",  
+        () => {  
 
-    )
+            localStorage.setItem(  
+                "ahmedAI_language",  
+                languageSelect.value  
+            );  
 
-    .forEach(button => {
 
+            if (  
+                languageSelect.value ===  
+                "en"  
+            ) {  
 
+                showNotification(  
+                    "English interface will be added soon."  
+                );  
 
-        button.addEventListener(
+            } else {  
 
-            "click",
+                showNotification(  
+                    "تم اختيار العربية"  
+                );  
 
-            () => {
+            }  
 
+        }  
+    );  
 
+}  
 
-                const index =
 
-                    Number(
+/* =========================================  
+   GENERAL KEYBOARD SHORTCUT  
+========================================= */  
 
-                        button.dataset.index
+document.addEventListener(  
+    "keydown",  
+    event => {  
 
-                    );
+        if (  
+            (  
+                event.ctrlKey ||  
+                event.metaKey  
+            ) &&  
+            event.key ===  
+                "k"  
+        ) {  
 
+            event.preventDefault();  
 
 
+            openSection(  
+                "chat"  
+            );  
 
 
-                uploadedFiles.splice(
+            if (chatInput) {  
 
-                    index,
+                chatInput.focus();  
 
-                    1
+            }  
 
-                );
+        }  
 
+    }  
+);  
 
 
+/* =========================================  
+   INITIAL STATE  
+========================================= */  
 
+openSection(  
+    "home"  
+);  
 
-                saveFiles();
 
-
-
-
-
-                renderFiles();
-
-
-
-
-
-                showNotification(
-
-                    "تم حذف الملف"
-
-                );
-
-
-
-            }
-
-        );
-
-
-
-    });
-
-}
-
-function saveFiles() {
-
-localStorage.setItem(
-
-    "ahmedAI_files",
-
-    JSON.stringify(
-
-        uploadedFiles
-
-    )
-
-);
-
-}
-
-function handleFile(
-
-file
-
-) {
-
-if (!file) {
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const exists =
-
-    uploadedFiles.some(
-
-        item =>
-
-
-
-            item.name ===
-
-                file.name &&
-
-
-
-            item.size ===
-
-                file.size
-
-
-
-    );
-
-
-
-
-
-if (exists) {
-
-
-
-    showNotification(
-
-        "الملف موجود بالفعل",
-
-        "error"
-
-    );
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-uploadedFiles.push({
-
-
-
-    name:
-
-        file.name,
-
-
-
-    size:
-
-        file.size,
-
-
-
-    type:
-
-        file.type,
-
-
-
-    date:
-
-        new Date()
-
-            .toISOString()
-
-
-
-});
-
-
-
-
-
-saveFiles();
-
-
-
-
-
-renderFiles();
-
-
-
-
-
-showNotification(
-
-    `تم إضافة ${file.name}`
-
-);
-
-}
-
-if (mainFileInput) {
-
-mainFileInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        Array
-
-            .from(
-
-                mainFileInput.files
-
-            )
-
-            .forEach(
-
-                handleFile
-
-            );
-
-
-
-
-
-        mainFileInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-if (studyFileInput) {
-
-studyFileInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        Array
-
-            .from(
-
-                studyFileInput.files
-
-            )
-
-            .forEach(
-
-                file => {
-
-
-
-                    handleFile(
-
-                        file
-
-                    );
-
-
-
-
-
-                    showNotification(
-
-                        "تم رفع الملف للمذاكرة"
-
-                    );
-
-
-
-                }
-
-            );
-
-
-
-
-
-        studyFileInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-if (homeFileInput) {
-
-homeFileInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        const file =
-
-            homeFileInput.files[0];
-
-
-
-
-
-        if (file) {
-
-
-
-            handleFile(
-
-                file
-
-            );
-
-
-
-
-
-            openSection(
-
-                "files"
-
-            );
-
-
-
-        }
-
-
-
-
-
-        homeFileInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-if (chatFileInput) {
-
-chatFileInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        const file =
-
-            chatFileInput.files[0];
-
-
-
-
-
-        if (file) {
-
-
-
-            handleFile(
-
-                file
-
-            );
-
-
-
-
-
-            addMessage(
-
-                `📎 تم اختيار الملف: ${file.name}`,
-
-                "user"
-
-            );
-
-
-
-        }
-
-
-
-
-
-        chatFileInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-HOME IMAGE INPUT
-
-========================================= */
-
-if (homeImageInput) {
-
-homeImageInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        const file =
-
-            homeImageInput.files[0];
-
-
-
-
-
-        if (file) {
-
-
-
-            showImagePreview(
-
-                file
-
-            );
-
-
-
-        }
-
-
-
-
-
-        homeImageInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-CHAT IMAGE INPUT
-
-========================================= */
-
-if (chatImageInput) {
-
-chatImageInput.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        const file =
-
-            chatImageInput.files[0];
-
-
-
-
-
-        if (file) {
-
-
-
-            showImagePreview(
-
-                file
-
-            );
-
-
-
-        }
-
-
-
-
-
-        chatImageInput.value =
-
-            "";
-
-
-
-    }
-
-);
-
-}
-
-renderFiles();
-
-/* =========================================
-
-WEB SEARCH BUTTON
-
-========================================= */
-
-/*
-
-مهم:
-
-هذا الزر الآن يفتح بحثًا حقيقيًا على Google.
-
-لكنه لا يدّعي أن نتائج Google دخلت إلى
-
-نموذج AI.
-
-لكي يصبح:
-
-سؤال المستخدم
-
-↓
-
-Web Search API
-
-↓
-
-نتائج البحث
-
-↓
-
-AI
-
-نحتاج إضافة Search API إلى Cloudflare Worker.
-
-حاليًا الزر يوفر بحثًا مباشرًا للمستخدم.
-
-
-*/
-
-if (webSearchBtn) {
-
-webSearchBtn.addEventListener(
-
-    "click",
-
-    () => {
-
-
-
-        let query = "";
-
-
-
-
-
-        if (
-
-            chatInput &&
-
-            chatInput.value.trim()
-
-        ) {
-
-
-
-            query =
-
-                chatInput.value.trim();
-
-
-
-        } else if (
-
-            homeChatInput &&
-
-            homeChatInput.value.trim()
-
-        ) {
-
-
-
-            query =
-
-                homeChatInput.value.trim();
-
-
-
-        }
-
-
-
-
-
-        if (!query) {
-
-
-
-            showNotification(
-
-                "اكتب ما تريد البحث عنه أولًا",
-
-                "error"
-
-            );
-
-
-
-
-
-            openSection(
-
-                "chat"
-
-            );
-
-
-
-
-
-            if (chatInput) {
-
-
-
-                chatInput.focus();
-
-
-
-            }
-
-
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-        const searchURL =
-
-            "https://www.google.com/search?q=" +
-
-            encodeURIComponent(
-
-                query
-
-            );
-
-
-
-
-
-        window.open(
-
-            searchURL,
-
-            "_blank",
-
-            "noopener,noreferrer"
-
-        );
-
-
-
-
-
-        showNotification(
-
-            "تم فتح البحث على الإنترنت"
-
-        );
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-STUDY ACTIONS
-
-========================================= */
-
-document
-
-.querySelectorAll(
-
-    "[data-study-action]"
-
-)
-
-.forEach(button => {
-
-
-
-    button.addEventListener(
-
-        "click",
-
-        async () => {
-
-
-
-            const action =
-
-                button.dataset.studyAction;
-
-
-
-
-
-            let message =
-
-                "";
-
-
-
-
-
-            if (
-
-                action ===
-
-                "explain"
-
-            ) {
-
-
-
-                message =
-
-                    "اشرحلي هذا الدرس بطريقة بسيطة خطوة بخطوة.";
-
-
-
-            }
-
-
-
-
-
-            if (
-
-                action ===
-
-                "summary"
-
-            ) {
-
-
-
-                message =
-
-                    "لخصلي الدرس في نقاط مهمة ومنظمة.";
-
-
-
-            }
-
-
-
-
-
-            if (
-
-                action ===
-
-                "questions"
-
-            ) {
-
-
-
-                message =
-
-                    "أنشئ لي أسئلة تدريبية على هذا الدرس.";
-
-
-
-            }
-
-
-
-
-
-            if (
-
-                action ===
-
-                "exam"
-
-            ) {
-
-
-
-                message =
-
-                    "اعمل لي اختبار تدريبي على هذا الموضوع.";
-
-
-
-            }
-
-
-
-
-
-            if (!message) {
-
-
-
-                return;
-
-
-
-            }
-
-
-
-
-
-            openSection(
-
-                "chat"
-
-            );
-
-
-
-
-
-            await sendChatMessage(
-
-                message,
-
-                "study"
-
-            );
-
-
-
-        }
-
-    );
-
-
-
-});
-
-/* =========================================
-
-TEST SYSTEM
-
-========================================= */
-
-const testQuestions = {
-
-GIS: [
-
-
-
-    {
-
-        q:
-
-            "ماذا يعني GIS؟",
-
-
-
-        options: [
-
-
-
-            "Geographic Information System",
-
-
-
-            "Global Internet System",
-
-
-
-            "Geology Information Software",
-
-
-
-            "Graphic Image System"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    },
-
-
-
-
-
-    {
-
-        q:
-
-            "ما الذي يستخدم لتمثيل الظواهر المستمرة؟",
-
-
-
-        options: [
-
-
-
-            "Raster",
-
-
-
-            "Vector فقط",
-
-
-
-            "Table",
-
-
-
-            "Text"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    },
-
-
-
-
-
-    {
-
-        q:
-
-            "ما أحد مكونات GIS؟",
-
-
-
-        options: [
-
-
-
-            "Data",
-
-
-
-            "Keyboard فقط",
-
-
-
-            "Printer فقط",
-
-
-
-            "Browser فقط"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-"ArcGIS Pro": [
-
-
-
-    {
-
-        q:
-
-            "ما وظيفة Buffer؟",
-
-
-
-        options: [
-
-
-
-            "إنشاء منطقة حول معلم بمسافة محددة",
-
-
-
-            "حذف كل البيانات",
-
-
-
-            "تغيير لغة البرنامج",
-
-
-
-            "فتح الإنترنت"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    },
-
-
-
-
-
-    {
-
-        q:
-
-            "أي أداة تستخدم لقص طبقة باستخدام حدود طبقة أخرى؟",
-
-
-
-        options: [
-
-
-
-            "Clip",
-
-
-
-            "Buffer",
-
-
-
-            "Merge",
-
-
-
-            "Dissolve"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-Python: [
-
-
-
-    {
-
-        q:
-
-            "ما الكلمة المستخدمة لتعريف دالة في Python؟",
-
-
-
-        options: [
-
-
-
-            "def",
-
-
-
-            "function",
-
-
-
-            "func",
-
-
-
-            "define"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    },
-
-
-
-
-
-    {
-
-        q:
-
-            "أي رمز يستخدم لكتابة تعليق في Python؟",
-
-
-
-        options: [
-
-
-
-            "#",
-
-
-
-            "//",
-
-
-
-            "<!--",
-
-
-
-            "/*"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-"Remote Sensing": [
-
-
-
-    {
-
-        q:
-
-            "أي قمر صناعي يستخدم Sentinel-2؟",
-
-
-
-        options: [
-
-
-
-            "Earth observation",
-
-
-
-            "GPS فقط",
-
-
-
-            "Communication فقط",
-
-
-
-            "Weather فقط"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-AutoCAD: [
-
-
-
-    {
-
-        q:
-
-            "ما وظيفة أمر LINE؟",
-
-
-
-        options: [
-
-
-
-            "رسم خط",
-
-
-
-            "حذف طبقة",
-
-
-
-            "نسخ ملف",
-
-
-
-            "تغيير اللون فقط"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-Surveying: [
-
-
-
-    {
-
-        q:
-
-            "ما الجهاز المستخدم لقياس المناسيب؟",
-
-
-
-        options: [
-
-
-
-            "Level",
-
-
-
-            "Printer",
-
-
-
-            "Scanner",
-
-
-
-            "GPS فقط"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-Geography: [
-
-
-
-    {
-
-        q:
-
-            "ما عاصمة مصر؟",
-
-
-
-        options: [
-
-
-
-            "القاهرة",
-
-
-
-            "الإسكندرية",
-
-
-
-            "المنيا",
-
-
-
-            "أسوان"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-],
-
-
-
-
-
-English: [
-
-
-
-    {
-
-        q:
-
-            "ما معنى كلمة Map؟",
-
-
-
-        options: [
-
-
-
-            "خريطة",
-
-
-
-            "كتاب",
-
-
-
-            "طريق",
-
-
-
-            "مدينة"
-
-
-
-        ],
-
-
-
-        answer: 0
-
-    }
-
-
-
-]
-
-};
-
-/* =========================================
-
-CREATE TEST
-
-========================================= */
-
-function createTest() {
-
-if (!testContainer) {
-
-    return;
-
-}
-
-
-
-
-
-const subjectElement =
-
-    document.getElementById(
-
-        "testSubject"
-
-    );
-
-
-
-
-
-const countElement =
-
-    document.getElementById(
-
-        "testCount"
-
-    );
-
-
-
-
-
-if (
-
-    !subjectElement ||
-
-    !countElement
-
-) {
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-const subject =
-
-    subjectElement.value;
-
-
-
-
-
-const count =
-
-    Number(
-
-        countElement.value
-
-    );
-
-
-
-
-
-let questions =
-
-    testQuestions[
-
-        subject
-
-    ] || [];
-
-
-
-
-
-if (
-
-    questions.length ===
-
-    0
-
-) {
-
-
-
-    testContainer.innerHTML = `
-
-
-
-        <div class="test-card">
-
-
-
-            لا توجد أسئلة تجريبية لهذه المادة حاليًا.
-
-
-
-        </div>
-
-
-
-    `;
-
-
-
-
-
-    return;
-
-
-
-}
-
-
-
-
-
-questions =
-
-    [...questions]
-
-
-
-        .sort(
-
-            () =>
-
-                Math.random() -
-
-                0.5
-
-        )
-
-
-
-        .slice(
-
-            0,
-
-            Math.min(
-
-                count,
-
-                questions.length
-
-            )
-
-        );
-
-
-
-
-
-testContainer.innerHTML =
-
-    questions
-
-
-
-        .map(
-
-            (
-
-                question,
-
-                index
-
-            ) => `
-
-
-
-            <div
-
-                class="test-card"
-
-                data-answer="${question.answer}"
-
-            >
-
-
-
-                <div class="test-question">
-
-
-
-                    ${index + 1}.
-
-                    ${escapeHTML(
-
-                        question.q
-
-                    )}
-
-
-
-                </div>
-
-
-
-                <div class="test-options">
-
-
-
-                    ${question.options
-
-
-
-                        .map(
-
-                            (
-
-                                option,
-
-                                optionIndex
-
-                            ) => `
-
-
-
-                            <button
-
-                                class="test-option"
-
-                                data-option="${optionIndex}">
-
-
-
-                                ${escapeHTML(
-
-                                    option
-
-                                )}
-
-
-
-                            </button>
-
-
-
-                        `
-
-                        )
-
-
-
-                        .join("")}
-
-
-
-                </div>
-
-
-
-            </div>
-
-
-
-        `
-
-        )
-
-
-
-        .join("");
-
-
-
-
-
-activateTestOptions();
-
-
-
-
-
-showNotification(
-
-    `تم إنشاء اختبار ${subject}`
-
-);
-
-}
-
-/* =========================================
-
-TEST OPTIONS
-
-========================================= */
-
-function activateTestOptions() {
-
-document
-
-    .querySelectorAll(
-
-        ".test-option"
-
-    )
-
-    .forEach(option => {
-
-
-
-        option.addEventListener(
-
-            "click",
-
-            () => {
-
-
-
-                const card =
-
-                    option.closest(
-
-                        ".test-card"
-
-                    );
-
-
-
-
-
-                if (!card) {
-
-                    return;
-
-                }
-
-
-
-
-
-                const correct =
-
-                    Number(
-
-                        card.dataset.answer
-
-                    );
-
-
-
-
-
-                const selected =
-
-                    Number(
-
-                        option.dataset.option
-
-                    );
-
-
-
-
-
-                card
-
-                    .querySelectorAll(
-
-                        ".test-option"
-
-                    )
-
-                    .forEach(
-
-                        btn => {
-
-
-
-                            btn.disabled =
-
-                                true;
-
-
-
-                        }
-
-                    );
-
-
-
-
-
-                if (
-
-                    selected ===
-
-                    correct
-
-                ) {
-
-
-
-                    option.classList.add(
-
-                        "correct"
-
-                    );
-
-
-
-
-
-                    showNotification(
-
-                        "إجابة صحيحة ✓"
-
-                    );
-
-
-
-                } else {
-
-
-
-                    option.classList.add(
-
-                        "wrong"
-
-                    );
-
-
-
-
-
-                    const correctButton =
-
-                        card.querySelector(
-
-                            `[data-option="${correct}"]`
-
-                        );
-
-
-
-
-
-                    if (
-
-                        correctButton
-
-                    ) {
-
-
-
-                        correctButton.classList.add(
-
-                            "correct"
-
-                        );
-
-
-
-                    }
-
-
-
-
-
-                    showNotification(
-
-                        "إجابة غير صحيحة",
-
-                        "error"
-
-                    );
-
-
-
-                }
-
-
-
-            }
-
-        );
-
-
-
-    });
-
-}
-
-if (createTestBtn) {
-
-createTestBtn.addEventListener(
-
-    "click",
-
-    createTest
-
-);
-
-}
-
-/* =========================================
-
-LANGUAGE
-
-========================================= */
-
-if (languageSelect) {
-
-const savedLanguage =
-
-    localStorage.getItem(
-
-        "ahmedAI_language"
-
-    );
-
-
-
-
-
-if (savedLanguage) {
-
-
-
-    languageSelect.value =
-
-        savedLanguage;
-
-
-
-}
-
-
-
-
-
-languageSelect.addEventListener(
-
-    "change",
-
-    () => {
-
-
-
-        localStorage.setItem(
-
-            "ahmedAI_language",
-
-            languageSelect.value
-
-        );
-
-
-
-
-
-        if (
-
-            languageSelect.value ===
-
-            "en"
-
-        ) {
-
-
-
-            showNotification(
-
-                "English interface will be added soon."
-
-            );
-
-
-
-        } else {
-
-
-
-            showNotification(
-
-                "تم اختيار العربية"
-
-            );
-
-
-
-        }
-
-
-
-    }
-
-);
-
-}
-
-/* =========================================
-
-GENERAL KEYBOARD SHORTCUT
-
-========================================= */
-
-document.addEventListener(
-
-"keydown",
-
-event => {
-
-
-
-    if (
-
-        (
-
-            event.ctrlKey ||
-
-            event.metaKey
-
-        ) &&
-
-        event.key ===
-
-            "k"
-
-    ) {
-
-
-
-        event.preventDefault();
-
-
-
-
-
-        openSection(
-
-            "chat"
-
-        );
-
-
-
-
-
-        if (chatInput) {
-
-
-
-            chatInput.focus();
-
-
-
-        }
-
-
-
-    }
-
-
-
-}
-
-);
-
-/* =========================================
-
-INITIAL STATE
-
-========================================= */
-
-openSection(
-
-"home"
-
-);
-
-console.log(
-
-"اسأل أبو الريس AI initialized successfully - Streaming + Vision + Links enabled."
-
+console.log(  
+    "اسأل أبو الريس AI initialized successfully - Streaming enabled."  
 );
 
 });
