@@ -65,6 +65,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
+       CLOUDFLARE WORKER
+    ========================================= */
+
+    const AI_API_URL =
+        "https://late-mode-12d3.123456789012345678o01234567898.workers.dev/api/chat";
+
+
+    /* =========================================
        PAGE INFORMATION
     ========================================= */
 
@@ -475,110 +483,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function generateDemoResponse(message) {
+    /* =========================================
+       REAL AI CHAT
+    ========================================= */
 
-        const text =
-            message.toLowerCase();
-
-        if (
-            text.includes("arcgis") ||
-            text.includes("أرك") ||
-            text.includes("gis")
-        ) {
-
-            return `تمام يا أحمد 👌
-
-Ahmed AI جاهز لمساعدتك في GIS.
-
-ممكن تسألني عن:
-• ArcGIS Pro
-• Network Analyst
-• Spatial Analyst
-• Geoprocessing
-• Raster
-• Vector
-• Coordinate Systems
-• Geodatabase
-• Remote Sensing
-
-مثال:
-"اشرحلي Network Analyst خطوة بخطوة"`;
-        }
-
-
-        if (
-            text.includes("python") ||
-            text.includes("بايثون")
-        ) {
-
-            return `تمام 🐍
-
-نقدر نتعلم Python تدريجيًا، خصوصًا Python for GIS.
-
-مثلاً:
-• Variables
-• Conditions
-• Loops
-• Functions
-• Lists
-• Files
-• Pandas
-• ArcPy
-
-اكتبلي الموضوع اللي عايز تبدأ به.`;
-        }
-
-
-        if (
-            text.includes("remote sensing") ||
-            text.includes("استشعار")
-        ) {
-
-            return `🛰️ مساعد Remote Sensing جاهز.
-
-ممكن نشتغل على:
-• Landsat
-• Sentinel-1
-• Sentinel-2
-• NDVI
-• Classification
-• Raster Analysis
-• Image Processing
-
-اكتب سؤالك بالتفصيل وأنا أرتبهولك.`;
-        }
-
-
-        if (
-            text.includes("network analyst") ||
-            text.includes("نيتورك")
-        ) {
-
-            return `🛣️ Network Analyst في ArcGIS Pro يسمح لك بتحليل الشبكات.
-
-من أشهر التحليلات:
-• Route
-• Closest Facility
-• Service Area
-• OD Cost Matrix
-• Location-Allocation
-
-لو عندك بيانات الطرق، نقدر نمشي معًا خطوة بخطوة في عمل التحليل.`;
-        }
-
-
-        return `وصلتني رسالتك يا أحمد 👍
-
-أنا حاليًا في وضع التشغيل التجريبي داخل الموقع.
-
-الواجهة جاهزة، وبعد توصيل الموقع بواجهة AI حقيقية هنقدر نخلي Ahmed AI يجاوب على الأسئلة فعليًا بدل الردود التجريبية.
-
-سؤالك كان:
-"${message}"`;
-    }
-
-
-    function sendChatMessage(text) {
+    async function sendChatMessage(text) {
 
         if (!text || !text.trim()) {
 
@@ -600,23 +509,113 @@ Ahmed AI جاهز لمساعدتك في GIS.
 
         showLoading();
 
-        setTimeout(() => {
+        try {
+
+            const response =
+                await fetch(
+                    AI_API_URL,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            message: cleanText
+                        })
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP Error: " +
+                    response.status
+                );
+            }
+
+
+            const data =
+                await response.json();
+
 
             hideLoading();
 
-            const response =
-                generateDemoResponse(
-                    cleanText
+
+            if (
+                data &&
+                data.success &&
+                data.reply
+            ) {
+
+                addMessage(
+                    data.reply,
+                    "ai"
                 );
 
+                return;
+            }
+
+
+            if (
+                data &&
+                data.error
+            ) {
+
+                addMessage(
+                    "حدث خطأ من الخادم:\n" +
+                    data.error,
+                    "ai"
+                );
+
+                showNotification(
+                    "حدث خطأ في الذكاء الاصطناعي",
+                    "error"
+                );
+
+                return;
+            }
+
+
             addMessage(
-                response,
+                "لم يصل رد صحيح من Ahmed AI.",
                 "ai"
             );
 
-        }, 700);
+            showNotification(
+                "الرد غير صالح",
+                "error"
+            );
+
+
+        } catch (error) {
+
+            hideLoading();
+
+            console.error(
+                "Ahmed AI Error:",
+                error
+            );
+
+            addMessage(
+                "تعذر الاتصال بـ Ahmed AI.\n\n" +
+                "تأكد من تشغيل Cloudflare Worker ثم حاول مرة أخرى.",
+                "ai"
+            );
+
+            showNotification(
+                "تعذر الاتصال بالـ AI",
+                "error"
+            );
+        }
     }
 
+
+    /* =========================================
+       CHAT SEND BUTTON
+    ========================================= */
 
     if (chatSendBtn) {
 
@@ -624,17 +623,24 @@ Ahmed AI جاهز لمساعدتك في GIS.
             "click",
             () => {
 
-                sendChatMessage(
-                    chatInput.value
-                );
+                const text =
+                    chatInput.value;
 
                 chatInput.value = "";
+
+                sendChatMessage(
+                    text
+                );
 
             }
         );
 
     }
 
+
+    /* =========================================
+       CHAT ENTER KEY
+    ========================================= */
 
     if (chatInput) {
 
@@ -649,7 +655,10 @@ Ahmed AI جاهز لمساعدتك في GIS.
 
                     event.preventDefault();
 
-                    chatSendBtn.click();
+                    if (chatSendBtn) {
+                        chatSendBtn.click();
+                    }
+
                 }
 
             }
@@ -917,7 +926,7 @@ Ahmed AI جاهز لمساعدتك في GIS.
 
 
     /* =========================================
-       CODE GENERATOR DEMO
+       CODE GENERATOR
     ========================================= */
 
     function generateCode(request) {
@@ -1422,7 +1431,7 @@ for file in os.listdir(folder):
             () => {
 
                 showNotification(
-                    "البحث على الإنترنت سيتم تفعيله عند ربط API"
+                    "البحث على الإنترنت سيتم تفعيله لاحقًا"
                 );
 
             }
