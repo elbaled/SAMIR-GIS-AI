@@ -2053,492 +2053,216 @@ English
 
 };
 
-
 /* =========================================
    STREAM DATA PARSER
 ========================================= */
-
-function extractStreamText(
-    rawData
-) {
+function extractStreamText(rawData) {
 
     if (!rawData) {
         return "";
     }
 
-
     let text = "";
 
-
     const lines =
-        rawData.split("\n");
+        rawData.split(/\r?\n/);
 
-
-    for (
-        const line of lines
-    ) {
+    for (const line of lines) {
 
         const trimmed =
             line.trim();
-
 
         if (!trimmed) {
             continue;
         }
 
-
+        /*
+         * تجاهل نهاية الـStream
+         */
         if (
-            trimmed ===
-            "data: [DONE]"
+            trimmed === "data: [DONE]" ||
+            trimmed === "[DONE]"
         ) {
-
             continue;
-
         }
 
+        /*
+         * إزالة data: من SSE
+         */
+        let jsonText =
+            trimmed.startsWith("data:")
+                ? trimmed.substring(5).trim()
+                : trimmed;
 
-        if (
-            trimmed.startsWith(
-                "data:"
-            )
-        ) {
-
-            const jsonText =
-                trimmed
-                    .substring(5)
-                    .trim();
-
-
-            if (!jsonText) {
-                continue;
-            }
-
-
-            try {
-
-                const parsed =
-                    JSON.parse(
-                        jsonText
-                    );
-
-
-                if (
-                    typeof parsed.response ===
-                    "string"
-                ) {
-
-                    text +=
-                        parsed.response;
-
-                } else if (
-                    parsed.result &&
-                    typeof parsed.result.response ===
-                    "string"
-                ) {
-
-                    text +=
-                        parsed.result.response;
-
-                } else if (
-                    typeof parsed.text ===
-                    "string"
-                ) {
-
-                    text +=
-                        parsed.text;
-
-                }
-
-            } catch (error) {
-
-                /*
-                 * أحيانًا قد يصل جزء
-                 * غير مكتمل من JSON.
-                 * نتركه للـbuffer التالي.
-                 */
-
-            }
-
-
-        } else {
-
-            /*
-             * دعم بعض أشكال الـstream
-             * التي قد ترسل JSON مباشرة.
-             */
-
-            try {
-
-                const parsed =
-                    JSON.parse(
-                        trimmed
-                    );
-
-
-                if (
-                    typeof parsed.response ===
-                    "string"
-                ) {
-
-                    text +=
-                        parsed.response;
-
-                } else if (
-                    parsed.result &&
-                    typeof parsed.result.response ===
-                    "string"
-                ) {
-
-                    text +=
-                        parsed.result.response;
-
-                }
-
-            } catch (error) {
-
-                /*
-                 * ليس JSON مباشرًا.
-                 * نتجاهله هنا.
-                 */
-
-            }
-
+        if (!jsonText) {
+            continue;
         }
-
-    }
-
-
-    return text;
-
-}
-
-
-/* =========================================
-   REAL AI STREAMING REQUEST
-========================================= */
-
-async function askAIStream(
-    userMessage,
-    mode = "general",
-    onChunk = null,
-    imageData = null
-) {
-
-    if (
-        !userMessage ||
-        !userMessage.trim()
-    ) {
-
-        throw new Error(
-            "Empty message"
-        );
-
-    }
-
-
-    const cleanMessage =
-        userMessage.trim();
-
-
-    const selectedPrompt =
-        AI_PROMPTS[mode] ||
-        AI_PROMPTS.general;
-
-
-    const finalMessage = `
-
-${selectedPrompt}
-
-رسالة المستخدم:
-
-${cleanMessage}
-
-أجب الآن بشكل مفيد ومنظم.
-`;
-
-
-    /*
-     * تجهيز البيانات التي سيتم إرسالها
-     * إلى Cloudflare Worker.
-     */
-const requestBody = {
-
-    messages: [
-
-        {
-            role: "user",
-
-            content:
-                finalMessage
-
-        }
-
-    ]
-
-};
-
-
-if (
-    imageData
-) {
-
-    requestBody.messages = [
-
-        {
-            role: "user",
-
-            content: [
-
-                {
-                    type: "text",
-
-                    text:
-                        finalMessage
-                },
-
-                {
-                    type: "image_url",
-
-                    image_url: {
-
-                        url:
-                            imageData
-
-                    }
-
-                }
-
-            ]
-
-        }
-
-    ];
-
-}
-;
-
-
-    /*
-     * إذا كانت هناك صورة،
-     * يتم إرسالها مع الرسالة.
-     */
-
-    if (
-        imageData
-    ) {
-
-        requestBody.image =
-            imageData;
-
-    }
-
-
-    const response =
-        await fetch(
-            AI_API_URL,
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(
-                        requestBody
-                    )
-
-            }
-        );
-
-
-    if (!response.ok) {
-
-        let errorText =
-            "HTTP Error: " +
-            response.status;
-
 
         try {
 
-            const errorData =
-                await response.json();
+            const parsed =
+                JSON.parse(jsonText);
 
-
+            /*
+             * Cloudflare / Worker
+             */
             if (
-                errorData &&
-                errorData.error
+                typeof parsed.response ===
+                "string"
+            ) {
+                text +=
+                    parsed.response;
+
+                continue;
+            }
+
+            /*
+             * result.response
+             */
+            if (
+                parsed.result &&
+                typeof parsed.result.response ===
+                "string"
+            ) {
+                text +=
+                    parsed.result.response;
+
+                continue;
+            }
+
+            /*
+             * text
+             */
+            if (
+                typeof parsed.text ===
+                "string"
+            ) {
+                text +=
+                    parsed.text;
+
+                continue;
+            }
+
+            /*
+             * output_text
+             */
+            if (
+                typeof parsed.output_text ===
+                "string"
+            ) {
+                text +=
+                    parsed.output_text;
+
+                continue;
+            }
+
+            /*
+             * choices[].delta.content
+             */
+            if (
+                Array.isArray(
+                    parsed.choices
+                )
             ) {
 
-                errorText =
-                    errorData.error;
+                for (
+                    const choice
+                    of parsed.choices
+                ) {
 
+                    if (
+                        choice &&
+                        choice.delta &&
+                        typeof choice.delta.content ===
+                        "string"
+                    ) {
+                        text +=
+                            choice.delta.content;
+                    }
+
+                    /*
+                     * choices[].message.content
+                     */
+                    else if (
+                        choice &&
+                        choice.message &&
+                        typeof choice.message.content ===
+                        "string"
+                    ) {
+                        text +=
+                            choice.message.content;
+                    }
+
+                    /*
+                     * choices[].text
+                     */
+                    else if (
+                        choice &&
+                        typeof choice.text ===
+                        "string"
+                    ) {
+                        text +=
+                            choice.text;
+                    }
+                }
+
+                continue;
+            }
+
+            /*
+             * content كنص مباشر
+             */
+            if (
+                typeof parsed.content ===
+                "string"
+            ) {
+                text +=
+                    parsed.content;
+
+                continue;
+            }
+
+            /*
+             * result كنص مباشر
+             */
+            if (
+                typeof parsed.result ===
+                "string"
+            ) {
+                text +=
+                    parsed.result;
+
+                continue;
             }
 
         } catch (error) {
 
             /*
-             * تجاهل خطأ قراءة JSON
+             * ممكن تكون البيانات
+             * نص عادي وليس JSON
              */
+            if (
+                !trimmed.startsWith("data:")
+            ) {
 
-        }
-
-
-        throw new Error(
-            errorText
-        );
-
-    }
-
-
-    if (!response.body) {
-
-        throw new Error(
-            "المتصفح لم يستلم Stream من Worker."
-        );
-
-    }
-
-
-    const reader =
-        response.body.getReader();
-
-
-    const decoder =
-        new TextDecoder(
-            "utf-8"
-        );
-
-
-    let buffer = "";
-
-    let fullText = "";
-
-
-    while (true) {
-
-        const {
-            value,
-            done
-        } =
-            await reader.read();
-
-
-        if (done) {
-            break;
-        }
-
-
-        buffer +=
-            decoder.decode(
-                value,
-                {
-                    stream: true
+                /*
+                 * لا نعتبر رسائل البروتوكول
+                 * نصًا من الـAI
+                 */
+                if (
+                    !trimmed.startsWith(":") &&
+                    !trimmed.startsWith("event:")
+                ) {
+                    text +=
+                        trimmed;
                 }
-            );
-
-
-        const parts =
-            buffer.split(
-                "\n"
-            );
-
-
-        buffer =
-            parts.pop() || "";
-
-
-        const completedData =
-            parts.join("\n");
-
-
-        const chunkText =
-            extractStreamText(
-                completedData
-            );
-
-
-        if (chunkText) {
-
-            fullText +=
-                chunkText;
-
-
-            if (
-                typeof onChunk ===
-                "function"
-            ) {
-
-                onChunk(
-                    chunkText,
-                    fullText
-                );
-
-            }
-
-
-            if (chatMessages) {
-
-                chatMessages.scrollTop =
-                    chatMessages.scrollHeight;
-
             }
 
         }
-
     }
 
-
-    buffer +=
-        decoder.decode();
-
-
-    if (buffer.trim()) {
-
-        const finalChunk =
-            extractStreamText(
-                buffer
-            );
-
-
-        if (finalChunk) {
-
-            fullText +=
-                finalChunk;
-
-
-            if (
-                typeof onChunk ===
-                "function"
-            ) {
-
-                onChunk(
-                    finalChunk,
-                    fullText
-                );
-
-            }
-
-        }
-
-    }
-
-
-    if (!fullText.trim()) {
-
-        throw new Error(
-            "لم يصل نص من نموذج الذكاء الاصطناعي."
-        );
-
-    }
-
-
-    return fullText;
-
+    return text;
 }
-
 
 /* =========================================
    REAL AI CHAT WITH STREAMING
