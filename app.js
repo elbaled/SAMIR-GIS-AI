@@ -11,57 +11,175 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.getElementById("sidebar");
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 
-    const menuItems = document.querySelectorAll(".menu-item[data-section]");
-    const sections = document.querySelectorAll(".page-section");
+    const menuItems =
+        document.querySelectorAll(
+            ".menu-item[data-section]"
+        );
 
-    const pageTitle = document.getElementById("pageTitle");
-    const pageSubtitle = document.getElementById("pageSubtitle");
+    const sections =
+        document.querySelectorAll(
+            ".page-section"
+        );
 
-    const newChatBtn = document.getElementById("newChatBtn");
+    const pageTitle =
+        document.getElementById(
+            "pageTitle"
+        );
 
-    const themeBtn = document.getElementById("themeBtn");
-    const darkModeToggle = document.getElementById("darkModeToggle");
+    const pageSubtitle =
+        document.getElementById(
+            "pageSubtitle"
+        );
 
-    const notification = document.getElementById("notification");
-    const notificationText = document.getElementById("notificationText");
-    const notificationIcon = document.getElementById("notificationIcon");
+    const newChatBtn =
+        document.getElementById(
+            "newChatBtn"
+        );
 
-    const loadingOverlay = document.getElementById("loadingOverlay");
+    const themeBtn =
+        document.getElementById(
+            "themeBtn"
+        );
 
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const chatSendBtn = document.getElementById("chatSendBtn");
+    const darkModeToggle =
+        document.getElementById(
+            "darkModeToggle"
+        );
 
-    const homeChatInput = document.getElementById("homeChatInput");
-    const homeSendBtn = document.getElementById("homeSendBtn");
+    const notification =
+        document.getElementById(
+            "notification"
+        );
 
-    const gisInput = document.getElementById("gisInput");
-    const gisSendBtn = document.getElementById("gisSendBtn");
+    const notificationText =
+        document.getElementById(
+            "notificationText"
+        );
 
-    const codeInput = document.getElementById("codeInput");
-    const codeSendBtn = document.getElementById("codeSendBtn");
-    const codeOutput = document.getElementById("codeOutput");
-    const copyCodeBtn = document.getElementById("copyCodeBtn");
+    const notificationIcon =
+        document.getElementById(
+            "notificationIcon"
+        );
 
-    const mainFileInput = document.getElementById("mainFileInput");
-    const studyFileInput = document.getElementById("studyFileInput");
+    const loadingOverlay =
+        document.getElementById(
+            "loadingOverlay"
+        );
 
-    const filesList = document.getElementById("filesList");
+    const chatMessages =
+        document.getElementById(
+            "chatMessages"
+        );
 
-    const createTestBtn = document.getElementById("createTestBtn");
-    const testContainer = document.getElementById("testContainer");
+    const chatInput =
+        document.getElementById(
+            "chatInput"
+        );
 
-    const saveChatsToggle = document.getElementById("saveChatsToggle");
+    const chatSendBtn =
+        document.getElementById(
+            "chatSendBtn"
+        );
 
-    const languageSelect = document.getElementById("languageSelect");
+    const homeChatInput =
+        document.getElementById(
+            "homeChatInput"
+        );
 
-    const webSearchBtn = document.getElementById("webSearchBtn");
+    const homeSendBtn =
+        document.getElementById(
+            "homeSendBtn"
+        );
 
-    const homeImageInput = document.getElementById("homeImageInput");
-    const homeFileInput = document.getElementById("homeFileInput");
+    const gisInput =
+        document.getElementById(
+            "gisInput"
+        );
 
-    const chatImageInput = document.getElementById("chatImageInput");
-    const chatFileInput = document.getElementById("chatFileInput");
+    const gisSendBtn =
+        document.getElementById(
+            "gisSendBtn"
+        );
+
+    const codeInput =
+        document.getElementById(
+            "codeInput"
+        );
+
+    const codeSendBtn =
+        document.getElementById(
+            "codeSendBtn"
+        );
+
+    const codeOutput =
+        document.getElementById(
+            "codeOutput"
+        );
+
+    const copyCodeBtn =
+        document.getElementById(
+            "copyCodeBtn"
+        );
+
+    const mainFileInput =
+        document.getElementById(
+            "mainFileInput"
+        );
+
+    const studyFileInput =
+        document.getElementById(
+            "studyFileInput"
+        );
+
+    const filesList =
+        document.getElementById(
+            "filesList"
+        );
+
+    const createTestBtn =
+        document.getElementById(
+            "createTestBtn"
+        );
+
+    const testContainer =
+        document.getElementById(
+            "testContainer"
+        );
+
+    const saveChatsToggle =
+        document.getElementById(
+            "saveChatsToggle"
+        );
+
+    const languageSelect =
+        document.getElementById(
+            "languageSelect"
+        );
+
+    const webSearchBtn =
+        document.getElementById(
+            "webSearchBtn"
+        );
+
+    const homeImageInput =
+        document.getElementById(
+            "homeImageInput"
+        );
+
+    const homeFileInput =
+        document.getElementById(
+            "homeFileInput"
+        );
+
+    const chatImageInput =
+        document.getElementById(
+            "chatImageInput"
+        );
+
+    const chatFileInput =
+        document.getElementById(
+            "chatFileInput"
+        );
 
 
     /* =========================================
@@ -80,42 +198,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
         home: {
             title: "الرئيسية",
-            subtitle: "مساعدك الذكي للمذاكرة والعمل"
+            subtitle:
+                "مساعدك الذكي للمذاكرة والعمل"
         },
 
         chat: {
             title: "AI Chat",
-            subtitle: "تحدث مع Ahmed AI"
+            subtitle:
+                "تحدث مع Ahmed AI"
         },
 
         study: {
             title: "المذاكرة",
-            subtitle: "تعلم بطريقة أسهل وأسرع"
+            subtitle:
+                "تعلم بطريقة أسهل وأسرع"
         },
 
         gis: {
             title: "مساعد GIS",
-            subtitle: "GIS • Remote Sensing • Surveying"
+            subtitle:
+                "GIS • Remote Sensing • Surveying"
         },
 
         coding: {
             title: "البرمجة",
-            subtitle: "Python • ArcPy • JavaScript"
+            subtitle:
+                "Python • ArcPy • JavaScript"
         },
 
         files: {
             title: "ملفاتي",
-            subtitle: "ملفاتك المستخدمة في التعلم"
+            subtitle:
+                "ملفاتك المستخدمة في التعلم"
         },
 
         tests: {
             title: "الاختبارات",
-            subtitle: "اختبر معلوماتك"
+            subtitle:
+                "اختبر معلوماتك"
         },
 
         settings: {
             title: "الإعدادات",
-            subtitle: "إعدادات Ahmed AI"
+            subtitle:
+                "إعدادات Ahmed AI"
         }
 
     };
@@ -128,57 +254,102 @@ document.addEventListener("DOMContentLoaded", () => {
     function openSection(sectionName) {
 
         sections.forEach(section => {
-            section.classList.remove("active");
+
+            section.classList.remove(
+                "active"
+            );
+
         });
 
-        const target = document.getElementById(
-            sectionName + "Section"
-        );
+
+        const target =
+            document.getElementById(
+                sectionName + "Section"
+            );
+
 
         if (target) {
-            target.classList.add("active");
+
+            target.classList.add(
+                "active"
+            );
+
         }
+
 
         menuItems.forEach(item => {
 
-            item.classList.remove("active");
+            item.classList.remove(
+                "active"
+            );
 
-            if (item.dataset.section === sectionName) {
-                item.classList.add("active");
+
+            if (
+                item.dataset.section ===
+                sectionName
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
             }
 
         });
 
+
         if (pageInfo[sectionName]) {
 
             pageTitle.textContent =
-                pageInfo[sectionName].title;
+                pageInfo[
+                    sectionName
+                ].title;
 
             pageSubtitle.textContent =
-                pageInfo[sectionName].subtitle;
+                pageInfo[
+                    sectionName
+                ].subtitle;
+
         }
 
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove("open");
+
+        if (
+            window.innerWidth <= 768
+        ) {
+
+            sidebar.classList.remove(
+                "open"
+            );
+
         }
+
 
         window.scrollTo({
+
             top: 0,
+
             behavior: "smooth"
+
         });
+
     }
 
 
     menuItems.forEach(item => {
 
-        item.addEventListener("click", () => {
+        item.addEventListener(
+            "click",
+            () => {
 
-            const section =
-                item.dataset.section;
+                const section =
+                    item.dataset.section;
 
-            openSection(section);
+                openSection(
+                    section
+                );
 
-        });
+            }
+        );
 
     });
 
@@ -189,32 +360,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (mobileMenuBtn) {
 
-        mobileMenuBtn.addEventListener("click", () => {
+        mobileMenuBtn.addEventListener(
+            "click",
+            () => {
 
-            sidebar.classList.toggle("open");
+                sidebar.classList.toggle(
+                    "open"
+                );
 
-        });
+            }
+        );
 
     }
 
 
-    document.addEventListener("click", event => {
+    document.addEventListener(
+        "click",
+        event => {
 
-        if (window.innerWidth > 768) {
-            return;
+            if (
+                window.innerWidth > 768
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                sidebar.classList.contains(
+                    "open"
+                ) &&
+                !sidebar.contains(
+                    event.target
+                ) &&
+                mobileMenuBtn &&
+                !mobileMenuBtn.contains(
+                    event.target
+                )
+            ) {
+
+                sidebar.classList.remove(
+                    "open"
+                );
+
+            }
+
         }
-
-        if (
-            sidebar.classList.contains("open") &&
-            !sidebar.contains(event.target) &&
-            !mobileMenuBtn.contains(event.target)
-        ) {
-
-            sidebar.classList.remove("open");
-
-        }
-
-    });
+    );
 
 
     /* =========================================
@@ -223,43 +416,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let notificationTimer = null;
 
+
     function showNotification(
         message,
         type = "success"
     ) {
 
-        notificationText.textContent = message;
+        if (!notificationText) {
+            return;
+        }
 
-        if (type === "error") {
 
-            notificationIcon.textContent = "×";
+        notificationText.textContent =
+            message;
 
-            notificationIcon.style.color =
-                "var(--danger)";
 
-            notificationIcon.style.background =
-                "rgba(239,68,68,0.1)";
+        if (
+            type === "error"
+        ) {
+
+            if (notificationIcon) {
+
+                notificationIcon.textContent =
+                    "×";
+
+                notificationIcon.style.color =
+                    "var(--danger)";
+
+                notificationIcon.style.background =
+                    "rgba(239,68,68,0.1)";
+
+            }
 
         } else {
 
-            notificationIcon.textContent = "✓";
+            if (notificationIcon) {
 
-            notificationIcon.style.color =
-                "var(--success)";
+                notificationIcon.textContent =
+                    "✓";
 
-            notificationIcon.style.background =
-                "rgba(34,197,94,0.1)";
+                notificationIcon.style.color =
+                    "var(--success)";
+
+                notificationIcon.style.background =
+                    "rgba(34,197,94,0.1)";
+
+            }
+
         }
 
-        notification.classList.add("show");
 
-        clearTimeout(notificationTimer);
+        if (notification) {
 
-        notificationTimer = setTimeout(() => {
+            notification.classList.add(
+                "show"
+            );
 
-            notification.classList.remove("show");
+        }
 
-        }, 3000);
+
+        clearTimeout(
+            notificationTimer
+        );
+
+
+        notificationTimer =
+            setTimeout(
+                () => {
+
+                    if (notification) {
+
+                        notification.classList.remove(
+                            "show"
+                        );
+
+                    }
+
+                },
+                3000
+            );
+
     }
 
 
@@ -269,13 +505,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showLoading() {
 
-        loadingOverlay.classList.add("show");
+        if (loadingOverlay) {
+
+            loadingOverlay.classList.add(
+                "show"
+            );
+
+        }
 
     }
 
+
     function hideLoading() {
 
-        loadingOverlay.classList.remove("show");
+        if (loadingOverlay) {
+
+            loadingOverlay.classList.remove(
+                "show"
+            );
+
+        }
 
     }
 
@@ -284,51 +533,79 @@ document.addEventListener("DOMContentLoaded", () => {
        DARK MODE
     ========================================= */
 
-    function setDarkMode(enabled) {
+    function setDarkMode(
+        enabled
+    ) {
 
         document.body.classList.toggle(
             "dark",
             enabled
         );
 
+
         localStorage.setItem(
             "ahmedAI_darkMode",
-            enabled ? "true" : "false"
+            enabled
+                ? "true"
+                : "false"
         );
 
+
         if (darkModeToggle) {
-            darkModeToggle.checked = enabled;
+
+            darkModeToggle.checked =
+                enabled;
+
         }
+
 
         if (themeBtn) {
 
             themeBtn.textContent =
-                enabled ? "☀️" : "🌙";
+                enabled
+                    ? "☀️"
+                    : "🌙";
+
 
             themeBtn.title =
                 enabled
                     ? "الوضع النهاري"
                     : "الوضع الليلي";
+
         }
+
     }
 
 
     const savedTheme =
-        localStorage.getItem("ahmedAI_darkMode");
+        localStorage.getItem(
+            "ahmedAI_darkMode"
+        );
 
-    setDarkMode(savedTheme === "true");
+
+    setDarkMode(
+        savedTheme === "true"
+    );
 
 
     if (themeBtn) {
 
-        themeBtn.addEventListener("click", () => {
+        themeBtn.addEventListener(
+            "click",
+            () => {
 
-            const enabled =
-                !document.body.classList.contains("dark");
+                const enabled =
+                    !document.body.classList.contains(
+                        "dark"
+                    );
 
-            setDarkMode(enabled);
 
-        });
+                setDarkMode(
+                    enabled
+                );
+
+            }
+        );
 
     }
 
@@ -354,19 +631,29 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================= */
 
     document
-        .querySelectorAll(".quick-card")
+        .querySelectorAll(
+            ".quick-card"
+        )
         .forEach(card => {
 
-            card.addEventListener("click", () => {
+            card.addEventListener(
+                "click",
+                () => {
 
-                const action =
-                    card.dataset.action;
+                    const action =
+                        card.dataset.action;
 
-                if (action) {
-                    openSection(action);
+
+                    if (action) {
+
+                        openSection(
+                            action
+                        );
+
+                    }
+
                 }
-
-            });
+            );
 
         });
 
@@ -377,7 +664,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function createNewChat() {
 
+        if (!chatMessages) {
+            return;
+        }
+
+
         chatMessages.innerHTML = `
+
             <div class="empty-chat">
 
                 <div class="empty-icon">
@@ -410,21 +703,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
             </div>
+
         `;
 
+
         if (chatInput) {
+
             chatInput.value = "";
+
         }
 
+
         saveMessages();
+
 
         showNotification(
             "تم إنشاء محادثة جديدة"
         );
 
-        openSection("chat");
+
+        openSection(
+            "chat"
+        );
+
 
         activateSuggestions();
+
     }
 
 
@@ -447,39 +751,301 @@ document.addEventListener("DOMContentLoaded", () => {
         sender = "user"
     ) {
 
+        if (!chatMessages) {
+            return;
+        }
+
+
         const emptyChat =
             chatMessages.querySelector(
                 ".empty-chat"
             );
 
+
         if (emptyChat) {
+
             emptyChat.remove();
+
         }
 
+
         const messageElement =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         messageElement.className =
             `message ${sender}`;
 
+
         const bubble =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         bubble.className =
             "message-bubble";
 
-        bubble.textContent = message;
 
-        messageElement.appendChild(bubble);
+        bubble.textContent =
+            message;
+
+
+        messageElement.appendChild(
+            bubble
+        );
+
 
         chatMessages.appendChild(
             messageElement
         );
 
+
         chatMessages.scrollTop =
             chatMessages.scrollHeight;
 
+
         saveMessages();
+
+    }
+
+
+    /* =========================================
+       AI PROMPTS
+    ========================================= */
+
+    const AI_PROMPTS = {
+
+        general: `
+أنت Ahmed AI، مساعد ذكي للمذاكرة والعمل.
+
+ساعد المستخدم بطريقة واضحة ومنظمة وعملية.
+
+إذا كتب المستخدم بالعربية فأجب بالعربية،
+وإذا كتب بالإنجليزية فأجب بالإنجليزية.
+
+يمكنك مساعدة المستخدم في:
+GIS
+ArcGIS Pro
+QGIS
+Remote Sensing
+Surveying
+AutoCAD
+Civil 3D
+Python
+ArcPy
+JavaScript
+Geography
+English
+والمذاكرة بشكل عام.
+
+اشرح للمستخدم خطوة بخطوة عندما يكون السؤال عمليًا.
+
+لا تخترع معلومات غير متأكد منها.
+`,
+
+        gis: `
+أنت الآن Ahmed AI - GIS Specialist.
+
+تخصصك الأساسي هو:
+GIS
+ArcGIS Pro
+QGIS
+Remote Sensing
+Surveying
+AutoCAD
+Civil 3D
+Spatial Analysis
+Network Analyst
+Spatial Analyst
+Geoprocessing
+Raster
+Vector
+Geodatabase
+Coordinate Systems
+Projection
+Cartography
+Python for GIS
+ArcPy
+Landsat
+Sentinel
+Google Earth Engine
+
+عندما يطرح المستخدم سؤال GIS:
+1. اشرح الفكرة ببساطة.
+2. أعطِ الخطوات العملية.
+3. اذكر الأدوات المستخدمة في ArcGIS Pro عندما يكون ذلك مناسبًا.
+4. اشرح المصطلحات الإنجليزية المهمة.
+5. أعطِ مثالًا عمليًا عندما يكون ذلك مفيدًا.
+6. إذا كان السؤال عن مشكلة، حاول تحديد سبب المشكلة والحل خطوة بخطوة.
+
+إذا كتب المستخدم بالعربية فأجب بالعربية.
+`,
+
+        coding: `
+أنت الآن Ahmed AI - Coding Assistant.
+
+تخصصك في:
+Python
+ArcPy
+JavaScript
+HTML
+CSS
+GIS Automation
+Data Processing
+Geospatial Programming
+
+عندما يطلب المستخدم كودًا:
+1. افهم المطلوب أولًا.
+2. أعطِ كودًا كاملًا قابلًا للنسخ.
+3. لا تضع كودًا ناقصًا إلا إذا كان المستخدم طلب جزءًا محددًا.
+4. اشرح أين يضع المستخدم الكود.
+5. اشرح طريقة تشغيله.
+6. إذا كان الكود خاصًا بـGIS فاستخدم ArcPy عندما يكون مناسبًا.
+7. إذا كان هناك خطأ محتمل، وضحه.
+8. استخدم تعليقات داخل الكود عند الحاجة.
+
+إذا كتب المستخدم بالعربية فأجب بالعربية.
+`,
+
+        study: `
+أنت الآن Ahmed AI - Study Assistant.
+
+مهمتك مساعدة المستخدم على الدراسة والفهم وليس مجرد إعطاء الإجابة.
+
+عند شرح موضوع:
+- ابدأ بالفكرة الأساسية.
+- قسم الموضوع إلى أجزاء.
+- استخدم أمثلة بسيطة.
+- اشرح المصطلحات.
+- في النهاية أعطِ ملخصًا سريعًا.
+- إذا طلب المستخدم أسئلة، أنشئ أسئلة مناسبة للمستوى.
+- إذا طلب اختبارًا، اجعل الأسئلة واضحة ومتنوعة.
+- إذا طلب تلخيصًا، حافظ على أهم المعلومات بدون حشو.
+
+المستخدم يدرس خصوصًا:
+الجغرافيا
+GIS
+ArcGIS Pro
+Remote Sensing
+Surveying
+Python
+English
+
+إذا كتب المستخدم بالعربية فأجب بالعربية.
+`
+
+    };
+
+
+    /* =========================================
+       REAL AI REQUEST
+    ========================================= */
+
+    async function askAI(
+        userMessage,
+        mode = "general"
+    ) {
+
+        if (
+            !userMessage ||
+            !userMessage.trim()
+        ) {
+
+            throw new Error(
+                "Empty message"
+            );
+
+        }
+
+
+        const cleanMessage =
+            userMessage.trim();
+
+
+        const selectedPrompt =
+            AI_PROMPTS[mode] ||
+            AI_PROMPTS.general;
+
+
+        const finalMessage = `
+
+${selectedPrompt}
+
+رسالة المستخدم:
+
+${cleanMessage}
+
+أجب الآن بشكل مفيد ومنظم.
+`;
+
+
+        const response =
+            await fetch(
+                AI_API_URL,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        message:
+                            finalMessage
+
+                    })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data &&
+            data.success &&
+            data.reply
+        ) {
+
+            return data.reply;
+
+        }
+
+
+        if (
+            data &&
+            data.error
+        ) {
+
+            throw new Error(
+                data.error
+            );
+
+        }
+
+
+        throw new Error(
+            "لم يصل رد صحيح من Ahmed AI."
+        );
+
     }
 
 
@@ -487,9 +1053,15 @@ document.addEventListener("DOMContentLoaded", () => {
        REAL AI CHAT
     ========================================= */
 
-    async function sendChatMessage(text) {
+    async function sendChatMessage(
+        text,
+        mode = "general"
+    ) {
 
-        if (!text || !text.trim()) {
+        if (
+            !text ||
+            !text.trim()
+        ) {
 
             showNotification(
                 "اكتب رسالتك أولاً",
@@ -497,96 +1069,38 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             return;
+
         }
+
 
         const cleanText =
             text.trim();
+
 
         addMessage(
             cleanText,
             "user"
         );
 
+
         showLoading();
+
 
         try {
 
-            const response =
-                await fetch(
-                    AI_API_URL,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            message: cleanText
-                        })
-                    }
+            const reply =
+                await askAI(
+                    cleanText,
+                    mode
                 );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "HTTP Error: " +
-                    response.status
-                );
-            }
-
-
-            const data =
-                await response.json();
 
 
             hideLoading();
 
 
-            if (
-                data &&
-                data.success &&
-                data.reply
-            ) {
-
-                addMessage(
-                    data.reply,
-                    "ai"
-                );
-
-                return;
-            }
-
-
-            if (
-                data &&
-                data.error
-            ) {
-
-                addMessage(
-                    "حدث خطأ من الخادم:\n" +
-                    data.error,
-                    "ai"
-                );
-
-                showNotification(
-                    "حدث خطأ في الذكاء الاصطناعي",
-                    "error"
-                );
-
-                return;
-            }
-
-
             addMessage(
-                "لم يصل رد صحيح من Ahmed AI.",
+                reply,
                 "ai"
-            );
-
-            showNotification(
-                "الرد غير صالح",
-                "error"
             );
 
 
@@ -594,22 +1108,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
             hideLoading();
 
+
             console.error(
                 "Ahmed AI Error:",
                 error
             );
 
+
             addMessage(
-                "تعذر الاتصال بـ Ahmed AI.\n\n" +
-                "تأكد من تشغيل Cloudflare Worker ثم حاول مرة أخرى.",
+
+                "تعذر الحصول على رد من Ahmed AI.\n\n" +
+                "الخطأ:\n" +
+                error.message,
+
                 "ai"
+
             );
 
+
             showNotification(
-                "تعذر الاتصال بالـ AI",
+                "حدث خطأ في الذكاء الاصطناعي",
                 "error"
             );
+
         }
+
     }
 
 
@@ -623,13 +1146,22 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
+                if (!chatInput) {
+                    return;
+                }
+
+
                 const text =
                     chatInput.value;
 
-                chatInput.value = "";
+
+                chatInput.value =
+                    "";
+
 
                 sendChatMessage(
-                    text
+                    text,
+                    "general"
                 );
 
             }
@@ -649,14 +1181,18 @@ document.addEventListener("DOMContentLoaded", () => {
             event => {
 
                 if (
-                    event.key === "Enter" &&
+                    event.key ===
+                        "Enter" &&
                     !event.shiftKey
                 ) {
 
                     event.preventDefault();
 
+
                     if (chatSendBtn) {
+
                         chatSendBtn.click();
+
                     }
 
                 }
@@ -677,8 +1213,14 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
+                if (!homeChatInput) {
+                    return;
+                }
+
+
                 const text =
                     homeChatInput.value.trim();
+
 
                 if (!text) {
 
@@ -688,17 +1230,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
 
                     return;
+
                 }
 
-                openSection("chat");
 
-                chatInput.value = text;
+                openSection(
+                    "chat"
+                );
 
-                homeChatInput.value = "";
 
-                sendChatMessage(text);
+                if (chatInput) {
 
-                chatInput.value = "";
+                    chatInput.value =
+                        text;
+
+                }
+
+
+                homeChatInput.value =
+                    "";
+
+
+                sendChatMessage(
+                    text,
+                    "general"
+                );
+
+
+                if (chatInput) {
+
+                    chatInput.value =
+                        "";
+
+                }
 
             }
         );
@@ -723,18 +1287,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     const text =
                         button.textContent.trim();
 
-                    openSection("chat");
 
-                    chatInput.value = text;
+                    openSection(
+                        "chat"
+                    );
 
-                    sendChatMessage(text);
 
-                    chatInput.value = "";
+                    if (chatInput) {
+
+                        chatInput.value =
+                            text;
+
+                    }
+
+
+                    sendChatMessage(
+                        text,
+                        "general"
+                    );
+
+
+                    if (chatInput) {
+
+                        chatInput.value =
+                            "";
+
+                    }
 
                 };
 
             });
+
     }
+
 
     activateSuggestions();
 
@@ -745,34 +1330,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function saveMessages() {
 
+        if (!chatMessages) {
+            return;
+        }
+
+
         if (
             saveChatsToggle &&
             !saveChatsToggle.checked
         ) {
+
             return;
+
         }
+
 
         localStorage.setItem(
             "ahmedAI_chatHTML",
             chatMessages.innerHTML
         );
+
     }
 
 
     function loadMessages() {
+
+        if (!chatMessages) {
+            return;
+        }
+
 
         const saved =
             localStorage.getItem(
                 "ahmedAI_chatHTML"
             );
 
-        if (saved && saved.trim()) {
+
+        if (
+            saved &&
+            saved.trim()
+        ) {
 
             chatMessages.innerHTML =
                 saved;
 
+
             activateSuggestions();
+
         }
+
     }
 
 
@@ -786,11 +1392,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 "ahmedAI_saveChats"
             );
 
+
         if (saved !== null) {
 
             saveChatsToggle.checked =
                 saved === "true";
+
         }
+
 
         saveChatsToggle.addEventListener(
             "change",
@@ -801,16 +1410,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     saveChatsToggle.checked
                 );
 
+
                 if (
                     saveChatsToggle.checked
                 ) {
+
                     saveMessages();
+
                 }
 
+
                 showNotification(
+
                     saveChatsToggle.checked
+
                         ? "تم تفعيل حفظ المحادثات"
+
                         : "تم إيقاف حفظ المحادثات"
+
                 );
 
             }
@@ -824,7 +1441,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================= */
 
     document
-        .querySelectorAll(".subject-card")
+        .querySelectorAll(
+            ".subject-card"
+        )
         .forEach(card => {
 
             card.addEventListener(
@@ -834,12 +1453,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     const topic =
                         card.dataset.topic;
 
-                    openSection("gis");
 
-                    gisInput.value =
-                        `اشرحلي ${topic} في GIS بالتفصيل وبطريقة عملية`;
+                    openSection(
+                        "gis"
+                    );
 
-                    gisInput.focus();
+
+                    if (gisInput) {
+
+                        gisInput.value =
+                            `اشرحلي ${topic} في GIS بالتفصيل وبطريقة عملية`;
+
+
+                        gisInput.focus();
+
+                    }
 
                 }
             );
@@ -847,14 +1475,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
+    /* =========================================
+       GIS AI SEND
+    ========================================= */
+
     if (gisSendBtn) {
 
         gisSendBtn.addEventListener(
             "click",
-            () => {
+            async () => {
+
+                if (!gisInput) {
+                    return;
+                }
+
 
                 const question =
                     gisInput.value.trim();
+
 
                 if (!question) {
 
@@ -864,20 +1502,56 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
 
                     return;
+
                 }
 
-                openSection("chat");
 
-                chatInput.value =
-                    question;
+                gisInput.value =
+                    "";
 
-                gisInput.value = "";
 
-                sendChatMessage(
-                    question
+                openSection(
+                    "chat"
                 );
 
-                chatInput.value = "";
+
+                await sendChatMessage(
+                    question,
+                    "gis"
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       GIS ENTER KEY
+    ========================================= */
+
+    if (gisInput) {
+
+        gisInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                        "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (gisSendBtn) {
+
+                        gisSendBtn.click();
+
+                    }
+
+                }
 
             }
         );
@@ -890,7 +1564,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================= */
 
     document
-        .querySelectorAll(".language-card")
+        .querySelectorAll(
+            ".language-card"
+        )
         .forEach(card => {
 
             card.addEventListener(
@@ -902,22 +1578,32 @@ document.addEventListener("DOMContentLoaded", () => {
                             ".language-card"
                         )
                         .forEach(item => {
+
                             item.classList.remove(
                                 "active"
                             );
+
                         });
+
 
                     card.classList.add(
                         "active"
                     );
 
+
                     const language =
                         card.dataset.language;
 
-                    codeInput.value =
-                        `اكتبلي كود ${language} يقوم بـ`;
 
-                    codeInput.focus();
+                    if (codeInput) {
+
+                        codeInput.value =
+                            `اكتبلي كود ${language} يقوم بـ`;
+
+
+                        codeInput.focus();
+
+                    }
 
                 }
             );
@@ -926,64 +1612,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
-       CODE GENERATOR
+       REAL AI CODE GENERATOR
     ========================================= */
 
-    function generateCode(request) {
+    async function generateCodeWithAI(
+        request
+    ) {
 
-        const text =
-            request.toLowerCase();
+        const prompt = `
 
-        if (
-            text.includes("shapefile") ||
-            text.includes("shapefiles")
-        ) {
+اكتب لي كودًا برمجيًا كاملًا بناءً على الطلب التالي:
 
-            return `import arcpy
-import os
+${request}
 
-folder = r"C:\\GIS\\Data"
+التزم بالتالي:
 
-for file in os.listdir(folder):
+1. أعطني الكود كاملًا.
+2. اجعله قابلًا للنسخ والتشغيل.
+3. إذا كان Python استخدم Python الصحيح.
+4. إذا كان GIS مناسبًا استخدم ArcPy.
+5. لا تضع شرحًا طويلًا داخل الكود.
+6. بعد الكود اكتب شرحًا مختصرًا لطريقة تشغيله.
+7. إذا كان هناك متطلبات أو مكتبات، اذكرها.
+8. لا تستخدم كودًا وهميًا إذا كان بالإمكان كتابة حل حقيقي.
 
-    if file.lower().endswith(".shp"):
-
-        path = os.path.join(
-            folder,
-            file
-        )
-
-        print(path)`;
-        }
+`;
 
 
-        if (
-            text.includes("hello") ||
-            text.includes("مرحبا")
-        ) {
+        return await askAI(
+            prompt,
+            "coding"
+        );
 
-            return `print("Hello Ahmed!")`;
-        }
-
-
-        return `# Ahmed AI - Code Example
-
-# طلبك:
-# ${request}
-
-# اكتب تفاصيل أكثر عن المطلوب
-# وسنقوم بتوليد الكود المناسب.`;
     }
 
+
+    /* =========================================
+       CODE SEND BUTTON
+    ========================================= */
 
     if (codeSendBtn) {
 
         codeSendBtn.addEventListener(
             "click",
-            () => {
+            async () => {
+
+                if (!codeInput) {
+                    return;
+                }
+
 
                 const request =
                     codeInput.value.trim();
+
 
                 if (!request) {
 
@@ -993,24 +1674,96 @@ for file in os.listdir(folder):
                     );
 
                     return;
+
                 }
+
 
                 showLoading();
 
-                setTimeout(() => {
 
-                    hideLoading();
+                try {
 
-                    codeOutput.textContent =
-                        generateCode(
+                    const result =
+                        await generateCodeWithAI(
                             request
                         );
 
+
+                    hideLoading();
+
+
+                    if (codeOutput) {
+
+                        codeOutput.textContent =
+                            result;
+
+                    }
+
+
                     showNotification(
-                        "تم إنشاء الكود"
+                        "تم إنشاء الكود بواسطة Ahmed AI"
                     );
 
-                }, 500);
+
+                } catch (error) {
+
+                    hideLoading();
+
+
+                    console.error(
+                        "Code AI Error:",
+                        error
+                    );
+
+
+                    if (codeOutput) {
+
+                        codeOutput.textContent =
+                            "حدث خطأ:\n\n" +
+                            error.message;
+
+                    }
+
+
+                    showNotification(
+                        "تعذر إنشاء الكود",
+                        "error"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       CODE ENTER KEY
+    ========================================= */
+
+    if (codeInput) {
+
+        codeInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                        "Enter" &&
+                    event.ctrlKey
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (codeSendBtn) {
+
+                        codeSendBtn.click();
+
+                    }
+
+                }
 
             }
         );
@@ -1028,12 +1781,19 @@ for file in os.listdir(folder):
             "click",
             async () => {
 
+                if (!codeOutput) {
+                    return;
+                }
+
+
                 const code =
                     codeOutput.textContent;
 
+
                 if (
                     !code ||
-                    code === "سيظهر الكود هنا..."
+                    code ===
+                        "سيظهر الكود هنا..."
                 ) {
 
                     showNotification(
@@ -1042,13 +1802,18 @@ for file in os.listdir(folder):
                     );
 
                     return;
+
                 }
+
 
                 try {
 
-                    await navigator.clipboard.writeText(
-                        code
-                    );
+                    await navigator
+                        .clipboard
+                        .writeText(
+                            code
+                        );
+
 
                     showNotification(
                         "تم نسخ الكود"
@@ -1060,6 +1825,7 @@ for file in os.listdir(folder):
                         "تعذر نسخ الكود",
                         "error"
                     );
+
                 }
 
             }
@@ -1074,40 +1840,63 @@ for file in os.listdir(folder):
 
     let uploadedFiles =
         JSON.parse(
+
             localStorage.getItem(
                 "ahmedAI_files"
             ) || "[]"
+
         );
 
 
-    function formatFileSize(bytes) {
+    function formatFileSize(
+        bytes
+    ) {
 
         if (!bytes) {
+
             return "0 KB";
+
         }
+
 
         const kb =
             bytes / 1024;
 
+
         if (kb < 1024) {
-            return kb.toFixed(1) + " KB";
+
+            return (
+                kb.toFixed(1) +
+                " KB"
+            );
+
         }
 
+
         return (
+
             kb / 1024
-        ).toFixed(1) + " MB";
+        ).toFixed(1) +
+        " MB";
+
     }
 
 
     function renderFiles() {
 
         if (!filesList) {
+
             return;
+
         }
 
-        if (uploadedFiles.length === 0) {
+
+        if (
+            uploadedFiles.length === 0
+        ) {
 
             filesList.innerHTML = `
+
                 <div class="empty-files">
 
                     📂
@@ -1117,16 +1906,21 @@ for file in os.listdir(folder):
                     </p>
 
                 </div>
+
             `;
 
             return;
+
         }
 
 
         filesList.innerHTML =
             uploadedFiles
                 .map(
-                    (file, index) => `
+                    (
+                        file,
+                        index
+                    ) => `
 
                     <div class="file-card">
 
@@ -1157,6 +1951,7 @@ for file in os.listdir(folder):
                         </button>
 
                     </div>
+
                 `
                 )
                 .join("");
@@ -1177,14 +1972,18 @@ for file in os.listdir(folder):
                                 button.dataset.index
                             );
 
+
                         uploadedFiles.splice(
                             index,
                             1
                         );
 
+
                         saveFiles();
 
+
                         renderFiles();
+
 
                         showNotification(
                             "تم حذف الملف"
@@ -1194,6 +1993,7 @@ for file in os.listdir(folder):
                 );
 
             });
+
     }
 
 
@@ -1205,21 +2005,33 @@ for file in os.listdir(folder):
                 uploadedFiles
             )
         );
+
     }
 
 
-    function handleFile(file) {
+    function handleFile(
+        file
+    ) {
 
         if (!file) {
+
             return;
+
         }
+
 
         const exists =
             uploadedFiles.some(
                 item =>
-                    item.name === file.name &&
-                    item.size === file.size
+
+                    item.name ===
+                        file.name &&
+
+                    item.size ===
+                        file.size
+
             );
+
 
         if (exists) {
 
@@ -1229,25 +2041,33 @@ for file in os.listdir(folder):
             );
 
             return;
+
         }
 
 
         uploadedFiles.push({
 
-            name: file.name,
+            name:
+                file.name,
 
-            size: file.size,
+            size:
+                file.size,
 
-            type: file.type,
+            type:
+                file.type,
 
-            date: new Date().toISOString()
+            date:
+                new Date()
+                    .toISOString()
 
         });
 
 
         saveFiles();
 
+
         renderFiles();
+
 
         showNotification(
             `تم إضافة ${file.name}`
@@ -1256,14 +2076,39 @@ for file in os.listdir(folder):
     }
 
 
-    function escapeHTML(value) {
+    function escapeHTML(
+        value
+    ) {
 
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+        return String(
+            value
+        )
+
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
     }
 
 
@@ -1274,10 +2119,16 @@ for file in os.listdir(folder):
             () => {
 
                 Array
-                    .from(mainFileInput.files)
-                    .forEach(handleFile);
+                    .from(
+                        mainFileInput.files
+                    )
+                    .forEach(
+                        handleFile
+                    );
 
-                mainFileInput.value = "";
+
+                mainFileInput.value =
+                    "";
 
             }
         );
@@ -1292,18 +2143,27 @@ for file in os.listdir(folder):
             () => {
 
                 Array
-                    .from(studyFileInput.files)
-                    .forEach(file => {
+                    .from(
+                        studyFileInput.files
+                    )
+                    .forEach(
+                        file => {
 
-                        handleFile(file);
+                            handleFile(
+                                file
+                            );
 
-                        showNotification(
-                            "تم رفع الملف للمذاكرة"
-                        );
 
-                    });
+                            showNotification(
+                                "تم رفع الملف للمذاكرة"
+                            );
 
-                studyFileInput.value = "";
+                        }
+                    );
+
+
+                studyFileInput.value =
+                    "";
 
             }
         );
@@ -1320,14 +2180,23 @@ for file in os.listdir(folder):
                 const file =
                     homeFileInput.files[0];
 
+
                 if (file) {
 
-                    handleFile(file);
+                    handleFile(
+                        file
+                    );
 
-                    openSection("files");
+
+                    openSection(
+                        "files"
+                    );
+
                 }
 
-                homeFileInput.value = "";
+
+                homeFileInput.value =
+                    "";
 
             }
         );
@@ -1344,9 +2213,13 @@ for file in os.listdir(folder):
                 const file =
                     chatFileInput.files[0];
 
+
                 if (file) {
 
-                    handleFile(file);
+                    handleFile(
+                        file
+                    );
+
 
                     addMessage(
                         `📎 تم اختيار الملف: ${file.name}`,
@@ -1355,7 +2228,9 @@ for file in os.listdir(folder):
 
                 }
 
-                chatFileInput.value = "";
+
+                chatFileInput.value =
+                    "";
 
             }
         );
@@ -1372,9 +2247,13 @@ for file in os.listdir(folder):
                 const file =
                     homeImageInput.files[0];
 
+
                 if (file) {
 
-                    openSection("chat");
+                    openSection(
+                        "chat"
+                    );
+
 
                     addMessage(
                         `📷 تم اختيار الصورة: ${file.name}`,
@@ -1383,7 +2262,9 @@ for file in os.listdir(folder):
 
                 }
 
-                homeImageInput.value = "";
+
+                homeImageInput.value =
+                    "";
 
             }
         );
@@ -1400,6 +2281,7 @@ for file in os.listdir(folder):
                 const file =
                     chatImageInput.files[0];
 
+
                 if (file) {
 
                     addMessage(
@@ -1409,7 +2291,9 @@ for file in os.listdir(folder):
 
                 }
 
-                chatImageInput.value = "";
+
+                chatImageInput.value =
+                    "";
 
             }
         );
@@ -1452,47 +2336,76 @@ for file in os.listdir(folder):
 
             button.addEventListener(
                 "click",
-                () => {
+                async () => {
 
                     const action =
                         button.dataset.studyAction;
 
-                    let message = "";
+
+                    let message =
+                        "";
+
 
                     if (
-                        action === "explain"
+                        action ===
+                        "explain"
                     ) {
+
                         message =
                             "اشرحلي هذا الدرس بطريقة بسيطة خطوة بخطوة.";
+
                     }
 
+
                     if (
-                        action === "summary"
+                        action ===
+                        "summary"
                     ) {
+
                         message =
                             "لخصلي الدرس في نقاط مهمة ومنظمة.";
+
                     }
 
+
                     if (
-                        action === "questions"
+                        action ===
+                        "questions"
                     ) {
+
                         message =
                             "أنشئ لي أسئلة تدريبية على هذا الدرس.";
+
                     }
+
 
                     if (
-                        action === "exam"
+                        action ===
+                        "exam"
                     ) {
+
                         message =
                             "اعمل لي اختبار تدريبي على هذا الموضوع.";
+
                     }
 
-                    openSection("chat");
 
-                    chatInput.value =
-                        message;
+                    if (!message) {
 
-                    chatInput.focus();
+                        return;
+
+                    }
+
+
+                    openSection(
+                        "chat"
+                    );
+
+
+                    await sendChatMessage(
+                        message,
+                        "study"
+                    );
 
                 }
             );
@@ -1507,151 +2420,286 @@ for file in os.listdir(folder):
     const testQuestions = {
 
         GIS: [
+
             {
-                q: "ماذا يعني GIS؟",
+                q:
+                    "ماذا يعني GIS؟",
+
                 options: [
+
                     "Geographic Information System",
+
                     "Global Internet System",
+
                     "Geology Information Software",
+
                     "Graphic Image System"
+
                 ],
+
                 answer: 0
+
             },
 
+
             {
-                q: "ما الذي يستخدم لتمثيل الظواهر المستمرة؟",
+                q:
+                    "ما الذي يستخدم لتمثيل الظواهر المستمرة؟",
+
                 options: [
+
                     "Raster",
+
                     "Vector فقط",
+
                     "Table",
+
                     "Text"
+
                 ],
+
                 answer: 0
+
             },
 
+
             {
-                q: "ما أحد مكونات GIS؟",
+                q:
+                    "ما أحد مكونات GIS؟",
+
                 options: [
+
                     "Data",
+
                     "Keyboard فقط",
+
                     "Printer فقط",
+
                     "Browser فقط"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
+
 
         "ArcGIS Pro": [
-            {
-                q: "ما وظيفة Buffer؟",
-                options: [
-                    "إنشاء منطقة حول معلم بمسافة محددة",
-                    "حذف كل البيانات",
-                    "تغيير لغة البرنامج",
-                    "فتح الإنترنت"
-                ],
-                answer: 0
-            },
 
             {
-                q: "أي أداة تستخدم لقص طبقة باستخدام حدود طبقة أخرى؟",
+                q:
+                    "ما وظيفة Buffer؟",
+
                 options: [
-                    "Clip",
-                    "Buffer",
-                    "Merge",
-                    "Dissolve"
+
+                    "إنشاء منطقة حول معلم بمسافة محددة",
+
+                    "حذف كل البيانات",
+
+                    "تغيير لغة البرنامج",
+
+                    "فتح الإنترنت"
+
                 ],
+
                 answer: 0
+
+            },
+
+
+            {
+                q:
+                    "أي أداة تستخدم لقص طبقة باستخدام حدود طبقة أخرى؟",
+
+                options: [
+
+                    "Clip",
+
+                    "Buffer",
+
+                    "Merge",
+
+                    "Dissolve"
+
+                ],
+
+                answer: 0
+
             }
+
         ],
+
 
         Python: [
+
             {
-                q: "ما الكلمة المستخدمة لتعريف دالة في Python؟",
+                q:
+                    "ما الكلمة المستخدمة لتعريف دالة في Python؟",
+
                 options: [
+
                     "def",
+
                     "function",
+
                     "func",
+
                     "define"
+
                 ],
+
                 answer: 0
+
             },
 
+
             {
-                q: "أي رمز يستخدم لكتابة تعليق في Python؟",
+                q:
+                    "أي رمز يستخدم لكتابة تعليق في Python؟",
+
                 options: [
+
                     "#",
+
                     "//",
+
                     "<!--",
+
                     "/*"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
+
 
         "Remote Sensing": [
+
             {
-                q: "أي قمر صناعي يستخدم Sentinel-2؟",
+                q:
+                    "أي قمر صناعي يستخدم Sentinel-2؟",
+
                 options: [
+
                     "Earth observation",
+
                     "GPS فقط",
+
                     "Communication فقط",
+
                     "Weather فقط"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
+
 
         AutoCAD: [
+
             {
-                q: "ما وظيفة أمر LINE؟",
+                q:
+                    "ما وظيفة أمر LINE؟",
+
                 options: [
+
                     "رسم خط",
+
                     "حذف طبقة",
+
                     "نسخ ملف",
+
                     "تغيير اللون فقط"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
+
 
         Surveying: [
+
             {
-                q: "ما الجهاز المستخدم لقياس المناسيب؟",
+                q:
+                    "ما الجهاز المستخدم لقياس المناسيب؟",
+
                 options: [
+
                     "Level",
+
                     "Printer",
+
                     "Scanner",
+
                     "GPS فقط"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
+
 
         Geography: [
+
             {
-                q: "ما عاصمة مصر؟",
+                q:
+                    "ما عاصمة مصر؟",
+
                 options: [
+
                     "القاهرة",
+
                     "الإسكندرية",
+
                     "المنيا",
+
                     "أسوان"
+
                 ],
+
                 answer: 0
+
             }
+
         ],
 
+
         English: [
+
             {
-                q: "ما معنى كلمة Map؟",
+                q:
+                    "ما معنى كلمة Map؟",
+
                 options: [
+
                     "خريطة",
+
                     "كتاب",
+
                     "طريق",
+
                     "مدينة"
+
                 ],
+
                 answer: 0
+
             }
+
         ]
 
     };
@@ -1659,40 +2707,79 @@ for file in os.listdir(folder):
 
     function createTest() {
 
-        const subject =
+        if (!testContainer) {
+            return;
+        }
+
+
+        const subjectElement =
             document.getElementById(
                 "testSubject"
-            ).value;
+            );
+
+
+        const countElement =
+            document.getElementById(
+                "testCount"
+            );
+
+
+        if (
+            !subjectElement ||
+            !countElement
+        ) {
+
+            return;
+
+        }
+
+
+        const subject =
+            subjectElement.value;
+
 
         const count =
             Number(
-                document.getElementById(
-                    "testCount"
-                ).value
+                countElement.value
             );
 
 
         let questions =
-            testQuestions[subject] || [];
+            testQuestions[
+                subject
+            ] || [];
 
 
-        if (questions.length === 0) {
+        if (
+            questions.length ===
+            0
+        ) {
 
             testContainer.innerHTML = `
+
                 <div class="test-card">
+
                     لا توجد أسئلة تجريبية لهذه المادة حاليًا.
+
                 </div>
+
             `;
 
+
             return;
+
         }
 
 
         questions =
             [...questions]
+
                 .sort(
-                    () => Math.random() - 0.5
+                    () =>
+                        Math.random() -
+                        0.5
                 )
+
                 .slice(
                     0,
                     Math.min(
@@ -1704,8 +2791,12 @@ for file in os.listdir(folder):
 
         testContainer.innerHTML =
             questions
+
                 .map(
-                    (question, index) => `
+                    (
+                        question,
+                        index
+                    ) => `
 
                     <div
                         class="test-card"
@@ -1724,8 +2815,12 @@ for file in os.listdir(folder):
                         <div class="test-options">
 
                             ${question.options
+
                                 .map(
-                                    (option, optionIndex) => `
+                                    (
+                                        option,
+                                        optionIndex
+                                    ) => `
 
                                     <button
                                         class="test-option"
@@ -1736,23 +2831,29 @@ for file in os.listdir(folder):
                                         )}
 
                                     </button>
+
                                 `
                                 )
+
                                 .join("")}
 
                         </div>
 
                     </div>
+
                 `
                 )
+
                 .join("");
 
 
         activateTestOptions();
 
+
         showNotification(
             `تم إنشاء اختبار ${subject}`
         );
+
     }
 
 
@@ -1773,10 +2874,17 @@ for file in os.listdir(folder):
                                 ".test-card"
                             );
 
+
+                        if (!card) {
+                            return;
+                        }
+
+
                         const correct =
                             Number(
                                 card.dataset.answer
                             );
+
 
                         const selected =
                             Number(
@@ -1788,18 +2896,25 @@ for file in os.listdir(folder):
                             .querySelectorAll(
                                 ".test-option"
                             )
-                            .forEach(btn => {
-                                btn.disabled = true;
-                            });
+                            .forEach(
+                                btn => {
+
+                                    btn.disabled =
+                                        true;
+
+                                }
+                            );
 
 
                         if (
-                            selected === correct
+                            selected ===
+                            correct
                         ) {
 
                             option.classList.add(
                                 "correct"
                             );
+
 
                             showNotification(
                                 "إجابة صحيحة ✓"
@@ -1811,22 +2926,29 @@ for file in os.listdir(folder):
                                 "wrong"
                             );
 
+
                             const correctButton =
                                 card.querySelector(
                                     `[data-option="${correct}"]`
                                 );
 
-                            if (correctButton) {
+
+                            if (
+                                correctButton
+                            ) {
 
                                 correctButton.classList.add(
                                     "correct"
                                 );
+
                             }
+
 
                             showNotification(
                                 "إجابة غير صحيحة",
                                 "error"
                             );
+
                         }
 
                     }
@@ -1858,9 +2980,12 @@ for file in os.listdir(folder):
                 "ahmedAI_language"
             );
 
+
         if (savedLanguage) {
+
             languageSelect.value =
                 savedLanguage;
+
         }
 
 
@@ -1873,8 +2998,10 @@ for file in os.listdir(folder):
                     languageSelect.value
                 );
 
+
                 if (
-                    languageSelect.value === "en"
+                    languageSelect.value ===
+                    "en"
                 ) {
 
                     showNotification(
@@ -1904,15 +3031,27 @@ for file in os.listdir(folder):
         event => {
 
             if (
-                (event.ctrlKey || event.metaKey) &&
-                event.key === "k"
+                (
+                    event.ctrlKey ||
+                    event.metaKey
+                ) &&
+                event.key ===
+                    "k"
             ) {
 
                 event.preventDefault();
 
-                openSection("chat");
 
-                chatInput.focus();
+                openSection(
+                    "chat"
+                );
+
+
+                if (chatInput) {
+
+                    chatInput.focus();
+
+                }
 
             }
 
@@ -1924,7 +3063,10 @@ for file in os.listdir(folder):
        INITIAL STATE
     ========================================= */
 
-    openSection("home");
+    openSection(
+        "home"
+    );
+
 
     console.log(
         "Ahmed AI initialized successfully."
