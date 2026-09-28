@@ -1,400 +1,502 @@
-/* =========================================
-   اسأل أبو الريس AI - Main JavaScript
-   Streaming AI Version
-========================================= */
+/* =========================================================
+   اسأل أبو الريس AI
+   app.js
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================
-       ELEMENTS
-    ========================================= */
+/* =========================================================
+   إعدادات التطبيق
+   ========================================================= */
 
-    const sidebar = document.getElementById("sidebar");
-    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const AI_API_URL =
+    "https://late-mode-12d3.123456789012345678o01234567898.workers.dev/api/chat";
 
-    const menuItems =
-        document.querySelectorAll(
-            ".menu-item[data-section]"
-        );
+const CHAT_STORAGE_KEY =
+    "ahmed_ai_chat_history";
 
-    const sections =
-        document.querySelectorAll(
-            ".page-section"
-        );
+const DARK_MODE_KEY =
+    "ahmed_ai_dark_mode";
 
-    const pageTitle =
+const SAVE_CHATS_KEY =
+    "ahmed_ai_save_chats";
+
+const LANGUAGE_KEY =
+    "ahmed_ai_language";
+
+
+/* =========================================================
+   عناصر الصفحة
+   ========================================================= */
+
+const sidebar =
+    document.getElementById("sidebar");
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const closeSidebarBtn =
+    document.getElementById("closeSidebarBtn");
+
+const notification =
+    document.getElementById("notification");
+
+
+/* =========================================================
+   أقسام الموقع
+   ========================================================= */
+
+const sections = document.querySelectorAll(
+    ".section"
+);
+
+const navItems = document.querySelectorAll(
+    "[data-section]"
+);
+
+
+/* =========================================================
+   الشات
+   ========================================================= */
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const chatInput =
+    document.getElementById("chatInput");
+
+const chatSendBtn =
+    document.getElementById("chatSendBtn");
+
+const chatImageInput =
+    document.getElementById("chatImageInput");
+
+const chatFileInput =
+    document.getElementById("chatFileInput");
+
+const webSearchBtn =
+    document.getElementById("webSearchBtn");
+
+
+/* =========================================================
+   الصفحة الرئيسية
+   ========================================================= */
+
+const homeChatInput =
+    document.getElementById("homeChatInput");
+
+const homeSendBtn =
+    document.getElementById("homeSendBtn");
+
+const homeImageInput =
+    document.getElementById("homeImageInput");
+
+const homeFileInput =
+    document.getElementById("homeFileInput");
+
+
+/* =========================================================
+   GIS
+   ========================================================= */
+
+const gisInput =
+    document.getElementById("gisInput");
+
+const gisSendBtn =
+    document.getElementById("gisSendBtn");
+
+
+/* =========================================================
+   البرمجة
+   ========================================================= */
+
+const codeInput =
+    document.getElementById("codeInput");
+
+const codeSendBtn =
+    document.getElementById("codeSendBtn");
+
+const codeOutput =
+    document.getElementById("codeOutput");
+
+const copyCodeBtn =
+    document.getElementById("copyCodeBtn");
+
+
+/* =========================================================
+   الملفات
+   ========================================================= */
+
+const mainFileInput =
+    document.getElementById("mainFileInput");
+
+const filesList =
+    document.getElementById("filesList");
+
+const studyFileInput =
+    document.getElementById("studyFileInput");
+
+
+/* =========================================================
+   الاختبارات
+   ========================================================= */
+
+const testSubject =
+    document.getElementById("testSubject");
+
+const testCount =
+    document.getElementById("testCount");
+
+const createTestBtn =
+    document.getElementById("createTestBtn");
+
+const testContainer =
+    document.getElementById("testContainer");
+
+
+/* =========================================================
+   الإعدادات
+   ========================================================= */
+
+const darkModeToggle =
+    document.getElementById("darkModeToggle");
+
+const saveChatsToggle =
+    document.getElementById("saveChatsToggle");
+
+const languageSelect =
+    document.getElementById("languageSelect");
+
+
+/* =========================================================
+   حالة التطبيق
+   ========================================================= */
+
+let selectedImageData = null;
+
+let selectedImageName = "";
+
+let selectedImageMimeType = "";
+
+let isStreaming = false;
+
+let currentAbortController = null;
+
+
+/* =========================================================
+   إنشاء منطقة معاينة الصورة
+   ========================================================= */
+
+function createImagePreviewArea() {
+
+    let area =
         document.getElementById(
-            "pageTitle"
+            "imagePreviewArea"
         );
 
-    const pageSubtitle =
-        document.getElementById(
-            "pageSubtitle"
-        );
-
-    const newChatBtn =
-        document.getElementById(
-            "newChatBtn"
-        );
-
-    const themeBtn =
-        document.getElementById(
-            "themeBtn"
-        );
-
-    const darkModeToggle =
-        document.getElementById(
-            "darkModeToggle"
-        );
-
-    const notification =
-        document.getElementById(
-            "notification"
-        );
-
-    const notificationText =
-        document.getElementById(
-            "notificationText"
-        );
-
-    const notificationIcon =
-        document.getElementById(
-            "notificationIcon"
-        );
-
-    const chatMessages =
-        document.getElementById(
-            "chatMessages"
-        );
-
-    const chatInput =
-        document.getElementById(
-            "chatInput"
-        );
-
-    const chatSendBtn =
-        document.getElementById(
-            "chatSendBtn"
-        );
-
-    const homeChatInput =
-        document.getElementById(
-            "homeChatInput"
-        );
-
-    const homeSendBtn =
-        document.getElementById(
-            "homeSendBtn"
-        );
-
-    const gisInput =
-        document.getElementById(
-            "gisInput"
-        );
-
-    const gisSendBtn =
-        document.getElementById(
-            "gisSendBtn"
-        );
-
-    const codeInput =
-        document.getElementById(
-            "codeInput"
-        );
-
-    const codeSendBtn =
-        document.getElementById(
-            "codeSendBtn"
-        );
-
-    const codeOutput =
-        document.getElementById(
-            "codeOutput"
-        );
-
-    const copyCodeBtn =
-        document.getElementById(
-            "copyCodeBtn"
-        );
-
-    const mainFileInput =
-        document.getElementById(
-            "mainFileInput"
-        );
-
-    const studyFileInput =
-        document.getElementById(
-            "studyFileInput"
-        );
-
-    const filesList =
-        document.getElementById(
-            "filesList"
-        );
-
-    const createTestBtn =
-        document.getElementById(
-            "createTestBtn"
-        );
-
-    const testContainer =
-        document.getElementById(
-            "testContainer"
-        );
-
-    const saveChatsToggle =
-        document.getElementById(
-            "saveChatsToggle"
-        );
-
-    const languageSelect =
-        document.getElementById(
-            "languageSelect"
-        );
-
-    const webSearchBtn =
-        document.getElementById(
-            "webSearchBtn"
-        );
-
-    const homeImageInput =
-        document.getElementById(
-            "homeImageInput"
-        );
-
-    const homeFileInput =
-        document.getElementById(
-            "homeFileInput"
-        );
-
-    const chatImageInput =
-        document.getElementById(
-            "chatImageInput"
-        );
-
-    const chatFileInput =
-        document.getElementById(
-            "chatFileInput"
-        );
-
-
-    /* =========================================
-       CLOUDFLARE WORKER
-    ========================================= */
-
-    const AI_API_URL =
-        "https://late-mode-12d3.123456789012345678o01234567898.workers.dev/api/chat";
-
-
-    /* =========================================
-       PAGE INFORMATION
-    ========================================= */
-
-    const pageInfo = {
-
-        home: {
-            title: "الرئيسية",
-            subtitle:
-                "مساعدك الذكي للمذاكرة والعمل"
-        },
-
-        chat: {
-            title: "AI Chat",
-            subtitle:
-                "تحدث مع اسأل أبو الريس AI"
-        },
-
-        study: {
-            title: "المذاكرة",
-            subtitle:
-                "تعلم بطريقة أسهل وأسرع"
-        },
-
-        gis: {
-            title: "مساعد GIS",
-            subtitle:
-                "GIS • Remote Sensing • Surveying"
-        },
-
-        coding: {
-            title: "البرمجة",
-            subtitle:
-                "Python • ArcPy • JavaScript"
-        },
-
-        files: {
-            title: "ملفاتي",
-            subtitle:
-                "ملفاتك المستخدمة في التعلم"
-        },
-
-        tests: {
-            title: "الاختبارات",
-            subtitle:
-                "اختبر معلوماتك"
-        },
-
-        settings: {
-            title: "الإعدادات",
-            subtitle:
-                "إعدادات اسأل أبو الريس AI"
-        }
-
-    };
-
-
-    /* =========================================
-       NAVIGATION
-    ========================================= */
-
-    function openSection(sectionName) {
-
-        sections.forEach(section => {
-
-            section.classList.remove(
-                "active"
-            );
-
-        });
-
-
-        const target =
-            document.getElementById(
-                sectionName + "Section"
-            );
-
-
-        if (target) {
-
-            target.classList.add(
-                "active"
-            );
-
-        }
-
-
-        menuItems.forEach(item => {
-
-            item.classList.remove(
-                "active"
-            );
-
-
-            if (
-                item.dataset.section ===
-                sectionName
-            ) {
-
-                item.classList.add(
-                    "active"
-                );
-
-            }
-
-        });
-
-
-        if (pageInfo[sectionName]) {
-
-            pageTitle.textContent =
-                pageInfo[
-                    sectionName
-                ].title;
-
-            pageSubtitle.textContent =
-                pageInfo[
-                    sectionName
-                ].subtitle;
-
-        }
-
-
-        if (
-            window.innerWidth <= 768
-        ) {
-
-            sidebar.classList.remove(
-                "open"
-            );
-
-        }
-
-
-        window.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-        });
-
+    if (area) {
+        return area;
     }
 
+    const chatBox =
+        document.querySelector(".chat-box");
 
-    menuItems.forEach(item => {
+    if (!chatBox) {
+        return null;
+    }
 
-        item.addEventListener(
-            "click",
-            () => {
+    area =
+        document.createElement("div");
 
-                const section =
-                    item.dataset.section;
+    area.id =
+        "imagePreviewArea";
 
-                openSection(
-                    section
-                );
+    area.className =
+        "image-preview-area";
 
+    chatBox.insertBefore(
+        area,
+        chatInput || chatBox.firstChild
+    );
+
+    return area;
+}
+
+
+/* =========================================================
+   تنسيق معاينة الصورة
+   ========================================================= */
+
+function injectImagePreviewStyles() {
+
+    if (
+        document.getElementById(
+            "ahmedAIImageStyles"
+        )
+    ) {
+        return;
+    }
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "ahmedAIImageStyles";
+
+    style.textContent = `
+
+        .image-preview-area {
+            display: none;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #d9dee8;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        .image-preview-area.active {
+            display: block;
+        }
+
+        .image-preview-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .image-preview-wrapper img {
+            display: block;
+            width: auto;
+            max-width: 280px;
+            max-height: 240px;
+            border-radius: 14px;
+            object-fit: contain;
+            border: 1px solid #d9dee8;
+            background: white;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .image-preview-name {
+            margin-top: 7px;
+            font-size: 13px;
+            color: #64748b;
+            word-break: break-word;
+        }
+
+        .message-bubble a {
+            color: #2563eb !important;
+            text-decoration: underline !important;
+            cursor: pointer;
+            word-break: break-word;
+        }
+
+        .message-bubble a:hover {
+            opacity: .8;
+        }
+
+        .image-message {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .image-message img {
+            max-width: 260px;
+            max-height: 260px;
+            border-radius: 14px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .image-message-question {
+            white-space: pre-wrap;
+        }
+
+        .thinking-message {
+            opacity: .75;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+
+            .image-preview-wrapper img {
+                max-width: 220px;
+                max-height: 200px;
             }
+
+            .image-message img {
+                max-width: 220px;
+                max-height: 220px;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+}
+
+
+/* =========================================================
+   إشعار
+   ========================================================= */
+
+function showNotification(
+    message,
+    type = "info"
+) {
+
+    if (!notification) {
+        alert(message);
+        return;
+    }
+
+    notification.textContent =
+        message;
+
+    notification.className =
+        "notification show";
+
+    notification.classList.add(
+        type
+    );
+
+    setTimeout(() => {
+
+        notification.classList.remove(
+            "show"
+        );
+
+    }, 3500);
+}
+
+
+/* =========================================================
+   فتح قسم
+   ========================================================= */
+
+function openSection(sectionName) {
+
+    sections.forEach(section => {
+
+        section.classList.remove(
+            "active"
         );
 
     });
 
+    navItems.forEach(item => {
 
-    /* =========================================
-       MOBILE SIDEBAR
-    ========================================= */
+        item.classList.remove(
+            "active"
+        );
 
-    if (mobileMenuBtn) {
+    });
 
-        mobileMenuBtn.addEventListener(
-            "click",
-            () => {
+    const target =
+        document.getElementById(
+            sectionName
+        );
+
+    if (target) {
+
+        target.classList.add(
+            "active"
+        );
+
+    }
+
+    const nav =
+        document.querySelector(
+            `[data-section="${sectionName}"]`
+        );
+
+    if (nav) {
+
+        nav.classList.add(
+            "active"
+        );
+
+    }
+
+    if (
+        window.innerWidth <= 900 &&
+        sidebar
+    ) {
+
+        sidebar.classList.remove(
+            "open"
+        );
+
+    }
+}
+
+
+/* =========================================================
+   التنقل
+   ========================================================= */
+
+navItems.forEach(item => {
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            const section =
+                item.dataset.section;
+
+            if (section) {
+                openSection(section);
+            }
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   القائمة الجانبية للموبايل
+   ========================================================= */
+
+if (menuBtn) {
+
+    menuBtn.addEventListener(
+        "click",
+        () => {
+
+            if (sidebar) {
 
                 sidebar.classList.toggle(
                     "open"
                 );
 
             }
-        );
 
-    }
+        }
+    );
+
+}
 
 
-    document.addEventListener(
+if (closeSidebarBtn) {
+
+    closeSidebarBtn.addEventListener(
         "click",
-        event => {
+        () => {
 
-            if (
-                window.innerWidth > 768
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                sidebar.classList.contains(
-                    "open"
-                ) &&
-                !sidebar.contains(
-                    event.target
-                ) &&
-                mobileMenuBtn &&
-                !mobileMenuBtn.contains(
-                    event.target
-                )
-            ) {
+            if (sidebar) {
 
                 sidebar.classList.remove(
                     "open"
@@ -405,304 +507,1244 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-
-    /* =========================================
-       NOTIFICATIONS
-    ========================================= */
-
-    let notificationTimer = null;
+}
 
 
-    function showNotification(
-        message,
-        type = "success"
-    ) {
+/* =========================================================
+   الوضع الليلي
+   ========================================================= */
 
-        if (!notificationText) {
-            return;
-        }
+function applyDarkMode(enabled) {
 
-
-        notificationText.textContent =
-            message;
-
-
-        if (
-            type === "error"
-        ) {
-
-            if (notificationIcon) {
-
-                notificationIcon.textContent =
-                    "×";
-
-                notificationIcon.style.color =
-                    "var(--danger)";
-
-                notificationIcon.style.background =
-                    "rgba(239,68,68,0.1)";
-
-            }
-
-        } else {
-
-            if (notificationIcon) {
-
-                notificationIcon.textContent =
-                    "✓";
-
-                notificationIcon.style.color =
-                    "var(--success)";
-
-                notificationIcon.style.background =
-                    "rgba(34,197,94,0.1)";
-
-            }
-
-        }
-
-
-        if (notification) {
-
-            notification.classList.add(
-                "show"
-            );
-
-        }
-
-
-        clearTimeout(
-            notificationTimer
-        );
-
-
-        notificationTimer =
-            setTimeout(
-                () => {
-
-                    if (notification) {
-
-                        notification.classList.remove(
-                            "show"
-                        );
-
-                    }
-
-                },
-                3000
-            );
-
-    }
-
-
-    /* =========================================
-       LOADING
-       تم إلغاء شاشة التحميل الكاملة.
-       حالة الانتظار تظهر داخل رسالة AI.
-    ========================================= */
-
-    function showLoading() {
-        // لا يوجد Loading Overlay.
-        // لا يتم حجب الصفحة أثناء انتظار رد AI.
-    }
-
-
-    function hideLoading() {
-        // لا يوجد Loading Overlay.
-    }
-
-
-    /* =========================================
-       DARK MODE
-    ========================================= */
-
-    function setDarkMode(
+    document.body.classList.toggle(
+        "dark-mode",
         enabled
-    ) {
-
-        document.body.classList.toggle(
-            "dark",
-            enabled
-        );
-
-
-        localStorage.setItem(
-            "ahmedAI_darkMode",
-            enabled
-                ? "true"
-                : "false"
-        );
-
-
-        if (darkModeToggle) {
-
-            darkModeToggle.checked =
-                enabled;
-
-        }
-
-
-        if (themeBtn) {
-
-            themeBtn.textContent =
-                enabled
-                    ? "☀️"
-                    : "🌙";
-
-
-            themeBtn.title =
-                enabled
-                    ? "الوضع النهاري"
-                    : "الوضع الليلي";
-
-        }
-
-    }
-
-
-    const savedTheme =
-        localStorage.getItem(
-            "ahmedAI_darkMode"
-        );
-
-
-    setDarkMode(
-        savedTheme === "true"
     );
-
-
-    if (themeBtn) {
-
-        themeBtn.addEventListener(
-            "click",
-            () => {
-
-                const enabled =
-                    !document.body.classList.contains(
-                        "dark"
-                    );
-
-
-                setDarkMode(
-                    enabled
-                );
-
-            }
-        );
-
-    }
-
 
     if (darkModeToggle) {
 
-        darkModeToggle.addEventListener(
-            "change",
-            () => {
+        darkModeToggle.checked =
+            enabled;
 
-                setDarkMode(
-                    darkModeToggle.checked
+    }
+
+    localStorage.setItem(
+        DARK_MODE_KEY,
+        enabled
+            ? "true"
+            : "false"
+    );
+}
+
+
+const savedDarkMode =
+    localStorage.getItem(
+        DARK_MODE_KEY
+    );
+
+if (savedDarkMode === "true") {
+
+    applyDarkMode(true);
+
+}
+
+
+if (darkModeToggle) {
+
+    darkModeToggle.addEventListener(
+        "change",
+        () => {
+
+            applyDarkMode(
+                darkModeToggle.checked
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   حفظ المحادثات
+   ========================================================= */
+
+function shouldSaveChats() {
+
+    const value =
+        localStorage.getItem(
+            SAVE_CHATS_KEY
+        );
+
+    if (value === null) {
+        return true;
+    }
+
+    return value === "true";
+}
+
+
+if (saveChatsToggle) {
+
+    saveChatsToggle.checked =
+        shouldSaveChats();
+
+    saveChatsToggle.addEventListener(
+        "change",
+        () => {
+
+            localStorage.setItem(
+                SAVE_CHATS_KEY,
+                saveChatsToggle.checked
+                    ? "true"
+                    : "false"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   الهروب من HTML
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+}
+
+
+/* =========================================================
+   تحويل الروابط إلى روابط قابلة للضغط
+   ========================================================= */
+
+function linkifyText(text) {
+
+    let safe =
+        escapeHTML(text);
+
+    const urlRegex =
+        /(https?:\/\/[^\s<]+)/gi;
+
+    safe =
+        safe.replace(
+            urlRegex,
+            function(match) {
+
+                let url =
+                    match;
+
+                let ending = "";
+
+                while (
+                    /[.,،؛!?؟)\]}]+$/.test(
+                        url
+                    )
+                ) {
+
+                    ending =
+                        url.slice(-1) +
+                        ending;
+
+                    url =
+                        url.slice(
+                            0,
+                            -1
+                        );
+
+                }
+
+                return (
+                    `<a href="${url}" ` +
+                    `target="_blank" ` +
+                    `rel="noopener noreferrer">` +
+                    `${url}` +
+                    `</a>` +
+                    ending
                 );
 
             }
         );
 
+    return safe.replace(
+        /\n/g,
+        "<br>"
+    );
+}
+
+
+/* =========================================================
+   عرض رسالة AI
+   ========================================================= */
+
+function renderAIMessage(
+    element,
+    text
+) {
+
+    if (!element) {
+        return;
+    }
+
+    element.innerHTML =
+        linkifyText(text);
+
+}
+
+
+/* =========================================================
+   إضافة رسالة عادية
+   ========================================================= */
+
+function addMessage(
+    message,
+    sender = "user"
+) {
+
+    if (!chatMessages) {
+        return null;
+    }
+
+    const messageElement =
+        document.createElement(
+            "div"
+        );
+
+    messageElement.className =
+        `message ${sender}`;
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "message-bubble";
+
+    if (sender === "ai") {
+
+        renderAIMessage(
+            bubble,
+            message
+        );
+
+    } else {
+
+        bubble.textContent =
+            message;
+
+    }
+
+    messageElement.appendChild(
+        bubble
+    );
+
+    chatMessages.appendChild(
+        messageElement
+    );
+
+    scrollChatToBottom();
+
+    return bubble;
+}
+
+
+/* =========================================================
+   إضافة رسالة صورة + سؤال
+   ========================================================= */
+
+function addImageMessage(
+    imageData,
+    question
+) {
+
+    if (!chatMessages) {
+        return null;
+    }
+
+    const messageElement =
+        document.createElement(
+            "div"
+        );
+
+    messageElement.className =
+        "message user";
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "message-bubble image-message";
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+    img.src =
+        imageData;
+
+    img.alt =
+        "الصورة المرسلة";
+
+    bubble.appendChild(
+        img
+    );
+
+    if (question) {
+
+        const questionElement =
+            document.createElement(
+                "div"
+            );
+
+        questionElement.className =
+            "image-message-question";
+
+        questionElement.textContent =
+            question;
+
+        bubble.appendChild(
+            questionElement
+        );
+
+    }
+
+    messageElement.appendChild(
+        bubble
+    );
+
+    chatMessages.appendChild(
+        messageElement
+    );
+
+    scrollChatToBottom();
+
+    return bubble;
+}
+
+
+/* =========================================================
+   إنشاء رسالة AI Streaming
+   ========================================================= */
+
+function createStreamingMessage() {
+
+    if (!chatMessages) {
+        return null;
+    }
+
+    const messageElement =
+        document.createElement(
+            "div"
+        );
+
+    messageElement.className =
+        "message ai";
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "message-bubble";
+
+    bubble.textContent =
+        "🤖 جاري التفكير...";
+
+    bubble.classList.add(
+        "thinking-message"
+    );
+
+    messageElement.appendChild(
+        bubble
+    );
+
+    chatMessages.appendChild(
+        messageElement
+    );
+
+    scrollChatToBottom();
+
+    return bubble;
+}
+
+
+/* =========================================================
+   النزول لآخر الشات
+   ========================================================= */
+
+function scrollChatToBottom() {
+
+    if (!chatMessages) {
+        return;
+    }
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   Loading
+   ========================================================= */
+
+function showLoading() {
+    // لا يوجد Loading Overlay.
+    // الصفحة تظل قابلة للاستخدام.
+}
+
+
+function hideLoading() {
+    // لا يوجد Loading Overlay.
+}
+
+
+/* =========================================================
+   قراءة Streaming Response
+   ========================================================= */
+
+async function readStreamingResponse(
+    response,
+    onChunk
+) {
+
+    if (!response.body) {
+
+        const text =
+            await response.text();
+
+        if (text) {
+            onChunk(text);
+        }
+
+        return;
+    }
+
+    const reader =
+        response.body.getReader();
+
+    const decoder =
+        new TextDecoder(
+            "utf-8"
+        );
+
+    let buffer = "";
+
+    while (true) {
+
+        const {
+            value,
+            done
+        } =
+            await reader.read();
+
+        if (done) {
+            break;
+        }
+
+        buffer +=
+            decoder.decode(
+                value,
+                {
+                    stream: true
+                }
+            );
+
+        const lines =
+            buffer.split("\n");
+
+        buffer =
+            lines.pop() || "";
+
+        for (
+            const rawLine
+            of lines
+        ) {
+
+            const line =
+                rawLine.trim();
+
+            if (!line) {
+                continue;
+            }
+
+            if (
+                line.startsWith(
+                    "data:"
+                )
+            ) {
+
+                const data =
+                    line
+                        .slice(5)
+                        .trim();
+
+                if (
+                    !data ||
+                    data === "[DONE]"
+                ) {
+                    continue;
+                }
+
+                try {
+
+                    const parsed =
+                        JSON.parse(
+                            data
+                        );
+
+                    let text = "";
+
+                    if (
+                        typeof parsed ===
+                        "string"
+                    ) {
+
+                        text =
+                            parsed;
+
+                    } else if (
+                        parsed.response
+                    ) {
+
+                        text =
+                            parsed.response;
+
+                    } else if (
+                        parsed.text
+                    ) {
+
+                        text =
+                            parsed.text;
+
+                    } else if (
+                        parsed.result &&
+                        typeof parsed.result ===
+                        "string"
+                    ) {
+
+                        text =
+                            parsed.result;
+
+                    }
+
+                    if (text) {
+                        onChunk(text);
+                    }
+
+                } catch {
+
+                    if (data) {
+                        onChunk(data);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    const finalText =
+        decoder.decode();
+
+    if (finalText) {
+        onChunk(finalText);
+    }
+}
+
+
+/* =========================================================
+   طلب AI
+   ========================================================= */
+
+async function askAIStream(
+    userMessage,
+    mode = "general",
+    onChunk = () => {},
+    imageData = null
+) {
+
+    if (currentAbortController) {
+
+        currentAbortController.abort();
+
+    }
+
+    currentAbortController =
+        new AbortController();
+
+    const controller =
+        currentAbortController;
+
+    let finalMessage =
+        String(
+            userMessage || ""
+        ).trim();
+
+
+    /* -----------------------------------------
+       إضافة سياق الوضع
+    ----------------------------------------- */
+
+    if (mode === "gis") {
+
+        finalMessage =
+            `أنت مساعد متخصص في GIS والجغرافيا والاستشعار عن بعد والمساحة وArcGIS Pro.
+
+أجب باللغة العربية وبشرح عملي واضح.
+
+سؤال المستخدم:
+${finalMessage}`;
+
     }
 
 
-    /* =========================================
-       QUICK ACTIONS
-    ========================================= */
+    if (mode === "coding") {
 
-    document
-        .querySelectorAll(
-            ".quick-card"
+        finalMessage =
+            `أنت مساعد برمجة.
+
+اكتب كودًا صحيحًا وقابلًا للتشغيل، واشرحه بالعربية عند الحاجة.
+
+سؤال المستخدم:
+${finalMessage}`;
+
+    }
+
+
+    if (mode === "study") {
+
+        finalMessage =
+            `أنت مساعد دراسي.
+
+اشرح للمستخدم بطريقة بسيطة ومنظمة، مع أمثلة عند الحاجة.
+
+سؤال المستخدم:
+${finalMessage}`;
+
+    }
+
+
+    if (
+        !finalMessage &&
+        !imageData
+    ) {
+
+        throw new Error(
+            "اكتب سؤالك أولًا."
+        );
+
+    }
+
+
+    const payload = {
+
+        message:
+            finalMessage,
+
+        mode:
+            mode
+
+    };
+
+
+    /* -----------------------------------------
+       إرسال الصورة
+    ----------------------------------------- */
+
+    if (imageData) {
+
+        payload.image =
+            imageData;
+
+    }
+
+
+    const response =
+        await fetch(
+            AI_API_URL,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        payload
+                    ),
+
+                signal:
+                    controller.signal
+            }
+        );
+
+
+    if (!response.ok) {
+
+        let errorText = "";
+
+        try {
+
+            errorText =
+                await response.text();
+
+        } catch {
+
+            errorText =
+                "حدث خطأ غير معروف.";
+
+        }
+
+        throw new Error(
+            `خطأ ${response.status}: ${errorText}`
+        );
+
+    }
+
+
+    await readStreamingResponse(
+        response,
+        onChunk
+    );
+
+}
+
+
+/* =========================================================
+   إرسال رسالة الشات
+   ========================================================= */
+
+async function sendChatMessage(
+    text,
+    mode = "general"
+) {
+
+    if (isStreaming) {
+        return;
+    }
+
+    const cleanText =
+        String(
+            text || ""
+        ).trim();
+
+    const hasImage =
+        Boolean(
+            selectedImageData
+        );
+
+    if (
+        !cleanText &&
+        !hasImage
+    ) {
+
+        showNotification(
+            "اكتب رسالتك أو اختر صورة أولًا.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    isStreaming = true;
+
+
+    /* -----------------------------------------
+       حفظ بيانات الصورة قبل تنظيف الحالة
+    ----------------------------------------- */
+
+    const imageToSend =
+        selectedImageData;
+
+    const imageNameToSend =
+        selectedImageName;
+
+
+    /* -----------------------------------------
+       عرض رسالة المستخدم
+    ----------------------------------------- */
+
+    if (imageToSend) {
+
+        addImageMessage(
+            imageToSend,
+            cleanText
+        );
+
+    } else {
+
+        addMessage(
+            cleanText,
+            "user"
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       تنظيف المدخل
+    ----------------------------------------- */
+
+    if (chatInput) {
+
+        chatInput.value = "";
+
+    }
+
+
+    clearImageSelection();
+
+
+    /* -----------------------------------------
+       إنشاء رسالة AI
+    ----------------------------------------- */
+
+    const aiBubble =
+        createStreamingMessage();
+
+    let fullResponse =
+        "";
+
+    let firstChunkReceived =
+        false;
+
+
+    try {
+
+        await askAIStream(
+            cleanText,
+            mode,
+            chunk => {
+
+                if (!firstChunkReceived) {
+
+                    firstChunkReceived =
+                        true;
+
+                    aiBubble.classList.remove(
+                        "thinking-message"
+                    );
+
+                    aiBubble.textContent =
+                        "";
+
+                }
+
+                fullResponse +=
+                    chunk;
+
+                /*
+                 * أثناء Streaming نعرض النص
+                 * مباشرة.
+                 */
+                aiBubble.textContent =
+                    fullResponse;
+
+                scrollChatToBottom();
+
+            },
+            imageToSend
+        );
+
+
+        /*
+         * بعد انتهاء Streaming
+         * نحول الروابط إلى روابط قابلة للضغط.
+         */
+        renderAIMessage(
+            aiBubble,
+            fullResponse
+        );
+
+
+        /*
+         * حفظ المحادثة
+         */
+        saveMessages();
+
+
+    } catch (error) {
+
+        console.error(
+            "AI Error:",
+            error
+        );
+
+        if (
+            error.name ===
+            "AbortError"
+        ) {
+
+            aiBubble.textContent =
+                "تم إيقاف الطلب.";
+
+        } else {
+
+            aiBubble.textContent =
+                "❌ حدث خطأ أثناء الاتصال بالذكاء الاصطناعي.\n\n" +
+                error.message;
+
+        }
+
+    } finally {
+
+        isStreaming =
+            false;
+
+        currentAbortController =
+            null;
+
+    }
+
+}
+
+
+/* =========================================================
+   إرسال الشات
+   ========================================================= */
+
+if (chatSendBtn) {
+
+    chatSendBtn.addEventListener(
+        "click",
+        () => {
+
+            sendChatMessage(
+                chatInput
+                    ? chatInput.value
+                    : "",
+                "general"
+            );
+
+        }
+    );
+
+}
+
+
+if (chatInput) {
+
+    chatInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendChatMessage(
+                    chatInput.value,
+                    "general"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   إرسال من الصفحة الرئيسية
+   ========================================================= */
+
+if (homeSendBtn) {
+
+    homeSendBtn.addEventListener(
+        "click",
+        () => {
+
+            const text =
+                homeChatInput
+                    ? homeChatInput.value
+                    : "";
+
+            openSection("chat");
+
+            if (chatInput) {
+                chatInput.value =
+                    text;
+            }
+
+            if (
+                homeChatInput
+            ) {
+                homeChatInput.value =
+                    "";
+            }
+
+            sendChatMessage(
+                text,
+                "general"
+            );
+
+        }
+    );
+
+}
+
+
+if (homeChatInput) {
+
+    homeChatInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                if (homeSendBtn) {
+                    homeSendBtn.click();
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   عرض معاينة الصورة
+   ========================================================= */
+
+function showImagePreview(
+    imageData,
+    fileName
+) {
+
+    const area =
+        createImagePreviewArea();
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = "";
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.className =
+        "image-preview-wrapper";
+
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+    img.src =
+        imageData;
+
+    img.alt =
+        "معاينة الصورة";
+
+
+    const removeBtn =
+        document.createElement(
+            "button"
+        );
+
+    removeBtn.type =
+        "button";
+
+    removeBtn.className =
+        "remove-image-btn";
+
+    removeBtn.textContent =
+        "×";
+
+    removeBtn.title =
+        "إزالة الصورة";
+
+
+    removeBtn.addEventListener(
+        "click",
+        clearImageSelection
+    );
+
+
+    wrapper.appendChild(
+        img
+    );
+
+    wrapper.appendChild(
+        removeBtn
+    );
+
+
+    const name =
+        document.createElement(
+            "div"
+        );
+
+    name.className =
+        "image-preview-name";
+
+    name.textContent =
+        `📷 ${fileName}`;
+
+
+    area.appendChild(
+        wrapper
+    );
+
+    area.appendChild(
+        name
+    );
+
+    area.classList.add(
+        "active"
+    );
+
+
+    /*
+     * بعد اختيار الصورة،
+     * نضع المؤشر في خانة السؤال.
+     */
+    setTimeout(() => {
+
+        if (chatInput) {
+            chatInput.focus();
+        }
+
+    }, 100);
+
+}
+
+
+/* =========================================================
+   اختيار الصورة
+   ========================================================= */
+
+async function handleImageSelection(
+    file
+) {
+
+    if (!file) {
+        return;
+    }
+
+
+    if (
+        !file.type.startsWith(
+            "image/"
         )
-        .forEach(card => {
+    ) {
 
-            card.addEventListener(
-                "click",
-                () => {
+        showNotification(
+            "الملف المختار ليس صورة.",
+            "warning"
+        );
 
-                    const action =
-                        card.dataset.action;
+        return;
+
+    }
 
 
-                    if (action) {
+    /*
+     * حد أقصى 5MB
+     */
+    const maxSize =
+        5 * 1024 * 1024;
 
-                        openSection(
-                            action
-                        );
+    if (file.size > maxSize) {
 
-                    }
+        showNotification(
+            "حجم الصورة كبير. الحد الأقصى 5MB.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const reader =
+            new FileReader();
+
+
+        const imageData =
+            await new Promise(
+                (
+                    resolve,
+                    reject
+                ) => {
+
+                    reader.onload =
+                        () => {
+
+                            resolve(
+                                reader.result
+                            );
+
+                        };
+
+                    reader.onerror =
+                        () => {
+
+                            reject(
+                                new Error(
+                                    "تعذر قراءة الصورة."
+                                )
+                            );
+
+                        };
+
+                    reader.readAsDataURL(
+                        file
+                    );
 
                 }
             );
 
-        });
 
+        selectedImageData =
+            imageData;
 
-    /* =========================================
-       NEW CHAT
-    ========================================= */
+        selectedImageName =
+            file.name;
 
-    function createNewChat() {
-
-        if (!chatMessages) {
-            return;
-        }
-
-
-        chatMessages.innerHTML = `
-
-            <div class="empty-chat">
-
-                <div class="empty-icon">
-                    🤖
-                </div>
-
-                <h2>
-                    اسأل أبو الريس AI
-                </h2>
-
-                <p>
-                    أنا جاهز أساعدك في المذاكرة
-                    وGIS والبرمجة.
-                </p>
-
-                <div class="suggestions">
-
-                    <button>
-                        اشرحلي ArcGIS Pro
-                    </button>
-
-                    <button>
-                        علمني Python
-                    </button>
-
-                    <button>
-                        اشرحلي Remote Sensing
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-
-
-        if (chatInput) {
-
-            chatInput.value = "";
-
-        }
-
-
-        saveMessages();
-
-
-        showNotification(
-            "تم إنشاء محادثة جديدة"
-        );
+        selectedImageMimeType =
+            file.type;
 
 
         openSection(
@@ -710,2173 +1752,62 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        activateSuggestions();
-
-    }
-
-
-    if (newChatBtn) {
-
-        newChatBtn.addEventListener(
-            "click",
-            createNewChat
+        showImagePreview(
+            imageData,
+            file.name
         );
-
-    }
-
-
-    /* =========================================
-       CHAT FUNCTIONS
-    ========================================= */
-
-    function addMessage(
-        message,
-        sender = "user"
-    ) {
-
-        if (!chatMessages) {
-            return;
-        }
-
-
-        const emptyChat =
-            chatMessages.querySelector(
-                ".empty-chat"
-            );
-
-
-        if (emptyChat) {
-
-            emptyChat.remove();
-
-        }
-
-
-        const messageElement =
-            document.createElement(
-                "div"
-            );
-
-
-        messageElement.className =
-            `message ${sender}`;
-
-
-        const bubble =
-            document.createElement(
-                "div"
-            );
-
-
-        bubble.className =
-            "message-bubble";
-
-
-        bubble.textContent =
-            message;
-
-
-        messageElement.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            messageElement
-        );
-
-
-        chatMessages.scrollTop =
-            chatMessages.scrollHeight;
-
-
-        saveMessages();
-
-    }
-
-
-    /* =========================================
-       CREATE STREAMING MESSAGE
-    ========================================= */
-
-    function createStreamingMessage() {
-
-        if (!chatMessages) {
-            return null;
-        }
-
-
-        const emptyChat =
-            chatMessages.querySelector(
-                ".empty-chat"
-            );
-
-
-        if (emptyChat) {
-
-            emptyChat.remove();
-
-        }
-
-
-        const messageElement =
-            document.createElement(
-                "div"
-            );
-
-
-        messageElement.className =
-            "message ai";
-
-
-        const bubble =
-            document.createElement(
-                "div"
-            );
-
-
-        bubble.className =
-            "message-bubble";
-
-
-        bubble.textContent =
-            "";
-
-
-        messageElement.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            messageElement
-        );
-
-
-        chatMessages.scrollTop =
-            chatMessages.scrollHeight;
-
-
-        return bubble;
-
-    }
-
-
-    /* =========================================
-       AI PROMPTS
-    ========================================= */
-
-    const AI_PROMPTS = {
-
-        general: `
-أنت اسأل أبو الريس AI، مساعد ذكي للمذاكرة والعمل.
-
-ساعد المستخدم بطريقة واضحة ومنظمة وعملية.
-
-إذا كتب المستخدم بالعربية فأجب بالعربية،
-وإذا كتب بالإنجليزية فأجب بالإنجليزية.
-
-يمكنك مساعدة المستخدم في:
-GIS
-ArcGIS Pro
-QGIS
-Remote Sensing
-Surveying
-AutoCAD
-Civil 3D
-Python
-ArcPy
-JavaScript
-Geography
-English
-والمذاكرة بشكل عام.
-
-اشرح للمستخدم خطوة بخطوة عندما يكون السؤال عمليًا.
-
-لا تخترع معلومات غير متأكد منها.
-`,
-
-        gis: `
-أنت الآن اسأل أبو الريس AI - GIS Specialist.
-
-تخصصك الأساسي هو:
-GIS
-ArcGIS Pro
-QGIS
-Remote Sensing
-Surveying
-AutoCAD
-Civil 3D
-Spatial Analysis
-Network Analyst
-Spatial Analyst
-Geoprocessing
-Raster
-Vector
-Geodatabase
-Coordinate Systems
-Projection
-Cartography
-Python for GIS
-ArcPy
-Landsat
-Sentinel
-Google Earth Engine
-
-عندما يطرح المستخدم سؤال GIS:
-
-1. اشرح الفكرة ببساطة.
-2. أعطِ الخطوات العملية.
-3. اذكر الأدوات المستخدمة في ArcGIS Pro عندما يكون ذلك مناسبًا.
-4. اشرح المصطلحات الإنجليزية المهمة.
-5. أعطِ مثالًا عمليًا عندما يكون ذلك مفيدًا.
-6. إذا كان السؤال عن مشكلة، حاول تحديد سبب المشكلة والحل خطوة بخطوة.
-
-إذا كتب المستخدم بالعربية فأجب بالعربية.
-`,
-
-        coding: `
-أنت الآن اسأل أبو الريس AI - Coding Assistant.
-
-تخصصك في:
-Python
-ArcPy
-JavaScript
-HTML
-CSS
-GIS Automation
-Data Processing
-Geospatial Programming
-
-عندما يطلب المستخدم كودًا:
-
-1. افهم المطلوب أولًا.
-2. أعطِ كودًا كاملًا قابلًا للنسخ.
-3. لا تضع كودًا ناقصًا إلا إذا كان المستخدم طلب جزءًا محددًا.
-4. اشرح أين يضع المستخدم الكود.
-5. اشرح طريقة تشغيله.
-6. إذا كان الكود خاصًا بـGIS فاستخدم ArcPy عندما يكون مناسبًا.
-7. إذا كان هناك خطأ محتمل، وضحه.
-8. استخدم تعليقات داخل الكود عند الحاجة.
-
-إذا كتب المستخدم بالعربية فأجب بالعربية.
-`,
-
-        study: `
-أنت الآن اسأل أبو الريس AI - Study Assistant.
-
-مهمتك مساعدة المستخدم على الدراسة والفهم وليس مجرد إعطاء الإجابة.
-
-عند شرح موضوع:
-
-- ابدأ بالفكرة الأساسية.
-- قسم الموضوع إلى أجزاء.
-- استخدم أمثلة بسيطة.
-- اشرح المصطلحات.
-- في النهاية أعطِ ملخصًا سريعًا.
-- إذا طلب المستخدم أسئلة، أنشئ أسئلة مناسبة للمستوى.
-- إذا طلب اختبارًا، اجعل الأسئلة واضحة ومتنوعة.
-- إذا طلب تلخيصًا، حافظ على أهم المعلومات بدون حشو.
-
-المستخدم يدرس خصوصًا:
-
-الجغرافيا
-GIS
-ArcGIS Pro
-Remote Sensing
-Surveying
-Python
-English
-
-إذا كتب المستخدم بالعربية فأجب بالعربية.
-`
-
-    };
-
-
-    /* =========================================
-       STREAM DATA PARSER
-    ========================================= */
-
-    function extractStreamText(
-        rawData
-    ) {
-
-        if (!rawData) {
-            return "";
-        }
-
-
-        let text = "";
-
-
-        const lines =
-            rawData.split("\n");
-
-
-        for (
-            const line of lines
-        ) {
-
-            const trimmed =
-                line.trim();
-
-
-            if (!trimmed) {
-                continue;
-            }
-
-
-            if (
-                trimmed ===
-                "data: [DONE]"
-            ) {
-
-                continue;
-
-            }
-
-
-            if (
-                trimmed.startsWith(
-                    "data:"
-                )
-            ) {
-
-                const jsonText =
-                    trimmed
-                        .substring(5)
-                        .trim();
-
-
-                if (!jsonText) {
-                    continue;
-                }
-
-
-                try {
-
-                    const parsed =
-                        JSON.parse(
-                            jsonText
-                        );
-
-
-                    if (
-                        typeof parsed.response ===
-                        "string"
-                    ) {
-
-                        text +=
-                            parsed.response;
-
-                    } else if (
-                        parsed.result &&
-                        typeof parsed.result.response ===
-                        "string"
-                    ) {
-
-                        text +=
-                            parsed.result.response;
-
-                    } else if (
-                        typeof parsed.text ===
-                        "string"
-                    ) {
-
-                        text +=
-                            parsed.text;
-
-                    }
-
-                } catch (error) {
-
-                    /*
-                     * أحيانًا قد يصل جزء
-                     * غير مكتمل من JSON.
-                     * نتركه للـbuffer التالي.
-                     */
-
-                }
-
-
-            } else {
-
-                /*
-                 * دعم بعض أشكال الـstream
-                 * التي قد ترسل JSON مباشرة.
-                 */
-
-                try {
-
-                    const parsed =
-                        JSON.parse(
-                            trimmed
-                        );
-
-
-                    if (
-                        typeof parsed.response ===
-                        "string"
-                    ) {
-
-                        text +=
-                            parsed.response;
-
-                    } else if (
-                        parsed.result &&
-                        typeof parsed.result.response ===
-                        "string"
-                    ) {
-
-                        text +=
-                            parsed.result.response;
-
-                    }
-
-                } catch (error) {
-
-                    /*
-                     * ليس JSON مباشرًا.
-                     * نتجاهله هنا.
-                     */
-
-                }
-
-            }
-
-        }
-
-
-        return text;
-
-    }
-
-
-    /* =========================================
-       REAL AI STREAMING REQUEST
-    ========================================= */
-
-    async function askAIStream(
-        userMessage,
-        mode = "general",
-        onChunk = null
-    ) {
-
-        if (
-            !userMessage ||
-            !userMessage.trim()
-        ) {
-
-            throw new Error(
-                "Empty message"
-            );
-
-        }
-
-
-        const cleanMessage =
-            userMessage.trim();
-
-
-        const selectedPrompt =
-            AI_PROMPTS[mode] ||
-            AI_PROMPTS.general;
-
-
-        const finalMessage = `
-
-${selectedPrompt}
-
-رسالة المستخدم:
-
-${cleanMessage}
-
-أجب الآن بشكل مفيد ومنظم.
-`;
-
-
-        const response =
-            await fetch(
-                AI_API_URL,
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        message:
-                            finalMessage
-
-                    })
-
-                }
-            );
-
-
-        if (!response.ok) {
-
-            let errorText =
-                "HTTP Error: " +
-                response.status;
-
-
-            try {
-
-                const errorData =
-                    await response.json();
-
-
-                if (
-                    errorData &&
-                    errorData.error
-                ) {
-
-                    errorText =
-                        errorData.error;
-
-                }
-
-            } catch (error) {
-                // تجاهل خطأ قراءة JSON
-            }
-
-
-            throw new Error(
-                errorText
-            );
-
-        }
-
-
-        if (!response.body) {
-
-            throw new Error(
-                "المتصفح لم يستلم Stream من Worker."
-            );
-
-        }
-
-
-        const reader =
-            response.body.getReader();
-
-
-        const decoder =
-            new TextDecoder(
-                "utf-8"
-            );
-
-
-        let buffer = "";
-
-        let fullText = "";
-
-
-        while (true) {
-
-            const {
-                value,
-                done
-            } =
-                await reader.read();
-
-
-            if (done) {
-                break;
-            }
-
-
-            buffer +=
-                decoder.decode(
-                    value,
-                    {
-                        stream: true
-                    }
-                );
-
-
-            const parts =
-                buffer.split(
-                    "\n"
-                );
-
-
-            buffer =
-                parts.pop() || "";
-
-
-            const completedData =
-                parts.join("\n");
-
-
-            const chunkText =
-                extractStreamText(
-                    completedData
-                );
-
-
-            if (chunkText) {
-
-                fullText +=
-                    chunkText;
-
-
-                if (
-                    typeof onChunk ===
-                    "function"
-                ) {
-
-                    onChunk(
-                        chunkText,
-                        fullText
-                    );
-
-                }
-
-
-                if (chatMessages) {
-
-                    chatMessages.scrollTop =
-                        chatMessages.scrollHeight;
-
-                }
-
-            }
-
-        }
-
-
-        buffer +=
-            decoder.decode();
-
-
-        if (buffer.trim()) {
-
-            const finalChunk =
-                extractStreamText(
-                    buffer
-                );
-
-
-            if (finalChunk) {
-
-                fullText +=
-                    finalChunk;
-
-
-                if (
-                    typeof onChunk ===
-                    "function"
-                ) {
-
-                    onChunk(
-                        finalChunk,
-                        fullText
-                    );
-
-                }
-
-            }
-
-        }
-
-
-        if (!fullText.trim()) {
-
-            throw new Error(
-                "لم يصل نص من نموذج الذكاء الاصطناعي."
-            );
-
-        }
-
-
-        return fullText;
-
-    }
-
-
-    /* =========================================
-       REAL AI CHAT WITH STREAMING
-    ========================================= */
-
-    async function sendChatMessage(
-        text,
-        mode = "general"
-    ) {
-
-        if (
-            !text ||
-            !text.trim()
-        ) {
-
-            showNotification(
-                "اكتب رسالتك أولاً",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const cleanText =
-            text.trim();
-
-
-        addMessage(
-            cleanText,
-            "user"
-        );
-
-
-        /*
-         * لم نعد نستخدم شاشة تحميل
-         * تغطي الصفحة بالكامل.
-         */
-
-
-        const aiBubble =
-            createStreamingMessage();
-
-
-        if (!aiBubble) {
-
-            return;
-
-        }
-
-
-        /*
-         * حالة الانتظار تظهر داخل
-         * فقاعة AI فقط.
-         */
-
-        aiBubble.textContent =
-            "🤖 جاري التفكير...";
-
-
-        try {
-
-            let hasReceivedText =
-                false;
-
-
-            await askAIStream(
-
-                cleanText,
-
-                mode,
-
-                (
-                    chunk,
-                    fullText
-                ) => {
-
-                    hasReceivedText =
-                        true;
-
-
-                    /*
-                     * عند وصول أول جزء
-                     * نحذف رسالة التفكير.
-                     */
-
-                    if (
-                        fullText ===
-                        chunk
-                    ) {
-
-                        aiBubble.textContent =
-                            "";
-
-                    }
-
-
-                    aiBubble.textContent +=
-                        chunk;
-
-
-                    if (chatMessages) {
-
-                        chatMessages.scrollTop =
-                            chatMessages.scrollHeight;
-
-                    }
-
-                }
-
-            );
-
-
-            if (!hasReceivedText) {
-
-                aiBubble.textContent =
-                    "تم استلام الرد.";
-
-            }
-
-
-            saveMessages();
-
-
-        } catch (error) {
-
-            console.error(
-                "اسأل أبو الريس AI Error:",
-                error
-            );
-
-
-            aiBubble.textContent =
-                "تعذر الحصول على رد من اسأل أبو الريس AI.\n\n" +
-                "الخطأ:\n" +
-                error.message;
-
-
-            showNotification(
-                "حدث خطأ في الذكاء الاصطناعي",
-                "error"
-            );
-
-
-            saveMessages();
-
-        }
-
-    }
-
-
-    /* =========================================
-       CHAT SEND BUTTON
-    ========================================= */
-
-    if (chatSendBtn) {
-
-        chatSendBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!chatInput) {
-                    return;
-                }
-
-
-                const text =
-                    chatInput.value;
-
-
-                chatInput.value =
-                    "";
-
-
-                sendChatMessage(
-                    text,
-                    "general"
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       CHAT ENTER KEY
-    ========================================= */
-
-    if (chatInput) {
-
-        chatInput.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key ===
-                        "Enter" &&
-                    !event.shiftKey
-                ) {
-
-                    event.preventDefault();
-
-
-                    if (chatSendBtn) {
-
-                        chatSendBtn.click();
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       HOME CHAT
-    ========================================= */
-
-    if (homeSendBtn) {
-
-        homeSendBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!homeChatInput) {
-                    return;
-                }
-
-
-                const text =
-                    homeChatInput.value.trim();
-
-
-                if (!text) {
-
-                    showNotification(
-                        "اكتب سؤالك أولاً",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                openSection(
-                    "chat"
-                );
-
-
-                if (chatInput) {
-
-                    chatInput.value =
-                        text;
-
-                }
-
-
-                homeChatInput.value =
-                    "";
-
-
-                sendChatMessage(
-                    text,
-                    "general"
-                );
-
-
-                if (chatInput) {
-
-                    chatInput.value =
-                        "";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       SUGGESTIONS
-    ========================================= */
-
-    function activateSuggestions() {
-
-        document
-            .querySelectorAll(
-                ".suggestions button"
-            )
-            .forEach(button => {
-
-                button.onclick = () => {
-
-                    const text =
-                        button.textContent.trim();
-
-
-                    openSection(
-                        "chat"
-                    );
-
-
-                    if (chatInput) {
-
-                        chatInput.value =
-                            text;
-
-                    }
-
-
-                    sendChatMessage(
-                        text,
-                        "general"
-                    );
-
-
-                    if (chatInput) {
-
-                        chatInput.value =
-                            "";
-
-                    }
-
-                };
-
-            });
-
-    }
-
-
-    activateSuggestions();
-
-
-    /* =========================================
-       SAVE CHAT
-    ========================================= */
-
-    function saveMessages() {
-
-        if (!chatMessages) {
-            return;
-        }
-
-
-        if (
-            saveChatsToggle &&
-            !saveChatsToggle.checked
-        ) {
-
-            return;
-
-        }
-
-
-        localStorage.setItem(
-            "ahmedAI_chatHTML",
-            chatMessages.innerHTML
-        );
-
-    }
-
-
-    function loadMessages() {
-
-        if (!chatMessages) {
-            return;
-        }
-
-
-        const saved =
-            localStorage.getItem(
-                "ahmedAI_chatHTML"
-            );
-
-
-        if (
-            saved &&
-            saved.trim()
-        ) {
-
-            chatMessages.innerHTML =
-                saved;
-
-
-            activateSuggestions();
-
-        }
-
-    }
-
-
-    loadMessages();
-
-
-    if (saveChatsToggle) {
-
-        const saved =
-            localStorage.getItem(
-                "ahmedAI_saveChats"
-            );
-
-
-        if (saved !== null) {
-
-            saveChatsToggle.checked =
-                saved === "true";
-
-        }
-
-
-        saveChatsToggle.addEventListener(
-            "change",
-            () => {
-
-                localStorage.setItem(
-                    "ahmedAI_saveChats",
-                    saveChatsToggle.checked
-                );
-
-
-                if (
-                    saveChatsToggle.checked
-                ) {
-
-                    saveMessages();
-
-                }
-
-
-                showNotification(
-
-                    saveChatsToggle.checked
-
-                        ? "تم تفعيل حفظ المحادثات"
-
-                        : "تم إيقاف حفظ المحادثات"
-
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       GIS SUBJECTS
-    ========================================= */
-
-    document
-        .querySelectorAll(
-            ".subject-card"
-        )
-        .forEach(card => {
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    const topic =
-                        card.dataset.topic;
-
-
-                    openSection(
-                        "gis"
-                    );
-
-
-                    if (gisInput) {
-
-                        gisInput.value =
-                            `اشرحلي ${topic} في GIS بالتفصيل وبطريقة عملية`;
-
-
-                        gisInput.focus();
-
-                    }
-
-                }
-            );
-
-        });
-
-
-    /* =========================================
-       GIS AI SEND
-    ========================================= */
-
-    if (gisSendBtn) {
-
-        gisSendBtn.addEventListener(
-            "click",
-            async () => {
-
-                if (!gisInput) {
-                    return;
-                }
-
-
-                const question =
-                    gisInput.value.trim();
-
-
-                if (!question) {
-
-                    showNotification(
-                        "اكتب سؤالك أولاً",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                gisInput.value =
-                    "";
-
-
-                openSection(
-                    "chat"
-                );
-
-
-                await sendChatMessage(
-                    question,
-                    "gis"
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       GIS ENTER KEY
-    ========================================= */
-
-    if (gisInput) {
-
-        gisInput.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key ===
-                        "Enter" &&
-                    !event.shiftKey
-                ) {
-
-                    event.preventDefault();
-
-
-                    if (gisSendBtn) {
-
-                        gisSendBtn.click();
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       CODING LANGUAGES
-    ========================================= */
-
-    document
-        .querySelectorAll(
-            ".language-card"
-        )
-        .forEach(card => {
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            ".language-card"
-                        )
-                        .forEach(item => {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-                        });
-
-
-                    card.classList.add(
-                        "active"
-                    );
-
-
-                    const language =
-                        card.dataset.language;
-
-
-                    if (codeInput) {
-
-                        codeInput.value =
-                            `اكتبلي كود ${language} يقوم بـ`;
-
-
-                        codeInput.focus();
-
-                    }
-
-                }
-            );
-
-        });
-
-
-    /* =========================================
-       REAL AI CODE GENERATOR
-    ========================================= */
-
-    async function generateCodeWithAI(
-        request
-    ) {
-
-        const prompt = `
-
-اكتب لي كودًا برمجيًا كاملًا بناءً على الطلب التالي:
-
-${request}
-
-التزم بالتالي:
-
-1. أعطني الكود كاملًا.
-2. اجعله قابلًا للنسخ والتشغيل.
-3. إذا كان Python استخدم Python الصحيح.
-4. إذا كان GIS مناسبًا استخدم ArcPy.
-5. لا تضع شرحًا طويلًا داخل الكود.
-6. بعد الكود اكتب شرحًا مختصرًا لطريقة تشغيله.
-7. إذا كان هناك متطلبات أو مكتبات، اذكرها.
-8. لا تستخدم كودًا وهميًا إذا كان بالإمكان كتابة حل حقيقي.
-
-`;
-
-
-        return await askAIStream(
-            prompt,
-            "coding",
-            null
-        );
-
-    }
-
-
-    /* =========================================
-       FULL AI REQUEST
-    ========================================= */
-
-    async function askAIFull(
-        userMessage,
-        mode = "general"
-    ) {
-
-        if (
-            !userMessage ||
-            !userMessage.trim()
-        ) {
-
-            throw new Error(
-                "Empty message"
-            );
-
-        }
-
-
-        const cleanMessage =
-            userMessage.trim();
-
-
-        const selectedPrompt =
-            AI_PROMPTS[mode] ||
-            AI_PROMPTS.general;
-
-
-        const finalMessage = `
-
-${selectedPrompt}
-
-رسالة المستخدم:
-
-${cleanMessage}
-
-أجب الآن بشكل مفيد ومنظم.
-`;
-
-
-        const response =
-            await fetch(
-                AI_API_URL,
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        message:
-                            finalMessage
-
-                    })
-
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP Error: " +
-                response.status
-            );
-
-        }
-
-
-        if (!response.body) {
-
-            throw new Error(
-                "لا يوجد Stream."
-            );
-
-        }
-
-
-        const reader =
-            response.body.getReader();
-
-
-        const decoder =
-            new TextDecoder(
-                "utf-8"
-            );
-
-
-        let buffer = "";
-
-        let fullText = "";
-
-
-        while (true) {
-
-            const {
-                value,
-                done
-            } =
-                await reader.read();
-
-
-            if (done) {
-                break;
-            }
-
-
-            buffer +=
-                decoder.decode(
-                    value,
-                    {
-                        stream: true
-                    }
-                );
-
-
-            const parts =
-                buffer.split(
-                    "\n"
-                );
-
-
-            buffer =
-                parts.pop() || "";
-
-
-            fullText +=
-                extractStreamText(
-                    parts.join("\n")
-                );
-
-        }
-
-
-        buffer +=
-            decoder.decode();
-
-
-        if (buffer.trim()) {
-
-            fullText +=
-                extractStreamText(
-                    buffer
-                );
-
-        }
-
-
-        if (!fullText.trim()) {
-
-            throw new Error(
-                "لم يصل رد من AI."
-            );
-
-        }
-
-
-        return fullText;
-
-    }
-
-
-    /* =========================================
-       CODE SEND BUTTON
-    ========================================= */
-
-    if (codeSendBtn) {
-
-        codeSendBtn.addEventListener(
-            "click",
-            async () => {
-
-                if (!codeInput) {
-                    return;
-                }
-
-
-                const request =
-                    codeInput.value.trim();
-
-
-                if (!request) {
-
-                    showNotification(
-                        "اكتب المطلوب من AI",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                /*
-                 * لم تعد هناك شاشة تحميل.
-                 * زر إنشاء الكود يظل في الصفحة
-                 * أثناء انتظار الرد.
-                 */
-
-                const originalText =
-                    codeSendBtn.textContent;
-
-
-                codeSendBtn.disabled =
-                    true;
-
-
-                codeSendBtn.textContent =
-                    "🤖 جاري إنشاء الكود...";
-
-
-                if (codeOutput) {
-
-                    codeOutput.textContent =
-                        "🤖 جاري التفكير وإنشاء الكود...";
-
-                }
-
-
-                try {
-
-                    const result =
-                        await generateCodeWithAI(
-                            request
-                        );
-
-
-                    if (codeOutput) {
-
-                        codeOutput.textContent =
-                            result;
-
-                    }
-
-
-                    showNotification(
-                        "تم إنشاء الكود بواسطة اسأل أبو الريس AI"
-                    );
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Code AI Error:",
-                        error
-                    );
-
-
-                    if (codeOutput) {
-
-                        codeOutput.textContent =
-                            "حدث خطأ:\n\n" +
-                            error.message;
-
-                    }
-
-
-                    showNotification(
-                        "تعذر إنشاء الكود",
-                        "error"
-                    );
-
-                } finally {
-
-                    codeSendBtn.disabled =
-                        false;
-
-                    codeSendBtn.textContent =
-                        originalText;
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       CODE ENTER KEY
-    ========================================= */
-
-    if (codeInput) {
-
-        codeInput.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key ===
-                        "Enter" &&
-                    event.ctrlKey
-                ) {
-
-                    event.preventDefault();
-
-
-                    if (codeSendBtn) {
-
-                        codeSendBtn.click();
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       COPY CODE
-    ========================================= */
-
-    if (copyCodeBtn) {
-
-        copyCodeBtn.addEventListener(
-            "click",
-            async () => {
-
-                if (!codeOutput) {
-                    return;
-                }
-
-
-                const code =
-                    codeOutput.textContent;
-
-
-                if (
-                    !code ||
-                    code ===
-                        "سيظهر الكود هنا..."
-                ) {
-
-                    showNotification(
-                        "لا يوجد كود لنسخه",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                try {
-
-                    await navigator
-                        .clipboard
-                        .writeText(
-                            code
-                        );
-
-
-                    showNotification(
-                        "تم نسخ الكود"
-                    );
-
-                } catch (error) {
-
-                    showNotification(
-                        "تعذر نسخ الكود",
-                        "error"
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================
-       FILE HANDLING
-    ========================================= */
-
-    let uploadedFiles =
-        JSON.parse(
-
-            localStorage.getItem(
-                "ahmedAI_files"
-            ) || "[]"
-
-        );
-
-
-    function formatFileSize(
-        bytes
-    ) {
-
-        if (!bytes) {
-
-            return "0 KB";
-
-        }
-
-
-        const kb =
-            bytes / 1024;
-
-
-        if (kb < 1024) {
-
-            return (
-                kb.toFixed(1) +
-                " KB"
-            );
-
-        }
-
-
-        return (
-
-            kb / 1024
-        ).toFixed(1) +
-        " MB";
-
-    }
-
-
-    function renderFiles() {
-
-        if (!filesList) {
-
-            return;
-
-        }
-
-
-        if (
-            uploadedFiles.length === 0
-        ) {
-
-            filesList.innerHTML = `
-
-                <div class="empty-files">
-
-                    📂
-
-                    <p>
-                        لا توجد ملفات حتى الآن
-                    </p>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        filesList.innerHTML =
-            uploadedFiles
-                .map(
-                    (
-                        file,
-                        index
-                    ) => `
-
-                    <div class="file-card">
-
-                        <div class="file-card-icon">
-                            📄
-                        </div>
-
-                        <div class="file-card-info">
-
-                            <strong>
-                                ${escapeHTML(
-                                    file.name
-                                )}
-                            </strong>
-
-                            <small>
-                                ${formatFileSize(
-                                    file.size
-                                )}
-                            </small>
-
-                        </div>
-
-                        <button
-                            class="delete-file"
-                            data-index="${index}">
-                            🗑️
-                        </button>
-
-                    </div>
-
-                `
-                )
-                .join("");
-
-
-        document
-            .querySelectorAll(
-                ".delete-file"
-            )
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const index =
-                            Number(
-                                button.dataset.index
-                            );
-
-
-                        uploadedFiles.splice(
-                            index,
-                            1
-                        );
-
-
-                        saveFiles();
-
-
-                        renderFiles();
-
-
-                        showNotification(
-                            "تم حذف الملف"
-                        );
-
-                    }
-                );
-
-            });
-
-    }
-
-
-    function saveFiles() {
-
-        localStorage.setItem(
-            "ahmedAI_files",
-            JSON.stringify(
-                uploadedFiles
-            )
-        );
-
-    }
-
-
-    function handleFile(
-        file
-    ) {
-
-        if (!file) {
-
-            return;
-
-        }
-
-
-        const exists =
-            uploadedFiles.some(
-                item =>
-
-                    item.name ===
-                        file.name &&
-
-                    item.size ===
-                        file.size
-
-            );
-
-
-        if (exists) {
-
-            showNotification(
-                "الملف موجود بالفعل",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        uploadedFiles.push({
-
-            name:
-                file.name,
-
-            size:
-                file.size,
-
-            type:
-                file.type,
-
-            date:
-                new Date()
-                    .toISOString()
-
-        });
-
-
-        saveFiles();
-
-
-        renderFiles();
 
 
         showNotification(
-            `تم إضافة ${file.name}`
+            "تم اختيار الصورة. اكتب سؤالك أسفلها ثم اضغط إرسال.",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+        showNotification(
+            "حدث خطأ أثناء قراءة الصورة.",
+            "error"
         );
 
     }
 
-
-    function escapeHTML(
-        value
-    ) {
-
-        return String(
-            value
-        )
-
-            .replaceAll(
-                "&",
-                "&amp;"
-            )
-
-            .replaceAll(
-                "<",
-                "&lt;"
-            )
-
-            .replaceAll(
-                ">",
-                "&gt;"
-            )
-
-            .replaceAll(
-                '"',
-                "&quot;"
-            )
-
-            .replaceAll(
-                "'",
-                "&#039;"
-            );
-
-    }
+}
 
 
-    if (mainFileInput) {
+/* =========================================================
+   إزالة الصورة
+   ========================================================= */
 
-        mainFileInput.addEventListener(
-            "change",
-            () => {
+function clearImageSelection() {
 
-                Array
-                    .from(
-                        mainFileInput.files
-                    )
-                    .forEach(
-                        handleFile
-                    );
+    selectedImageData =
+        null;
+
+    selectedImageName =
+        "";
+
+    selectedImageMimeType =
+        "";
 
 
-                mainFileInput.value =
-                    "";
-
-            }
+    const area =
+        document.getElementById(
+            "imagePreviewArea"
         );
 
-    }
+    if (area) {
 
+        area.innerHTML =
+            "";
 
-    if (studyFileInput) {
-
-        studyFileInput.addEventListener(
-            "change",
-            () => {
-
-                Array
-                    .from(
-                        studyFileInput.files
-                    )
-                    .forEach(
-                        file => {
-
-                            handleFile(
-                                file
-                            );
-
-
-                            showNotification(
-                                "تم رفع الملف للمذاكرة"
-                            );
-
-                        }
-                    );
-
-
-                studyFileInput.value =
-                    "";
-
-            }
-        );
-
-    }
-
-
-    if (homeFileInput) {
-
-        homeFileInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    homeFileInput.files[0];
-
-
-                if (file) {
-
-                    handleFile(
-                        file
-                    );
-
-
-                    openSection(
-                        "files"
-                    );
-
-                }
-
-
-                homeFileInput.value =
-                    "";
-
-            }
-        );
-
-    }
-
-
-    if (chatFileInput) {
-
-        chatFileInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    chatFileInput.files[0];
-
-
-                if (file) {
-
-                    handleFile(
-                        file
-                    );
-
-
-                    addMessage(
-                        `📎 تم اختيار الملف: ${file.name}`,
-                        "user"
-                    );
-
-                }
-
-
-                chatFileInput.value =
-                    "";
-
-            }
-        );
-
-    }
-
-
-    if (homeImageInput) {
-
-        homeImageInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    homeImageInput.files[0];
-
-
-                if (file) {
-
-                    openSection(
-                        "chat"
-                    );
-
-
-                    addMessage(
-                        `📷 تم اختيار الصورة: ${file.name}`,
-                        "user"
-                    );
-
-                }
-
-
-                homeImageInput.value =
-                    "";
-
-            }
+        area.classList.remove(
+            "active"
         );
 
     }
@@ -2884,802 +1815,1040 @@ ${cleanMessage}
 
     if (chatImageInput) {
 
-        chatImageInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    chatImageInput.files[0];
-
-
-                if (file) {
-
-                    addMessage(
-                        `📷 تم اختيار الصورة: ${file.name}`,
-                        "user"
-                    );
-
-                }
-
-
-                chatImageInput.value =
-                    "";
-
-            }
-        );
+        chatImageInput.value =
+            "";
 
     }
 
 
-    renderFiles();
+    if (homeImageInput) {
+
+        homeImageInput.value =
+            "";
+
+    }
+
+}
 
 
-    /* =========================================
-       WEB SEARCH BUTTON
-    ========================================= */
+/* =========================================================
+   صورة الصفحة الرئيسية
+   ========================================================= */
 
-    if (webSearchBtn) {
+if (homeImageInput) {
 
-        webSearchBtn.addEventListener(
-            "click",
-            () => {
+    homeImageInput.addEventListener(
+        "change",
+        async () => {
 
-                showNotification(
-                    "البحث على الإنترنت سيتم تفعيله لاحقًا"
+            const file =
+                homeImageInput.files[0];
+
+            if (file) {
+
+                await handleImageSelection(
+                    file
                 );
 
             }
-        );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   صورة الشات
+   ========================================================= */
+
+if (chatImageInput) {
+
+    chatImageInput.addEventListener(
+        "change",
+        async () => {
+
+            const file =
+                chatImageInput.files[0];
+
+            if (file) {
+
+                await handleImageSelection(
+                    file
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   الملفات
+   ========================================================= */
+
+let uploadedFiles = [];
+
+
+function renderFiles() {
+
+    if (!filesList) {
+        return;
+    }
+
+    filesList.innerHTML =
+        "";
+
+    if (
+        uploadedFiles.length === 0
+    ) {
+
+        filesList.innerHTML =
+            `<div class="empty-state">
+                لا توجد ملفات مضافة حاليًا.
+            </div>`;
+
+        return;
 
     }
 
 
-    /* =========================================
-       STUDY ACTIONS
-    ========================================= */
+    uploadedFiles.forEach(
+        (
+            file,
+            index
+        ) => {
 
-    document
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "file-item";
+
+
+            item.innerHTML =
+                `
+                <div>
+                    <strong>
+                        ${escapeHTML(file.name)}
+                    </strong>
+                    <small>
+                        ${escapeHTML(file.type || "ملف")}
+                    </small>
+                </div>
+
+                <button
+                    type="button"
+                    data-file-index="${index}"
+                >
+                    حذف
+                </button>
+                `;
+
+
+            const deleteBtn =
+                item.querySelector(
+                    "[data-file-index]"
+                );
+
+
+            deleteBtn.addEventListener(
+                "click",
+                () => {
+
+                    uploadedFiles.splice(
+                        index,
+                        1
+                    );
+
+                    renderFiles();
+
+                }
+            );
+
+
+            filesList.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+function handleFiles(
+    fileList
+) {
+
+    if (!fileList) {
+        return;
+    }
+
+    Array.from(
+        fileList
+    ).forEach(
+        file => {
+
+            uploadedFiles.push(
+                {
+                    name:
+                        file.name,
+
+                    type:
+                        file.type,
+
+                    size:
+                        file.size
+                }
+            );
+
+        }
+    );
+
+    renderFiles();
+
+}
+
+
+if (mainFileInput) {
+
+    mainFileInput.addEventListener(
+        "change",
+        () => {
+
+            handleFiles(
+                mainFileInput.files
+            );
+
+            mainFileInput.value =
+                "";
+
+        }
+    );
+
+}
+
+
+if (studyFileInput) {
+
+    studyFileInput.addEventListener(
+        "change",
+        () => {
+
+            handleFiles(
+                studyFileInput.files
+            );
+
+            studyFileInput.value =
+                "";
+
+        }
+    );
+
+}
+
+
+if (chatFileInput) {
+
+    chatFileInput.addEventListener(
+        "change",
+        () => {
+
+            const file =
+                chatFileInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            addMessage(
+                `📎 تم اختيار الملف: ${file.name}`,
+                "user"
+            );
+
+            showNotification(
+                "تم اختيار الملف.",
+                "success"
+            );
+
+            chatFileInput.value =
+                "";
+
+        }
+    );
+
+}
+
+
+if (homeFileInput) {
+
+    homeFileInput.addEventListener(
+        "change",
+        () => {
+
+            const file =
+                homeFileInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            openSection(
+                "chat"
+            );
+
+            addMessage(
+                `📎 تم اختيار الملف: ${file.name}`,
+                "user"
+            );
+
+            showNotification(
+                "تم اختيار الملف.",
+                "success"
+            );
+
+            homeFileInput.value =
+                "";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   البحث على الإنترنت
+   ========================================================= */
+
+if (webSearchBtn) {
+
+    webSearchBtn.addEventListener(
+        "click",
+        () => {
+
+            showNotification(
+                "البحث المباشر على الإنترنت يحتاج ربط خدمة Web Search بالـWorker. زر البحث جاهز في الواجهة.",
+                "info"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GIS
+   ========================================================= */
+
+async function sendGISQuestion() {
+
+    const text =
+        gisInput
+            ? gisInput.value.trim()
+            : "";
+
+    if (!text) {
+
+        showNotification(
+            "اكتب سؤال GIS أولًا.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    openSection(
+        "chat"
+    );
+
+
+    if (chatInput) {
+
+        chatInput.value =
+            text;
+
+    }
+
+
+    if (gisInput) {
+
+        gisInput.value =
+            "";
+
+    }
+
+
+    await sendChatMessage(
+        text,
+        "gis"
+    );
+
+}
+
+
+if (gisSendBtn) {
+
+    gisSendBtn.addEventListener(
+        "click",
+        sendGISQuestion
+    );
+
+}
+
+
+if (gisInput) {
+
+    gisInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendGISQuestion();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   البرمجة
+   ========================================================= */
+
+async function generateCode() {
+
+    const text =
+        codeInput
+            ? codeInput.value.trim()
+            : "";
+
+    if (!text) {
+
+        showNotification(
+            "اكتب ما تريد برمجته.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if (codeOutput) {
+
+        codeOutput.textContent =
+            "🤖 جاري كتابة الكود...";
+
+    }
+
+
+    try {
+
+        let responseText =
+            "";
+
+
+        await askAIStream(
+            `
+أنت مساعد برمجة متخصص.
+
+المطلوب:
+${text}
+
+اكتب الكود كاملًا من أول سطر لآخر سطر.
+إذا كان هناك أكثر من ملف، وضح اسم كل ملف.
+لا تختصر الكود.
+            `,
+            "coding",
+            chunk => {
+
+                responseText +=
+                    chunk;
+
+                if (codeOutput) {
+
+                    codeOutput.textContent =
+                        responseText;
+
+                }
+
+            }
+        );
+
+
+    } catch (error) {
+
+        if (codeOutput) {
+
+            codeOutput.textContent =
+                `❌ ${error.message}`;
+
+        }
+
+    }
+
+}
+
+
+if (codeSendBtn) {
+
+    codeSendBtn.addEventListener(
+        "click",
+        generateCode
+    );
+
+}
+
+
+if (codeInput) {
+
+    codeInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                generateCode();
+
+            }
+
+        }
+    );
+
+}
+
+
+if (copyCodeBtn) {
+
+    copyCodeBtn.addEventListener(
+        "click",
+        async () => {
+
+            if (!codeOutput) {
+                return;
+            }
+
+            const text =
+                codeOutput.textContent;
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+                showNotification(
+                    "✅ تم نسخ الكود.",
+                    "success"
+                );
+
+            } catch {
+
+                showNotification(
+                    "تعذر نسخ الكود.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   حفظ الشات
+   ========================================================= */
+
+function saveMessages() {
+
+    if (!chatMessages) {
+        return;
+    }
+
+    if (!shouldSaveChats()) {
+        return;
+    }
+
+
+    /*
+     * نأخذ نسخة من HTML.
+     *
+     * الصور الكبيرة لا يتم حفظها
+     * في LocalStorage حتى لا تمتلئ المساحة.
+     */
+
+    const clone =
+        chatMessages.cloneNode(
+            true
+        );
+
+
+    clone
         .querySelectorAll(
-            "[data-study-action]"
+            ".image-message img"
         )
-        .forEach(button => {
+        .forEach(
+            img => {
+
+                img.remove();
+
+            }
+        );
+
+
+    localStorage.setItem(
+        CHAT_STORAGE_KEY,
+        clone.innerHTML
+    );
+
+}
+
+
+/* =========================================================
+   تحميل الشات
+   ========================================================= */
+
+function loadMessages() {
+
+    if (!chatMessages) {
+        return;
+    }
+
+    if (!shouldSaveChats()) {
+        return;
+    }
+
+
+    const saved =
+        localStorage.getItem(
+            CHAT_STORAGE_KEY
+        );
+
+
+    if (!saved) {
+        return;
+    }
+
+
+    try {
+
+        chatMessages.innerHTML =
+            saved;
+
+        scrollChatToBottom();
+
+    } catch (error) {
+
+        console.error(
+            "Load chat error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   محادثة جديدة
+   ========================================================= */
+
+function newChat() {
+
+    if (!chatMessages) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "هل تريد بدء محادثة جديدة؟"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    chatMessages.innerHTML =
+        "";
+
+    clearImageSelection();
+
+
+    localStorage.removeItem(
+        CHAT_STORAGE_KEY
+    );
+
+
+    addMessage(
+        "أهلًا بك 👋 أنا اسأل أبو الريس AI. كيف أساعدك؟",
+        "ai"
+    );
+
+}
+
+
+document
+    .querySelectorAll(
+        "[data-new-chat]"
+    )
+    .forEach(
+        button => {
 
             button.addEventListener(
                 "click",
-                async () => {
+                newChat
+            );
 
-                    const action =
-                        button.dataset.studyAction;
-
-
-                    let message =
-                        "";
+        }
+    );
 
 
-                    if (
-                        action ===
-                        "explain"
-                    ) {
+/* =========================================================
+   الاقتراحات السريعة
+   ========================================================= */
 
-                        message =
-                            "اشرحلي هذا الدرس بطريقة بسيطة خطوة بخطوة.";
+document
+    .querySelectorAll(
+        "[data-prompt]"
+    )
+    .forEach(
+        button => {
 
-                    }
+            button.addEventListener(
+                "click",
+                () => {
 
-
-                    if (
-                        action ===
-                        "summary"
-                    ) {
-
-                        message =
-                            "لخصلي الدرس في نقاط مهمة ومنظمة.";
-
-                    }
-
-
-                    if (
-                        action ===
-                        "questions"
-                    ) {
-
-                        message =
-                            "أنشئ لي أسئلة تدريبية على هذا الدرس.";
-
-                    }
-
-
-                    if (
-                        action ===
-                        "exam"
-                    ) {
-
-                        message =
-                            "اعمل لي اختبار تدريبي على هذا الموضوع.";
-
-                    }
-
-
-                    if (!message) {
-
-                        return;
-
-                    }
-
+                    const prompt =
+                        button.dataset.prompt ||
+                        button.textContent.trim();
 
                     openSection(
                         "chat"
                     );
 
+                    if (chatInput) {
 
-                    await sendChatMessage(
-                        message,
-                        "study"
-                    );
+                        chatInput.value =
+                            prompt;
 
-                }
-            );
-
-        });
-
-
-    /* =========================================
-       TEST SYSTEM
-    ========================================= */
-
-    const testQuestions = {
-
-        GIS: [
-
-            {
-                q:
-                    "ماذا يعني GIS؟",
-
-                options: [
-
-                    "Geographic Information System",
-
-                    "Global Internet System",
-
-                    "Geology Information Software",
-
-                    "Graphic Image System"
-
-                ],
-
-                answer: 0
-
-            },
-
-
-            {
-                q:
-                    "ما الذي يستخدم لتمثيل الظواهر المستمرة؟",
-
-                options: [
-
-                    "Raster",
-
-                    "Vector فقط",
-
-                    "Table",
-
-                    "Text"
-
-                ],
-
-                answer: 0
-
-            },
-
-
-            {
-                q:
-                    "ما أحد مكونات GIS؟",
-
-                options: [
-
-                    "Data",
-
-                    "Keyboard فقط",
-
-                    "Printer فقط",
-
-                    "Browser فقط"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        "ArcGIS Pro": [
-
-            {
-                q:
-                    "ما وظيفة Buffer؟",
-
-                options: [
-
-                    "إنشاء منطقة حول معلم بمسافة محددة",
-
-                    "حذف كل البيانات",
-
-                    "تغيير لغة البرنامج",
-
-                    "فتح الإنترنت"
-
-                ],
-
-                answer: 0
-
-            },
-
-
-            {
-                q:
-                    "أي أداة تستخدم لقص طبقة باستخدام حدود طبقة أخرى؟",
-
-                options: [
-
-                    "Clip",
-
-                    "Buffer",
-
-                    "Merge",
-
-                    "Dissolve"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        Python: [
-
-            {
-                q:
-                    "ما الكلمة المستخدمة لتعريف دالة في Python؟",
-
-                options: [
-
-                    "def",
-
-                    "function",
-
-                    "func",
-
-                    "define"
-
-                ],
-
-                answer: 0
-
-            },
-
-
-            {
-                q:
-                    "أي رمز يستخدم لكتابة تعليق في Python؟",
-
-                options: [
-
-                    "#",
-
-                    "//",
-
-                    "<!--",
-
-                    "/*"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        "Remote Sensing": [
-
-            {
-                q:
-                    "أي قمر صناعي يستخدم Sentinel-2؟",
-
-                options: [
-
-                    "Earth observation",
-
-                    "GPS فقط",
-
-                    "Communication فقط",
-
-                    "Weather فقط"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        AutoCAD: [
-
-            {
-                q:
-                    "ما وظيفة أمر LINE؟",
-
-                options: [
-
-                    "رسم خط",
-
-                    "حذف طبقة",
-
-                    "نسخ ملف",
-
-                    "تغيير اللون فقط"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        Surveying: [
-
-            {
-                q:
-                    "ما الجهاز المستخدم لقياس المناسيب؟",
-
-                options: [
-
-                    "Level",
-
-                    "Printer",
-
-                    "Scanner",
-
-                    "GPS فقط"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        Geography: [
-
-            {
-                q:
-                    "ما عاصمة مصر؟",
-
-                options: [
-
-                    "القاهرة",
-
-                    "الإسكندرية",
-
-                    "المنيا",
-
-                    "أسوان"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ],
-
-
-        English: [
-
-            {
-                q:
-                    "ما معنى كلمة Map؟",
-
-                options: [
-
-                    "خريطة",
-
-                    "كتاب",
-
-                    "طريق",
-
-                    "مدينة"
-
-                ],
-
-                answer: 0
-
-            }
-
-        ]
-
-    };
-
-
-    function createTest() {
-
-        if (!testContainer) {
-            return;
-        }
-
-
-        const subjectElement =
-            document.getElementById(
-                "testSubject"
-            );
-
-
-        const countElement =
-            document.getElementById(
-                "testCount"
-            );
-
-
-        if (
-            !subjectElement ||
-            !countElement
-        ) {
-
-            return;
-
-        }
-
-
-        const subject =
-            subjectElement.value;
-
-
-        const count =
-            Number(
-                countElement.value
-            );
-
-
-        let questions =
-            testQuestions[
-                subject
-            ] || [];
-
-
-        if (
-            questions.length ===
-            0
-        ) {
-
-            testContainer.innerHTML = `
-
-                <div class="test-card">
-
-                    لا توجد أسئلة تجريبية لهذه المادة حاليًا.
-
-                </div>
-
-            `;
-
-
-            return;
-
-        }
-
-
-        questions =
-            [...questions]
-
-                .sort(
-                    () =>
-                        Math.random() -
-                        0.5
-                )
-
-                .slice(
-                    0,
-                    Math.min(
-                        count,
-                        questions.length
-                    )
-                );
-
-
-        testContainer.innerHTML =
-            questions
-
-                .map(
-                    (
-                        question,
-                        index
-                    ) => `
-
-                    <div
-                        class="test-card"
-                        data-answer="${question.answer}"
-                    >
-
-                        <div class="test-question">
-
-                            ${index + 1}.
-                            ${escapeHTML(
-                                question.q
-                            )}
-
-                        </div>
-
-                        <div class="test-options">
-
-                            ${question.options
-
-                                .map(
-                                    (
-                                        option,
-                                        optionIndex
-                                    ) => `
-
-                                    <button
-                                        class="test-option"
-                                        data-option="${optionIndex}">
-
-                                        ${escapeHTML(
-                                            option
-                                        )}
-
-                                    </button>
-
-                                `
-                                )
-
-                                .join("")}
-
-                        </div>
-
-                    </div>
-
-                `
-                )
-
-                .join("");
-
-
-        activateTestOptions();
-
-
-        showNotification(
-            `تم إنشاء اختبار ${subject}`
-        );
-
-    }
-
-
-    function activateTestOptions() {
-
-        document
-            .querySelectorAll(
-                ".test-option"
-            )
-            .forEach(option => {
-
-                option.addEventListener(
-                    "click",
-                    () => {
-
-                        const card =
-                            option.closest(
-                                ".test-card"
-                            );
-
-
-                        if (!card) {
-                            return;
-                        }
-
-
-                        const correct =
-                            Number(
-                                card.dataset.answer
-                            );
-
-
-                        const selected =
-                            Number(
-                                option.dataset.option
-                            );
-
-
-                        card
-                            .querySelectorAll(
-                                ".test-option"
-                            )
-                            .forEach(
-                                btn => {
-
-                                    btn.disabled =
-                                        true;
-
-                                }
-                            );
-
-
-                        if (
-                            selected ===
-                            correct
-                        ) {
-
-                            option.classList.add(
-                                "correct"
-                            );
-
-
-                            showNotification(
-                                "إجابة صحيحة ✓"
-                            );
-
-                        } else {
-
-                            option.classList.add(
-                                "wrong"
-                            );
-
-
-                            const correctButton =
-                                card.querySelector(
-                                    `[data-option="${correct}"]`
-                                );
-
-
-                            if (
-                                correctButton
-                            ) {
-
-                                correctButton.classList.add(
-                                    "correct"
-                                );
-
-                            }
-
-
-                            showNotification(
-                                "إجابة غير صحيحة",
-                                "error"
-                            );
-
-                        }
+                        chatInput.focus();
 
                     }
-                );
 
-            });
-
-    }
-
-
-    if (createTestBtn) {
-
-        createTestBtn.addEventListener(
-            "click",
-            createTest
-        );
-
-    }
-
-
-    /* =========================================
-       LANGUAGE
-    ========================================= */
-
-    if (languageSelect) {
-
-        const savedLanguage =
-            localStorage.getItem(
-                "ahmedAI_language"
+                }
             );
 
-
-        if (savedLanguage) {
-
-            languageSelect.value =
-                savedLanguage;
-
         }
+    );
 
 
-        languageSelect.addEventListener(
-            "change",
-            () => {
+/* =========================================================
+   إنشاء اختبار
+   ========================================================= */
 
-                localStorage.setItem(
-                    "ahmedAI_language",
-                    languageSelect.value
-                );
+async function createTest() {
+
+    const subject =
+        testSubject
+            ? testSubject.value.trim()
+            : "";
+
+    const count =
+        testCount
+            ? Number(
+                testCount.value
+            )
+            : 5;
 
 
-                if (
-                    languageSelect.value ===
-                    "en"
-                ) {
+    if (!subject) {
 
-                    showNotification(
-                        "English interface will be added soon."
-                    );
+        showNotification(
+            "اكتب المادة أولًا.",
+            "warning"
+        );
 
-                } else {
+        return;
 
-                    showNotification(
-                        "تم اختيار العربية"
-                    );
+    }
+
+
+    if (testContainer) {
+
+        testContainer.innerHTML =
+            "🤖 جاري إنشاء الاختبار...";
+
+    }
+
+
+    let responseText =
+        "";
+
+
+    try {
+
+        await askAIStream(
+            `
+أنشئ اختبارًا في مادة:
+${subject}
+
+عدد الأسئلة:
+${count}
+
+اجعل الأسئلة متنوعة.
+اكتب رقم السؤال والاختيارات.
+ثم ضع الإجابة الصحيحة في نهاية كل سؤال.
+            `,
+            "study",
+            chunk => {
+
+                responseText +=
+                    chunk;
+
+                if (testContainer) {
+
+                    testContainer.textContent =
+                        responseText;
 
                 }
 
             }
         );
 
+
+    } catch (error) {
+
+        if (testContainer) {
+
+            testContainer.textContent =
+                `❌ ${error.message}`;
+
+        }
+
+    }
+
+}
+
+
+if (createTestBtn) {
+
+    createTestBtn.addEventListener(
+        "click",
+        createTest
+    );
+
+}
+
+
+/* =========================================================
+   اللغة
+   ========================================================= */
+
+if (languageSelect) {
+
+    const savedLanguage =
+        localStorage.getItem(
+            LANGUAGE_KEY
+        );
+
+    if (savedLanguage) {
+
+        languageSelect.value =
+            savedLanguage;
+
     }
 
 
-    /* =========================================
-       GENERAL KEYBOARD SHORTCUT
-    ========================================= */
+    languageSelect.addEventListener(
+        "change",
+        () => {
 
-    document.addEventListener(
-        "keydown",
-        event => {
+            localStorage.setItem(
+                LANGUAGE_KEY,
+                languageSelect.value
+            );
+
+            showNotification(
+                "تم حفظ إعداد اللغة.",
+                "success"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   اختصار Ctrl + Enter
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.ctrlKey &&
+            event.key ===
+            "Enter"
+        ) {
 
             if (
-                (
-                    event.ctrlKey ||
-                    event.metaKey
-                ) &&
-                event.key ===
-                    "k"
+                document.activeElement ===
+                chatInput
             ) {
 
-                event.preventDefault();
-
-
-                openSection(
-                    "chat"
+                sendChatMessage(
+                    chatInput.value,
+                    "general"
                 );
 
+            }
 
-                if (chatInput) {
+        }
 
-                    chatInput.focus();
+    }
+);
+
+
+/* =========================================================
+   منع إرسال النموذج عند الضغط Enter
+   ========================================================= */
+
+document
+    .querySelectorAll(
+        "form"
+    )
+    .forEach(
+        form => {
+
+            form.addEventListener(
+                "submit",
+                event => {
+
+                    event.preventDefault();
 
                 }
-
-            }
+            );
 
         }
     );
 
 
-    /* =========================================
-       INITIAL STATE
-    ========================================= */
+/* =========================================================
+   تشغيل التطبيق
+   ========================================================= */
 
-    openSection(
-        "home"
-    );
+function initializeApp() {
+
+    injectImagePreviewStyles();
+
+    createImagePreviewArea();
+
+    renderFiles();
+
+    loadMessages();
 
 
-    console.log(
-        "اسأل أبو الريس AI initialized successfully - Streaming enabled."
-    );
+    /*
+     * إذا لم توجد أي رسائل،
+     * نضع رسالة ترحيب.
+     */
 
-});
+    if (
+        chatMessages &&
+        chatMessages.children.length === 0
+    ) {
+
+        addMessage(
+            "أهلًا بك 👋\nأنا اسأل أبو الريس AI.\n\nأقدر أساعدك في GIS، ArcGIS Pro، الاستشعار عن بعد، البرمجة، المذاكرة والكثير من المهام.",
+            "ai"
+        );
+
+    }
+
+
+    /*
+     * القسم الافتراضي
+     */
+
+    const activeSection =
+        document.querySelector(
+            ".section.active"
+        );
+
+    if (!activeSection) {
+
+        openSection(
+            "home"
+        );
+
+    }
+
+}
+
+
+initializeApp();
+
+
+/* =========================================================
+   حماية من أخطاء غير متوقعة
+   ========================================================= */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "Application Error:",
+            event.error
+        );
+
+    }
+);
+
+
+window.addEventListener(
+    "unhandledrejection",
+    event => {
+
+        console.error(
+            "Unhandled Promise:",
+            event.reason
+        );
+
+    }
+);
+
+
+/* =========================================================
+   نهاية app.js
+   ========================================================= */
