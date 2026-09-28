@@ -62,11 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "notificationIcon"
         );
 
-    const loadingOverlay =
-        document.getElementById(
-            "loadingOverlay"
-        );
-
     const chatMessages =
         document.getElementById(
             "chatMessages"
@@ -502,31 +497,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================================
        LOADING
+       تم إلغاء شاشة التحميل الكاملة.
+       حالة الانتظار تظهر داخل رسالة AI.
     ========================================= */
 
     function showLoading() {
-
-        if (loadingOverlay) {
-
-            loadingOverlay.classList.add(
-                "show"
-            );
-
-        }
-
+        // لا يوجد Loading Overlay.
+        // لا يتم حجب الصفحة أثناء انتظار رد AI.
     }
 
 
     function hideLoading() {
-
-        if (loadingOverlay) {
-
-            loadingOverlay.classList.remove(
-                "show"
-            );
-
-        }
-
+        // لا يوجد Loading Overlay.
     }
 
 
@@ -1319,21 +1301,11 @@ ${cleanMessage}
                 );
 
 
-            /*
-             * نحاول استخراج البيانات
-             * المكتملة من الـbuffer.
-             */
-
             const parts =
                 buffer.split(
                     "\n"
                 );
 
-
-            /*
-             * نحتفظ بآخر جزء لأنه
-             * قد يكون غير مكتمل.
-             */
 
             buffer =
                 parts.pop() || "";
@@ -1379,11 +1351,6 @@ ${cleanMessage}
 
         }
 
-
-        /*
-         * قراءة أي بيانات متبقية
-         * في نهاية الـstream.
-         */
 
         buffer +=
             decoder.decode();
@@ -1468,13 +1435,11 @@ ${cleanMessage}
         );
 
 
-        showLoading();
-
-
         /*
-         * ننشئ فقاعة AI فارغة
-         * ثم نملأها تدريجيًا.
+         * لم نعد نستخدم شاشة تحميل
+         * تغطي الصفحة بالكامل.
          */
+
 
         const aiBubble =
             createStreamingMessage();
@@ -1482,20 +1447,18 @@ ${cleanMessage}
 
         if (!aiBubble) {
 
-            hideLoading();
-
             return;
 
         }
 
 
         /*
-         * رسالة مؤقتة أثناء
-         * بدء الاتصال.
+         * حالة الانتظار تظهر داخل
+         * فقاعة AI فقط.
          */
 
         aiBubble.textContent =
-            "جاري التفكير...";
+            "🤖 جاري التفكير...";
 
 
         try {
@@ -1520,8 +1483,8 @@ ${cleanMessage}
 
 
                     /*
-                     * أول ما يصل النص
-                     * نحذف "جاري التفكير..."
+                     * عند وصول أول جزء
+                     * نحذف رسالة التفكير.
                      */
 
                     if (
@@ -1551,10 +1514,6 @@ ${cleanMessage}
             );
 
 
-            /*
-             * إذا وصل الرد بنجاح
-             */
-
             if (!hasReceivedText) {
 
                 aiBubble.textContent =
@@ -1562,11 +1521,6 @@ ${cleanMessage}
 
             }
 
-
-            /*
-             * نحفظ المحادثة مرة واحدة
-             * بعد انتهاء الـstream.
-             */
 
             saveMessages();
 
@@ -1592,15 +1546,6 @@ ${cleanMessage}
 
 
             saveMessages();
-
-        } finally {
-
-            /*
-             * مهم جدًا:
-             * إخفاء التحميل دائمًا.
-             */
-
-            hideLoading();
 
         }
 
@@ -2119,10 +2064,9 @@ ${request}
     }
 
 
-    /*
-     * دالة غير Streaming لاستخدامها
-     * مع مولد الأكواد.
-     */
+    /* =========================================
+       FULL AI REQUEST
+    ========================================= */
 
     async function askAIFull(
         userMessage,
@@ -2194,11 +2138,6 @@ ${cleanMessage}
 
         }
 
-
-        /*
-         * لأن Worker أصبح Streaming،
-         * نقرأ الـstream بالكامل هنا.
-         */
 
         if (!response.body) {
 
@@ -2324,7 +2263,30 @@ ${cleanMessage}
                 }
 
 
-                showLoading();
+                /*
+                 * لم تعد هناك شاشة تحميل.
+                 * زر إنشاء الكود يظل في الصفحة
+                 * أثناء انتظار الرد.
+                 */
+
+                const originalText =
+                    codeSendBtn.textContent;
+
+
+                codeSendBtn.disabled =
+                    true;
+
+
+                codeSendBtn.textContent =
+                    "🤖 جاري إنشاء الكود...";
+
+
+                if (codeOutput) {
+
+                    codeOutput.textContent =
+                        "🤖 جاري التفكير وإنشاء الكود...";
+
+                }
 
 
                 try {
@@ -2372,7 +2334,11 @@ ${cleanMessage}
 
                 } finally {
 
-                    hideLoading();
+                    codeSendBtn.disabled =
+                        false;
+
+                    codeSendBtn.textContent =
+                        originalText;
 
                 }
 
